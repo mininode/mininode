@@ -1,1 +1,3 @@
 mininode
+*.o
+*.a

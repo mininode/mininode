@@ -14,12 +14,14 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 CC ?= gcc
+CFLAGS ?= -Os
 
-LIBUV_CFLAGS += -Wall \
-          -Wextra \
-          -Wno-unused-parameter \
-	  -Isrc/contrib/libuv/include \
-	  -Isrc/contrib/libuv/src
+LIBUV_CFLAGS += $(CFLAGS) \
+                -Wall \
+                -Wextra \
+                -Wno-unused-parameter \
+	        -Isrc/contrib/libuv/include \
+	        -Isrc/contrib/libuv/src
 
 LIBUV_INCLUDES = src/contrib/libuv/include/tree.h \
                  src/contrib/libuv/include/uv-errno.h \
@@ -28,57 +30,20 @@ LIBUV_INCLUDES = src/contrib/libuv/include/tree.h \
                  src/contrib/libuv/include/uv.h \
                  src/contrib/libuv/src/heap-inl.h \
                  src/contrib/libuv/src/queue.h \
-                 src/contrib/libuv/src/uv-common.h \
-                 src/contrib/libuv/include/uv-win.h \
-		 src/contrib/libuv/include/stdint-msvc2008.h \
-                 src/contrib/libuv/src/win/atomicops-inl.h \
-                 src/contrib/libuv/src/win/handle-inl.h \
-                 src/contrib/libuv/src/win/internal.h \
-                 src/contrib/libuv/src/win/req-inl.h \
-                 src/contrib/libuv/src/win/stream-inl.h \
-                 src/contrib/libuv/src/win/winapi.h \
-                 src/contrib/libuv/src/win/winsock.h
+                 src/contrib/libuv/src/uv-common.h
 
 LIBUV_OBJS = src/contrib/libuv/src/fs-poll.o \
-       src/contrib/libuv/src/inet.o \
-       src/contrib/libuv/src/threadpool.o \
-       src/contrib/libuv/src/uv-common.o \
-       src/contrib/libuv/src/version.o 
+             src/contrib/libuv/src/inet.o \
+             src/contrib/libuv/src/threadpool.o \
+             src/contrib/libuv/src/uv-common.o \
+             src/contrib/libuv/src/version.o 
+
+HTTP_PARSER_CFLAGS = $(CFLAGS)
 
 HTTP_PARSER_OBJS = src/contrib/http-parser/http_parser.o
 
 ifeq ($(OS),Windows_NT)
-CCFLAGS += -D WIN32
-LIBUV_CFLAGS += -Isrc/win \
-                -DWIN32_LEAN_AND_MEAN \
-                -D_WIN32_WINNT=0x0600
-
-LIBUV_OBJS += src/contrib/libuv/src/win/async.o \
-              src/contrib/libuv/src/win/core.o \
-                  src/contrib/libuv/src/win/dl.o \
-                  src/contrib/libuv/src/win/error.o \
-                  src/contrib/libuv/src/win/fs-event.o \
-                  src/contrib/libuv/src/win/fs.o \
-                  src/contrib/libuv/src/win/getaddrinfo.o \
-                  src/contrib/libuv/src/win/getnameinfo.o \
-                  src/contrib/libuv/src/win/handle.o \
-                  src/contrib/libuv/src/win/loop-watcher.o \
-                  src/contrib/libuv/src/win/pipe.o \
-                  src/contrib/libuv/src/win/poll.o \
-                  src/contrib/libuv/src/win/process-stdio.o \
-                  src/contrib/libuv/src/win/process.o \
-                  src/contrib/libuv/src/win/req.o \
-                  src/contrib/libuv/src/win/signal.o \
-                  src/contrib/libuv/src/win/stream.o \
-                  src/contrib/libuv/src/win/tcp.o \
-                  src/contrib/libuv/src/win/thread.o \
-                  src/contrib/libuv/src/win/timer.o \
-                  src/contrib/libuv/src/win/tty.o \
-                  src/contrib/libuv/src/win/udp.o \
-                  src/contrib/libuv/src/win/util.o \
-                  src/contrib/libuv/src/win/winapi.o \
-                  src/contrib/libuv/src/win/winsock.o
-
+$(error Windows is currently unsupported.)
 else
     LIBUV_OBJS += src/contrib/libuv/src/unix/core.o \
                   src/contrib/libuv/src/unix/async.o \
@@ -104,7 +69,7 @@ else
 
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
-        #TBD
+        # TBD
     endif
     ifeq ($(UNAME_S),Darwin)
         # TBD
@@ -114,17 +79,71 @@ else
     endif
 endif
 
-all: libuv.a libhttparser.a
+MININODE_CFLAGS = $(CFLAGS) \
+                  -Wall \
+                  -Isrc/contrib/duktape \
+		  -Isrc/contrib \
+		  -Isrc/contrib/libz \
+		  -D_XOPEN_SOURCE=600 \
+		  -DMINIZ_NO_TIME
+
+MININODE_OBJS = src/contrib/duktape/duktape.o \
+                src/modules/assert/assert.o \
+		src/modules/buffer/buffer.o \
+		src/modules/child_process/child_process.o \
+		src/modules/cluster/cluster.o \
+		src/modules/console/console.o \
+		src/modules/crypto/crypto.o \
+		src/modules/debugger/debugger.o \
+		src/modules/dgram/dgram.o \
+		src/modules/dns/dns.o \
+		src/modules/errors/errors.o \
+		src/modules/events/events.o \
+		src/modules/fs/fs.o \
+		src/modules/globals/globals.o \
+		src/modules/http/http.o \
+		src/modules/https/https.o \
+		src/modules/net/net.o \
+		src/modules/os/os.o \
+		src/modules/path/path.o \
+		src/modules/process/process.o \
+		src/modules/punycode/punycode.o \
+		src/modules/querystring/querystring.o \
+		src/modules/readline/readline.o \
+		src/modules/repl/repl.o \
+		src/modules/stream/stream.o \
+		src/modules/string_decoder/string_decoder.o \
+		src/modules/timers/timers.o \
+		src/modules/tls/tls.o \
+		src/modules/tty/tty.o \
+		src/modules/url/url.o \
+		src/modules/util/util.o \
+		src/modules/v8/v8.o \
+		src/modules/vm/vm.o \
+		src/modules/zlib/zlib.o \
+                src/mininode.o
+
+all: mininode
 
 clean:
 	-$(RM) $(LIBUV_OBJS) libuv.a
 	-$(RM) $(HTTP_PARSER_OBJS) libhttparser.a
+	-$(RM) $(MININODE_OBJS) mininode
 
 libuv.a: $(LIBUV_OBJS)
 	$(AR) crs $@ $^
 
 libhttparser.a: $(HTTP_PARSER_OBJS)
 	$(AR) crs $@ $^
+	
+mininode: libuv.a libhttparser.a $(MININODE_OBJS)
+	$(CC) $^ -o $@
 
 $(LIBUV_OBJS): %.o : %.c $(LIBUV_INCLUDES)
-	$(CC) $(LIBUV_CFLAGS)  -c -o $@ $<
+	$(CC) $(LIBUV_CFLAGS) -c -o $@ $<
+
+$(HTTP_PARSER_OBJS): %.o : %.c
+	$(CC) $(HTTP_PARSER_CFLAGS) -c -o $@ $<
+
+$(MININODE_OBJS): %.o : %.c
+	$(CC) $(MININODE_CFLAGS) -c -o $@ $<
