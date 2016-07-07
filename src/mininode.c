@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <unistd.h>
 #include <string.h>
 #include <limits.h>
@@ -18,32 +17,33 @@
 #define VERSION "0.0.1"
 
 /* Accepted flags for getopt_long() */
-#define OPTSTRING "c:e:hipr:v"
-/* Flag set by --eval */
-static int eval_flag = 0;
-/* Flag set by --print */
+#define OPTSTRING "chipvz"
+/* Flag set by -p */
 static int print_flag = 0;
-/* Flag set by --check */
+/* Flag set by -c */
 static int check_flag = 0;
-/* Flag set by --interactive */
+/* Flag set by -i */
 static int interactive_flag = 0;
-/* Flag set by --require */
-static int require_flag = 0;
-/* Flag set by --no-deprecation */
-static int no_depreca_flag = 0;
-/* Flag set by --trace-deprecation */
-static int trace_depreca_flag = 0;
-/* Flag set by --trace-sync-io */
-static int trace_sync_flag = 0;
-/* Flag set by --track-heap-objects */
-static int track_heap_flag = 0;
-/* Flag set by --zero-fill-buffers */
+/* Flag set by --z */
 static int zero_fill_flag = 0;
 
 static void
 short_help() {
-	printf("Usage: node [options] [ -e script | script.js ] [arguments]\n"
-               "       node debug script.js [arguments]\n");
+	printf("Usage: mininode [options] script.js\n");
+}
+
+duk_ret_t
+mininode_mod_search(duk_context *ctx) {
+	/* We get the following duk stack arguments:
+	 *   index 0: id
+	 *   index 1: require
+	 *   index 2: exports
+	 *   index 3: module
+	 *
+	 * For built-in modules, we need to map from, e.g., 'v8' to 
+	 * dukopen_v8. This needs to happen quickly, ideally O(1), due
+	 * to the fact that it is the first step in module loading.
+	 */
 }
 
 int
@@ -51,48 +51,18 @@ main(int argc, char **argv) {
 
 	duk_context *ctx = NULL; /* The heart of mininode! A duktape context. */
 	char line[MAX_INPUT];    /* Reserved for the repl */
-	int option_index;        /* Used by getopt_long. */
-	int c;                   /* Also used by getopt_long. */
+	int c;                   /* Used by getopt. */
 	int ch;                  /* Used by the repl. */
 	char *filename = NULL;   /* Kinda self-explanatory. */
 	
 	/* If invoked without any arguments, we should invoke the REPL. */
 	if (argc == 1) {
 		printf("repl is currently unimplemented.\n");
+		short_help();
+		exit(EXIT_FAILURE);
 	}
 
-	static struct option long_options[] = {
-		{"help",               no_argument, 0, 'h'},
-		{"version",            no_argument, 0, 'v'},
-		{"eval",               required_argument, &eval_flag, 'e'},
-		{"print",              required_argument, &print_flag, 'p'},
-		{"check",              no_argument, &check_flag, 'c'},
-		{"interactive",        no_argument, &interactive_flag, 'i'},
-		{"require",            no_argument, &require_flag,  'r'},
-		{"no-deprecation",     no_argument, &no_depreca_flag, 0},
-		{"trace-deprecation",  no_argument, &trace_depreca_flag, 0},
-		{"trace-sync-io",      no_argument, &trace_sync_flag, 0},
-		{"track-heap-objects", no_argument, &track_heap_flag, 0},
-		/* --prof-process is a no-op for compatibility. */
-		{"prof-process",       no_argument, 0, 0},
-		{"zero-fill-buffers",  no_argument, &zero_fill_flag, 0},
-		/* --v8-options is a no-op for compatibility. */
-		{"v8-options",         required_argument, 0, 0},
-		{"v8-pool-size",       required_argument, 0, 0},
-		{"tls-cipher-list",    required_argument, 0, 0},
-		/* --icu-data-dir is a no-op for compatibility */ 
-		{"icu-data-dir",       required_argument, 0, 0},
-		{0, 0, 0, 0}
-	};
-
-	while (1) {
-		c = getopt_long(argc, argv, OPTSTRING, long_options, &option_index);
-
-		/* Detect the end of the options. */
-		if (c == -1)
-			break;
-
-
+	while ((c = getopt(argc, argv, OPTSTRING)) != -1) {
 		switch (c) {
 			case 'h':
 				short_help();
@@ -100,17 +70,8 @@ main(int argc, char **argv) {
 			case 'v':
 				printf("Version %s\n", VERSION);
 				exit(EXIT_SUCCESS);
-			case 'e':
-				if (!eval_flag) {
-					eval_flag = 1;
-					filename = optarg;
-				} else {
-					short_help();
-					exit(EXIT_FAILURE);
-				}
-				break;
 			case 'p':
-				if (!print_flag) {
+				if (print_flag == 0) {
 					print_flag = 1;
 				} else {
 					short_help();
@@ -118,7 +79,7 @@ main(int argc, char **argv) {
 				}
 				break;
 			case 'c':
-				if (!check_flag) {
+				if (check_flag == 0) {
 					check_flag = 1;
 				} else {
 					short_help();
@@ -126,16 +87,11 @@ main(int argc, char **argv) {
 				}
 				break;
 			case 'i':
-				interactive_flag = 99;
+				interactive_flag = 1;
 				break;
-			case 'r':
-				printf("blah r\n");
+			case 'z':
+				zero_fill_flag = 1;
 				break;
-			case 0:
-				/* The remaining long options just set flags. */
-				if (long_options[option_index].flag != 0)
-					//long_options[option_index].flag = 1;
-					break;
 			default:
 				short_help();
 				exit(EXIT_FAILURE);
@@ -144,29 +100,22 @@ main(int argc, char **argv) {
 	}
 
 	/* 
-	 * The last argument should be the filename unless -e was used.
+	 * The last argument should be the filename.
 	 */
-	if (eval_flag == 0) {
-		if (optind < argc) {
-			/* If there is more than one remaining argument, exit. */
-			if (argc - optind > 1) {
-				short_help();
-				exit(EXIT_FAILURE);
-			}
-			/* We'll try to use this file. */
-			filename = argv[optind];
-		}	
-	}
+	filename = argv[argc-1];
 
 	/* If we can't access the file, exit. */
 	if (access(filename, R_OK) == -1) {
 		fprintf(stderr, "Error: file not readable\n");
+		short_help();
 		exit(EXIT_FAILURE);
 	}
 
 	/*
 	 * Need to add custom handlers here eventually.
 	 * See http://duktape.org/api.html#duk_create_heap
+	 * 
+	 * This might be an interesting place to use portableumem.
 	 */
 	ctx = duk_create_heap_default();
 
@@ -175,18 +124,33 @@ main(int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 	
-	/* TODO: Register modules here. */
+	/*
+	 * Register our module loader with the Duktape context.
+	 */
+	duk_get_global_string(ctx, "Duktape");
+	duk_push_c_function(ctx, mininode_mod_search, 4 /*nargs*/);
+	duk_put_prop_string(ctx, -2, "modSearch");
+	duk_pop(ctx);
+	
+	/* TODO: Register always loaded modules here (e.g., 'console'). */
 
-	if (eval_flag || !check_flag) {
-		if (duk_peval_file(ctx, filename) != 0) {
-			/* FIXME: This is wrong... */
-			if ( print_flag ) {
-				printf("%s\n", duk_safe_to_string(ctx, -1));
-			}
-        	}
+	if (zero_fill_flag) {
+		fprintf(stderr, "-z is currently unimplemented.");
+		short_help();
+		exit(EXIT_FAILURE);
 	}
 
-	/* TODO: Support check_flag */
+	if (!check_flag && !print_flag) {
+		if (duk_peval_file(ctx, filename) != 0) {
+			printf("%s\n", duk_safe_to_string(ctx, -1));
+        	}
+	} else {
+		fprintf(stderr, "-c and -p are currently unimplemented.\n");
+		short_help();
+		exit(EXIT_FAILURE);
+	}
+
+	/* TODO: Support check_flag and print_flag */
 
 	duk_destroy_heap(ctx);
 	exit(0);
