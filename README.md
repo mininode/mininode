@@ -24,7 +24,7 @@ For use on embedded systems, musl libc and Linux are recommended.
 ## What's the point?
 
 This is intended aid in rapid development of small embedded clients, with 
-realistic requirements of 200mhz and 4MB RAM although less might be work able. 
+realistic requirements of ~75mhz and 2MB RAM although less might be workable. 
 Since this will likely never approach the performance of V8, you will almost 
 certainly want to continue using mainstream Node.js for servers unless you are
 prepared to write the bulk of your hot path in C using duktape.
