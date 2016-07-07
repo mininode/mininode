@@ -16,7 +16,7 @@
 
 #define VERSION "0.0.1"
 
-/* Accepted flags for getopt_long() */
+/* Accepted flags for getopt() */
 #define OPTSTRING "chipvz"
 /* Flag set by -p */
 static int print_flag = 0;
@@ -34,7 +34,8 @@ short_help() {
 
 duk_ret_t
 mininode_mod_search(duk_context *ctx) {
-	/* We get the following duk stack arguments:
+	/*
+	 * We get the following duk stack arguments:
 	 *   index 0: id
 	 *   index 1: require
 	 *   index 2: exports
@@ -106,7 +107,7 @@ main(int argc, char **argv) {
 
 	/* If we can't access the file, exit. */
 	if (access(filename, R_OK) == -1) {
-		fprintf(stderr, "Error: file not readable\n");
+		fprintf(stderr, "Error: file %s not readable\n", filename);
 		short_help();
 		exit(EXIT_FAILURE);
 	}
@@ -142,7 +143,8 @@ main(int argc, char **argv) {
 
 	if (!check_flag && !print_flag) {
 		if (duk_peval_file(ctx, filename) != 0) {
-			printf("%s\n", duk_safe_to_string(ctx, -1));
+			fprintf(stderr, "%s\n", duk_safe_to_string(ctx, -1));
+			exit(EXIT_FAILURE);
         	}
 	} else {
 		fprintf(stderr, "-c and -p are currently unimplemented.\n");
@@ -153,5 +155,5 @@ main(int argc, char **argv) {
 	/* TODO: Support check_flag and print_flag */
 
 	duk_destroy_heap(ctx);
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
