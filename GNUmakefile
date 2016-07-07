@@ -14,7 +14,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 CC ?= gcc
-CFLAGS ?= -Os
+CFLAGS ?= -Os -std=c99
 
 LIBUV_CFLAGS += $(CFLAGS) \
                 -Wall \

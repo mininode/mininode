@@ -5,6 +5,8 @@ together with [duktape][5]. The goal here is to produce an implementation of
 the [Node.js 6.2.2 API][6] with a full-fledged Javascript ES5.1 interpreter in 
 a single binary with no runtime dependencies other than a standard C library.
 
+This is very early in development. Any feedback is very welcome!
+
 ## Build Instructions
 
 This uses GNU make and it should work on Linux, MacOS, Illumos/Solaris, and 
