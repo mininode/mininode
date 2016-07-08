@@ -15,7 +15,7 @@
 #include "duktape.h"
 #include "modules.h"
 
-#define VERSION "0.0.1"
+#define MININODE_VERSION "0.0.1"
 
 /* Accepted flags for getopt() */
 #define OPTSTRING "chipvz"
@@ -72,7 +72,7 @@ main(int argc, char **argv) {
 				short_help();
 				exit(EXIT_SUCCESS);
 			case 'v':
-				printf("Version %s\n", VERSION);
+				printf("Version %s\n", MININODE_VERSION);
 				exit(EXIT_SUCCESS);
 			case 'p':
 				if (print_flag == 0) {
@@ -115,6 +115,16 @@ main(int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
+	/* 
+	 * We'll implement zero_fill_flag by changing the handlers we 
+	 * pass when creating the duk heap. So this goes here.
+	 */
+	if (zero_fill_flag) {
+		fprintf(stderr, "-z is currently unimplemented.\n");
+		short_help();
+		exit(EXIT_FAILURE);
+	}
+
 	/*
 	 * Need to add custom handlers here eventually.
 	 * See http://duktape.org/api.html#duk_create_heap
@@ -135,18 +145,11 @@ main(int argc, char **argv) {
 	duk_push_c_function(ctx, mininode_mod_search, 4 /*nargs*/);
 	duk_put_prop_string(ctx, -2, "modSearch");
 	duk_pop(ctx);
-	
+
 	/* TODO: See what modules should always be loaded. */
 	duk_push_c_function(ctx, dukopen_console, 0 /*nargs*/);
 	duk_call(ctx, 0);
 	duk_put_global_string(ctx, "console");
-	
-
-	if (zero_fill_flag) {
-		fprintf(stderr, "-z is currently unimplemented.");
-		short_help();
-		exit(EXIT_FAILURE);
-	}
 
 	if (!check_flag && !print_flag) {
 		if (duk_peval_file(ctx, filename) != 0) {

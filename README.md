@@ -34,4 +34,4 @@ prepared to write the bulk of your hot path in C using duktape.
 [3]: https://github.com/ARMmbed/mbedtls/tree/mbedtls-2.3
 [4]: https://www.progville.com/c/miniz-fast-small-zip/
 [5]: http://duktape.org
-[6]: https://nodejs.org/api/documentation.html
+[6]: https://nodejs.org/dist/v6.2.2/docs/api/
