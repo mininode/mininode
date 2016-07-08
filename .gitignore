@@ -1,3 +1,4 @@
 mininode
 *.o
 *.a
+config.mak

@@ -27,4 +27,3 @@ duk_ret_t dukopen_assert(duk_context *ctx) {
 	duk_put_number_list(ctx, -1, assert_consts);
 	return 1;
 }
-
