@@ -84,6 +84,7 @@ MININODE_CFLAGS = $(CFLAGS) \
                   -Isrc/contrib/duktape \
 		  -Isrc/contrib \
 		  -Isrc/contrib/libz \
+		  -Isrc/modules \
 		  -D_XOPEN_SOURCE=600 \
 		  -DMINIZ_NO_TIME
 

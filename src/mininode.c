@@ -13,6 +13,7 @@
 #include <limits.h>
 #include <getopt.h>
 #include "duktape.h"
+#include "modules.h"
 
 #define VERSION "0.0.1"
 
@@ -45,15 +46,17 @@ mininode_mod_search(duk_context *ctx) {
 	 * dukopen_v8. This needs to happen quickly, ideally O(1), due
 	 * to the fact that it is the first step in module loading.
 	 */
+	
+	return 1;
 }
 
 int
 main(int argc, char **argv) {
 
 	duk_context *ctx = NULL; /* The heart of mininode! A duktape context. */
-	char line[MAX_INPUT];    /* Reserved for the repl */
+	char line[MAX_INPUT];    /* Reserved for the repl. */
+	int ch;                  /* Reserved for the repl. */
 	int c;                   /* Used by getopt. */
-	int ch;                  /* Used by the repl. */
 	char *filename = NULL;   /* Kinda self-explanatory. */
 	
 	/* If invoked without any arguments, we should invoke the REPL. */
@@ -124,7 +127,7 @@ main(int argc, char **argv) {
 		printf("Failed to create a Duktape heap!\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	/*
 	 * Register our module loader with the Duktape context.
 	 */
@@ -133,7 +136,11 @@ main(int argc, char **argv) {
 	duk_put_prop_string(ctx, -2, "modSearch");
 	duk_pop(ctx);
 	
-	/* TODO: Register always loaded modules here (e.g., 'console'). */
+	/* TODO: See what modules should always be loaded. */
+	duk_push_c_function(ctx, dukopen_console, 0 /*nargs*/);
+	duk_call(ctx, 0);
+	duk_put_global_string(ctx, "console");
+	
 
 	if (zero_fill_flag) {
 		fprintf(stderr, "-z is currently unimplemented.");
