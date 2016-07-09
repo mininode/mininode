@@ -33,6 +33,7 @@ I've only tested with `gcc` and `clang`. Others may work! Please let me know.
     git clone https://github.com/hypoalex/mininode.git
     cd mininode
     git submodule init
+    git submodule update
     make -j4
 
 For use on embedded systems, musl libc and Linux are recommended.
