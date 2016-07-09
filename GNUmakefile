@@ -45,8 +45,7 @@ HTTP_PARSER_OBJS = src/contrib/http-parser/http_parser.o
 ifeq ($(OS),Windows_NT)
 $(error Windows is currently unsupported.)
 else
-    LIBUV_OBJS += src/contrib/libuv/src/unix/core.o \
-                  src/contrib/libuv/src/unix/async.o \
+    LIBUV_OBJS += src/contrib/libuv/src/unix/async.o \
 		  src/contrib/libuv/src/unix/dl.o \
 		  src/contrib/libuv/src/unix/fs.o \
 		  src/contrib/libuv/src/unix/getaddrinfo.o \
@@ -69,12 +68,14 @@ else
 
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
-        # TBD
-    endif
-    ifeq ($(UNAME_S),Darwin)
-        # TBD
-    endif
-    ifeq ($(UNAME_S),SunOS)
+	# TBD
+    else ifeq ($(UNAME_S),Darwin)
+        LIBUV_OBJS += src/contrib/libuv/src/unix/core.o \
+                      src/contrib/libuv/src/unix/darwin.o \
+	              src/contrib/libuv/src/unix/darwin-proctitle.o \
+		      src/contrib/libuv/src/unix/kqueue.o \
+		      src/contrib/libuv/src/unix/fsevents.o
+    else ifeq ($(UNAME_S),SunOS)
         # TBD
     endif
 endif
@@ -163,6 +164,8 @@ MININODE_CFLAGS = $(CFLAGS) \
 		  -Isrc/contrib \
 		  -Isrc/contrib/libz \
 		  -Isrc/modules \
+		  -Isrc/contrib/libuv/include/ \
+		  -Isrc/include \
 		  -D_XOPEN_SOURCE=600 \
 		  -DMINIZ_NO_TIME
 
