@@ -9,13 +9,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
+#include <errno.h>
 #include <string.h>
 #include <limits.h>
 #include <getopt.h>
+#include "uv.h"
 #include "duktape.h"
+#include "mininode.h"
 #include "modules.h"
-
-#define MININODE_VERSION "0.0.1"
 
 /* Accepted flags for getopt() */
 #define OPTSTRING "chipvz"
@@ -28,9 +30,108 @@ static int interactive_flag = 0;
 /* Flag set by --z */
 static int zero_fill_flag = 0;
 
-static void
-short_help() {
+void
+mn_short_help() {
 	printf("Usage: mininode [options] script.js\n");
+}
+
+void
+mn_sighandler(int x) {
+	fprintf(stderr, "Got signal %d\n", x);
+	fflush(stderr);
+}
+
+void
+mn_set_sigint_handler(void) {
+	(void)signal(SIGINT, mn_sighandler);
+	(void)signal(SIGPIPE, SIG_IGN);  /* avoid SIGPIPE killing process */
+}
+
+void
+mn_fatal_handler(const char *msg) {
+	fprintf(stderr, "*** FATAL ERROR: %s\n", msg ? msg : "no message");
+	fprintf(stderr, "Causing intentional segfault...\n");
+	fflush(stderr);
+	*((volatile unsigned int *) 0) = (unsigned int) 0xdeadbeefUL;
+	abort();
+}
+
+int
+mn_get_stack_raw(duk_context *ctx) {
+	if (!duk_is_object(ctx, -1)) {
+		return 1;
+	}
+
+	if (!duk_has_prop_string(ctx, -1, "stack")) {
+		return 1;
+	}
+
+	if (!duk_is_error(ctx, -1)) {
+		/* Not an Error instance, don't read "stack". */
+		return 1;
+	}
+
+	duk_get_prop_string(ctx, -1, "stack");  /* caller coerces */
+	duk_remove(ctx, -2);
+	return 1;
+}
+
+/* Print error to stderr and pop error. */
+void
+mn_print_pop_error(duk_context *ctx, FILE *f) {
+	/* 
+	 * Print error objects with a stack trace specially.
+	 * Note that getting the stack trace may throw an error
+	 * so this also needs to be safe call wrapped.
+	 */
+	(void)duk_safe_call(ctx, mn_get_stack_raw, 1 /*nargs*/, 1 /*nrets*/);
+	fprintf(f, "%s\n", duk_safe_to_string(ctx, -1));
+	fflush(f);
+	duk_pop(ctx);
+}
+
+void *
+mn_zmalloc(size_t size) {
+	void *ret = calloc(1, size);
+	return ret;
+}
+
+
+FILE *
+mn_stdin_to_tmpfile() {
+	FILE *	ftmp;
+	char	buf[4096];
+	ssize_t	nread;
+	int 	ret;
+
+	if (!(ftmp = tmpfile())) {
+		return 0;	
+	}
+
+	nread = read(0,buf,sizeof(buf)-1);
+
+	while (nread) {
+		if (nread > 0) {
+			buf[nread] = '\0';
+			ret = fputs(buf,ftmp);
+		} else {
+			ret = (errno == EINTR) ? 0 : -1;
+		}
+
+		if (ret < 0) {
+			fclose(ftmp);
+			return 0;
+		}
+
+		nread = read(0,buf,sizeof(buf)-1);
+	}
+
+	return ftmp;	
+}
+
+duk_ret_t
+mininode_mod_load(FILE *file, duk_context *ctx) {
+	return 1;
 }
 
 duk_ret_t
@@ -46,30 +147,22 @@ mininode_mod_search(duk_context *ctx) {
 	 * dukopen_v8. This needs to happen quickly, ideally O(1), due
 	 * to the fact that it is the first step in module loading.
 	 */
-	
+
 	return 1;
 }
 
 int
 main(int argc, char **argv) {
 
-	duk_context *ctx = NULL; /* The heart of mininode! A duktape context. */
-	char line[MAX_INPUT];    /* Reserved for the repl. */
-	int ch;                  /* Reserved for the repl. */
-	int c;                   /* Used by getopt. */
+	duk_context *ctx = NULL; /* The heart of mininode! */
+	int c = 0;               /* Used by getopt. */
 	char *filename = NULL;   /* Kinda self-explanatory. */
-	
-	/* If invoked without any arguments, we should invoke the REPL. */
-	if (argc == 1) {
-		printf("repl is currently unimplemented.\n");
-		short_help();
-		exit(EXIT_FAILURE);
-	}
+	uv_loop_t *loop =  NULL; /* The event loop. */
 
 	while ((c = getopt(argc, argv, OPTSTRING)) != -1) {
 		switch (c) {
 			case 'h':
-				short_help();
+				mn_short_help();
 				exit(EXIT_SUCCESS);
 			case 'v':
 				printf("Version %s\n", MININODE_VERSION);
@@ -78,7 +171,7 @@ main(int argc, char **argv) {
 				if (print_flag == 0) {
 					print_flag = 1;
 				} else {
-					short_help();
+					mn_short_help();
 					exit(EXIT_FAILURE);
 				}
 				break;
@@ -86,7 +179,7 @@ main(int argc, char **argv) {
 				if (check_flag == 0) {
 					check_flag = 1;
 				} else {
-					short_help();
+					mn_short_help();
 					exit(EXIT_FAILURE);
 				}
 				break;
@@ -97,44 +190,41 @@ main(int argc, char **argv) {
 				zero_fill_flag = 1;
 				break;
 			default:
-				short_help();
+				mn_short_help();
 				exit(EXIT_FAILURE);
 		}
-
 	}
-
-	/* 
-	 * The last argument should be the filename.
-	 */
-	filename = argv[argc-1];
-
-	/* If we can't access the file, exit. */
-	if (access(filename, R_OK) == -1) {
-		fprintf(stderr, "Error: file %s not readable\n", filename);
-		short_help();
-		exit(EXIT_FAILURE);
-	}
-
-	/* 
-	 * We'll implement zero_fill_flag by changing the handlers we 
-	 * pass when creating the duk heap. So this goes here.
-	 */
-	if (zero_fill_flag) {
-		fprintf(stderr, "-z is currently unimplemented.\n");
-		short_help();
-		exit(EXIT_FAILURE);
-	}
+	
+	/* Set the sigint handler and initialize the loop. */
+	mn_set_sigint_handler();
+	loop = uv_default_loop();
 
 	/*
-	 * Need to add custom handlers here eventually.
 	 * See http://duktape.org/api.html#duk_create_heap
 	 * 
 	 * This might be an interesting place to use portableumem.
 	 */
-	ctx = duk_create_heap_default();
+	if (zero_fill_flag) {
+		fprintf(stderr, "WARNING: -z is currently unimplemented.\n");
+		ctx = duk_create_heap(
+			NULL, /* TODO: calloc() here */
+			NULL,
+			NULL,
+			&loop,
+			(void *)&mn_fatal_handler
+		);
+	} else {
+		ctx = duk_create_heap(
+			NULL,
+			NULL,
+			NULL,
+			&loop,
+			(void *)mn_fatal_handler
+		);
+	}
 
 	if (!ctx) {
-		printf("Failed to create a Duktape heap!\n");
+		printf("Failed to create a Duktape context!\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -145,25 +235,78 @@ main(int argc, char **argv) {
 	duk_push_c_function(ctx, mininode_mod_search, 4 /*nargs*/);
 	duk_put_prop_string(ctx, -2, "modSearch");
 	duk_pop(ctx);
-
-	/* TODO: See what modules should always be loaded. */
+	/*
+	 * Register globals.
+	 * See https://nodejs.org/dist/v6.2.2/docs/api/globals.html
+	 */
+	/* Register the global 'timer' functions. */
+	duk_push_c_function(ctx, dukopen_timers, 0);
+	duk_call(ctx, 0);
+	/* Register the global 'console' object. */
 	duk_push_c_function(ctx, dukopen_console, 0 /*nargs*/);
 	duk_call(ctx, 0);
 	duk_put_global_string(ctx, "console");
 
-	if (!check_flag && !print_flag) {
-		if (duk_peval_file(ctx, filename) != 0) {
-			fprintf(stderr, "%s\n", duk_safe_to_string(ctx, -1));
+	/* Connect the Duk context with the event loop. */
+	//loop->data = ctx;
+	
+	/* Detect piped input and try to execute it. */
+	if (!isatty(fileno(stdin)) && !interactive_flag) {
+
+	} else {
+		/* If invoked without any file arguments, invoke the REPL. */
+		if (argc == 1) {
+			printf("repl is currently unimplemented.\n");
+			mn_short_help();
 			exit(EXIT_FAILURE);
-        	}
+		}
+       		/* 
+        	 * The last argument should be the filename.
+       	 	 */
+       		filename = argv[argc-1];
+
+		/* If we can't access the file, exit. */
+       		if (access(filename, R_OK) == -1) {
+       			fprintf(stderr, "Error: file %s not readable\n", filename);
+       			mn_short_help();
+       			exit(EXIT_FAILURE);
+       		} else {
+       			// open the file
+       		}
+		
+	}
+
+	if (!check_flag && !print_flag) {
+		if (filename != NULL) {
+			if (duk_peval_file(ctx, filename) != 0) {
+				fprintf(stderr, "%s\n", duk_safe_to_string(ctx, -1));
+				exit(EXIT_FAILURE);
+	        	} else {
+	        		exit(EXIT_SUCCESS);
+	        	}
+		}
+
+		/* TODO: We should take a FILE * and always use mn_mod_load() */
+		/*
+		if (src != NULL) {
+			duk_push_external_buffer(ctx);
+			duk_config_buffer(ctx, -1, src, bufsz);
+			duk_eval(ctx);
+			free(src);
+			exit(EXIT_SUCCESS);
+		} else {
+			printf("NO SRC TO HAX0R\n");
+		}
+		*/
 	} else {
 		fprintf(stderr, "-c and -p are currently unimplemented.\n");
-		short_help();
+		mn_short_help();
 		exit(EXIT_FAILURE);
 	}
 
 	/* TODO: Support check_flag and print_flag */
 
 	duk_destroy_heap(ctx);
+	uv_loop_close(loop);
 	exit(EXIT_SUCCESS);
 }

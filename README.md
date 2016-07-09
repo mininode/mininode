@@ -26,7 +26,9 @@ mainline Node.js runtime will likely need to be ported.
 ## Build Instructions
 
 This uses GNU make and it should work on Linux, MacOS, Illumos/Solaris, and 
-FreeBSD. Other systems are possible provided that they are supported by libuv.
+FreeBSD (possibly with minimal porting effort).
+
+Other systems are possible provided that they are supported by libuv.
 
 I've only tested with `gcc` and `clang`. Others may work! Please let me know.
 
