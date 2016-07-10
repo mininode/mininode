@@ -135,6 +135,12 @@ mn_stdin_to_tmpfile() {
 
 duk_ret_t
 mn_mod_load(FILE *file, duk_context *ctx) {
+	/*
+	 * While the module loader will load files, it does
+	 * so differently than the loader for the entry point.
+	 * There will be no support for shebang lines here,
+	 * it will just register objects in the context.
+	 */
 	return 1;
 }
 
@@ -264,7 +270,7 @@ main(int argc, char **argv) {
 
 		/* If we can't access the file, exit. */
        		if (access(filename, R_OK) == -1) {
-       			fprintf(stderr, "Error: file %s not readable\n", filename);
+			fprintf(stderr, "Error: cannot read %s\n", filename);
        			goto sadplace;
        		} else {
        			script = fopen(filename, "r");
@@ -324,7 +330,12 @@ main(int argc, char **argv) {
 	 * Register globals.
 	 * See https://nodejs.org/dist/v6.2.2/docs/api/globals.html
 	 *
-	 * First, register the global 'timer' functions.
+	 * TODO: Implement 'events' and 'process' modules.
+	 * For now, register the global 'timer' functions.
+	 * Note that the 'timer' functions do not expose an
+	 * object (viz 'console' or 'process') but the timer
+	 * functions return an opaque object that has the
+	 * 'ref' and 'unref' methods.
 	 */
 	duk_push_c_function(ctx, dukopen_timers, 0 /*nargs*/);
 	duk_call(ctx, 0);
