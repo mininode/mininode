@@ -260,15 +260,13 @@ main(int argc, char **argv) {
 		/* If invoked without any file arguments, invoke the REPL. */
 		if (argc == 1 || interactive_flag) {
 			printf("repl is currently unimplemented.\n");
-			mn_short_help();
-			exit(EXIT_FAILURE);
+			goto sadplace;
 		}
 
 		/* If we can't access the file, exit. */
        		if (access(filename, R_OK) == -1) {
        			fprintf(stderr, "Error: file %s not readable\n", filename);
-       			mn_short_help();
-       			exit(EXIT_FAILURE);
+       			goto sadplace;
        		} else {
        			script = fopen(filename, "r");
        		}
@@ -358,8 +356,7 @@ main(int argc, char **argv) {
 		}
 	} else {
 		fprintf(stderr, "-c and -p are currently unimplemented.\n");
-		mn_short_help();
-		exit(EXIT_FAILURE);
+		goto sadplace;
 	}
 
 	/* TODO: Support check_flag and print_flag */
