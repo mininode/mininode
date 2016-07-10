@@ -179,37 +179,32 @@ main(int argc, char **argv) {
 				if (print_flag == 0) {
 					print_flag = 1;
 				} else {
-					mn_short_help();
-					exit(EXIT_FAILURE);
+					goto sadplace;
 				}
 				break;
 			case 'c':
 				if (check_flag == 0) {
 					check_flag = 1;
 				} else {
-					mn_short_help();
-					exit(EXIT_FAILURE);
+					goto sadplace;
 				}
 				break;
 			case 'i':
 				if (interactive_flag == 0){
 					interactive_flag = 1;
 				} else {
-					mn_short_help();
-					exit(EXIT_FAILURE);
+					goto sadplace;
 				}
 				break;
 			case 'z':
 				if (zero_fill_flag == 0) {
 					zero_fill_flag = 1;
 				} else {
-					mn_short_help();
-					exit(EXIT_FAILURE);
+					goto sadplace;
 				}
 				break;
 			default:
-				mn_short_help();
-				exit(EXIT_FAILURE);
+				goto sadplace;
 		}
 	}
 
@@ -373,4 +368,8 @@ main(int argc, char **argv) {
 	free(source);
 	uv_loop_close(loop);
 	exit(EXIT_SUCCESS);
+
+	sadplace:
+		mn_short_help();
+		exit(EXIT_FAILURE);
 }
