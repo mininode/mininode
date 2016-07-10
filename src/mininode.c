@@ -211,8 +211,7 @@ main(int argc, char **argv) {
 	if (argc > optind) {
 		/* Only accept one non-option file argument. */
 		if (argc - optind > 1) {
-			mn_short_help();
-			exit(EXIT_FAILURE);
+			goto sadplace;
 		} else {
 			filename = argv[optind];
 		}
@@ -247,7 +246,7 @@ main(int argc, char **argv) {
 	}
 
 	if (!ctx) {
-		printf("Failed to create a Duktape context!\n");
+		fprintf(stderr, "Failed to create a Duktape context!\n");
 		exit(EXIT_FAILURE);
 	}
 	
