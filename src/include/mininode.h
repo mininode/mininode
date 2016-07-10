@@ -21,11 +21,11 @@ typedef struct {
 	void *_idlePrev;
 	void *_timer;
 	bool unrefed;
-	uint64_t msecs;
+	uint32_t msecs;
 } mn_timers_list;
 
 typedef struct {
 	bool _called;
-	uint64_t _idleTimeout;
+	uint32_t _idleTimeout;
 
 } mn_timeout;
