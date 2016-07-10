@@ -7,3 +7,6 @@
 [submodule "src/contrib/libuv"]
 	path = src/contrib/libuv
 	url = https://github.com/libuv/libuv.git
+[submodule "src/contrib/uthash"]
+	path = src/contrib/uthash
+	url = https://github.com/troydhanson/uthash.git
