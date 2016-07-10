@@ -4,7 +4,7 @@
 /* Semantic versioning, per mainline Node.js */
 #define MININODE_VERSION "0.0.1"
 /* Timeout values > TIMEOUT_MAX are set to 1. */
-#define TIMEOUT_MAX 2147483647
+#define TIMEOUT_MAX UINT32_MAX
 
 typedef struct {
 	char *domain;
