@@ -169,6 +169,10 @@ MININODE_CFLAGS = $(CFLAGS) \
 		  -D_XOPEN_SOURCE=600 \
 		  -DMINIZ_NO_TIME
 
+MININODE_INCLUDES = src/include/mininode.h \
+                    src/include/modules.h \
+		    src/include/builtin_hash.h
+
 MININODE_OBJS = src/contrib/duktape/duktape.o \
                 src/modules/assert/assert.o \
 		src/modules/buffer/buffer.o \
@@ -222,6 +226,9 @@ libhttparser.a: $(HTTP_PARSER_OBJS)
 libmbedtls.a: $(MBEDTLS_OBJS)
 	$(AR) crs $@ $^
 
+src/include/builtin_hash.h: src/include/builtin_hash.gperf
+	gperf -N find_builtin -t $< > $@
+
 mininode: libuv.a libhttparser.a libmbedtls.a $(MININODE_OBJS)
 	$(CC) $^ -o $@
 
@@ -234,5 +241,5 @@ $(HTTP_PARSER_OBJS): %.o : %.c
 $(MBEDTLS_OBJS): %.o : %.c
 	$(CC) $(MBEDTLS_CFLAGS) -c -o $@ $<
 
-$(MININODE_OBJS): %.o : %.c
+$(MININODE_OBJS): %.o : %.c $(MININODE_INCLUDES)
 	$(CC) $(MININODE_CFLAGS) -c -o $@ $<

@@ -1,3 +1,5 @@
+typedef duk_ret_t (*builtin_loader)(duk_context *ctx);
+
 duk_ret_t dukopen_assert(duk_context *ctx);
 duk_ret_t dukopen_buffer(duk_context *ctx);
 duk_ret_t dukopen_child_process(duk_context *ctx);

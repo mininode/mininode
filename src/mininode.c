@@ -18,6 +18,7 @@
 #include "duktape.h"
 #include "mininode.h"
 #include "modules.h"
+#include "builtin_hash.h"
 
 /* Accepted flags for getopt() */
 #define OPTSTRING "chipvz"
@@ -154,10 +155,18 @@ mn_mod_search(duk_context *ctx) {
 	 *   index 3: module
 	 *
 	 * For built-in modules, we need to map from, e.g., 'v8' to 
-	 * dukopen_v8. This needs to happen quickly, ideally O(1), due
-	 * to the fact that it is the first step in module loading.
+	 * dukopen_v8. This is done with a gperf(1) perfect hash,
+	 * see src/include/builtin_hash.gperf for the details.
 	 */
+	const char *modname = duk_safe_to_string(ctx, 0);
+	builtin_module *module = find_builtin(modname, strlen(modname));
 
+	if (module) {
+		module->loader(ctx);
+		return 1;
+	}
+
+	/* Just punt on file lookup logic for now. */
 	return 1;
 }
 

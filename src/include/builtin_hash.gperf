@@ -1,0 +1,39 @@
+%{
+#include "builtin_code.h"
+typedef struct builtin_module builtin_module;
+%}
+struct builtin_module {
+	const char *name;
+	int builtin_code;
+	builtin_loader loader;
+};
+%%
+assert, ASSERT_MODULE, &dukopen_assert
+buffer, BUFFER_MODULE, &dukopen_buffer
+child_process, CHILD_PROCESS_MODULE, &dukopen_child_process
+cluster, CLUSTER_MODULE, &dukopen_cluster
+crypto, CRYPTO_MODULE, &dukopen_crypto
+debugger, DEBUGGER_MODULE, &dukopen_debugger
+dgram, DGRAM_MODULE, &dukopen_dgram
+dns, DNS_MODULE, &dukopen_dns
+events, EVENTS_MODULE, &dukopen_events
+fs, FS_MODULE, &dukopen_fs
+http, HTTP_MODULE, &dukopen_http
+https, HTTPS_MODULE, &dukopen_https
+net, NET_MODULE, &dukopen_net
+os, OS_MODULE, &dukopen_os
+path, PATH_MODULE, &dukopen_path
+process, PROCESS_MODULE, &dukopen_process
+punycode, PUNYCODE_MODULE, &dukopen_punycode
+querystring, QUERYSTRING_MODULE, &dukopen_querystring
+readline, READLINE_MODULE, &dukopen_readline
+repl, REPL_MODULE, &dukopen_repl
+stream, STREAM_MODULE, &dukopen_stream
+string_decoder, STRING_DECODER_MODULE, &dukopen_string_decoder
+tls, TLS_MODULE, &dukopen_tls
+tty, TTY_MODULE, &dukopen_tty
+url, URL_MODULE, &dukopen_url
+util, UTIL_MODULE, &dukopen_util
+v8, V8_MODULE, &dukopen_v8
+vm, VM_MODULE, &dukopen_vm
+zlib, ZLIB_MODULE, &dukopen_zlib

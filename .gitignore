@@ -2,3 +2,4 @@ mininode
 *.o
 *.a
 config.mak
+src/include/builtin_hash.h
