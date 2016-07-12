@@ -104,10 +104,10 @@ mn_zmalloc(size_t size) {
 
 FILE *
 mn_stdin_to_tmpfile() {
-	FILE *	ftmp;
-	char	buf[4096];
+	FILE *ftmp;
+	char buf[4096];
 	ssize_t	nread;
-	int 	ret;
+	int ret;
 
 	if (!(ftmp = tmpfile())) {
 		return 0;	
@@ -159,7 +159,20 @@ mn_mod_search(duk_context *ctx) {
 	 * see src/include/builtin_hash.gperf for the details.
 	 */
 	const char *modname = duk_safe_to_string(ctx, 0);
-	builtin_module *module = find_builtin(modname, strlen(modname));
+
+	/*
+	 * A required module prefixed with '/' is an absolute path.
+	 * A required module prefixed with './' is a relative path.
+	 *
+	 * If the specified modname is a directory, look in it for
+	 * a package.json file and include the 'main' entry there.
+	 * 
+	 * .js files are interpreted as JavaScript text files, and 
+	 * .json files are parsed as JSON text files
+	 * 
+	 * NOTE: .node files are not supported.
+	 */
+	builtin *module = find_builtin(modname, strlen(modname));
 
 	if (module) {
 		module->loader(ctx);
@@ -339,21 +352,22 @@ main(int argc, char **argv) {
 	 * Register globals.
 	 * See https://nodejs.org/dist/v6.2.2/docs/api/globals.html
 	 *
-	 * TODO: Implement 'events' and 'process' modules.
-	 * For now, register the global 'timer' functions.
+	 * TODO: Actually implement all the builtin modules!
+	 *
 	 * Note that the 'timer' functions do not expose an
-	 * object (viz 'console' or 'process') but the timer
-	 * functions return an opaque object that has the
-	 * 'ref' and 'unref' methods.
+	 * object (viz 'console', 'process', 'buffer', etc). 
+	 * The timer functions return an opaque object that 
+	 * has the 'ref' and 'unref' methods.
 	 */
-	duk_push_c_function(ctx, dukopen_timers, 0 /*nargs*/);
-	duk_call(ctx, 0);
-	/*
-	 * Next, register the global 'console' object.
-	 */
-	duk_push_c_function(ctx, dukopen_console, 0 /*nargs*/);
-	duk_call(ctx, 0);
-	duk_put_global_string(ctx, "console");
+	dukopen_errors(ctx);
+	dukopen_timers(ctx);
+	dukopen_events(ctx);
+	dukopen_buffer(ctx);
+	dukopen_process(ctx);
+	dukopen_console(ctx);
+	
+	/* TODO: Work out how to set __dirname and __filename! */
+	/* See https://nodejs.org/dist/v6.2.2/docs/api/modules.html */
 
 	/* Connect the Duk context with the event loop. */
 	loop->data = ctx;
@@ -363,7 +377,7 @@ main(int argc, char **argv) {
 			/* eval the contents of char *source */
 			duk_eval_string(ctx, source);
 			/*
-			 * TODO: We might be able to oppportunistically
+			 * TODO: We might be able to opportunistically
 			 * free(source) and save some memory once the
 			 * interpreter is running.
 			 */
