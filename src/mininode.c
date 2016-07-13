@@ -36,6 +36,10 @@ mn_short_help() {
 	printf("Usage: mininode [options] script.js\n");
 }
 
+/*
+ * Several of these utility functions are based on the Duktape examples.
+ * The example code will gradually disappear, but I'm makine a note!
+ */
 void
 mn_sighandler(int x) {
 	/*
@@ -101,7 +105,11 @@ mn_zmalloc(size_t size) {
 	return ret;
 }
 
-
+/* 
+ * mn_stdin_to_tmpfile() is based on code from midipix. 
+ * git.midipix.org/cgit.cgi/mdso/tree/src/driver/mdso_unit_ctx.c#n34
+ * Huge thanks to midipix!
+ */
 FILE *
 mn_stdin_to_tmpfile() {
 	FILE *ftmp;
@@ -358,14 +366,19 @@ main(int argc, char **argv) {
 	 * object (viz 'console', 'process', 'buffer', etc). 
 	 * The timer functions return an opaque object that 
 	 * has the 'ref' and 'unref' methods.
+	 *
+	 * Also note that some built-ins may be invoked
+	 * directly by other built-in functions without being
+	 * included in the global namespace. This is useful
+	 * with mn_bi_util_format() and mn_bi_console_log().
 	 */
-	dukopen_errors(ctx);
-	dukopen_timers(ctx);
-	dukopen_events(ctx);
-	dukopen_buffer(ctx);
-	dukopen_process(ctx);
-	dukopen_console(ctx);
-	
+	mn_bi_errors(ctx);
+	mn_bi_timers(ctx);
+	mn_bi_events(ctx);
+	mn_bi_buffer(ctx);
+	mn_bi_process(ctx);
+	mn_bi_console(ctx);
+
 	/* TODO: Work out how to set __dirname and __filename! */
 	/* See https://nodejs.org/dist/v6.2.2/docs/api/modules.html */
 
@@ -374,13 +387,19 @@ main(int argc, char **argv) {
 
 	if (!check_flag && !print_flag) {
 		if (source != NULL) {
-			/* eval the contents of char *source */
-			duk_eval_string(ctx, source);
-			/*
-			 * TODO: We might be able to opportunistically
-			 * free(source) and save some memory once the
-			 * interpreter is running.
+			/* 
+			 * compile and run the contents of char *source
 			 */
+			if (duk_pcompile_lstring(ctx, 0, source, srclen) != 0) {
+				printf(
+					"compile failed: %s\n",
+					duk_safe_to_string(ctx, -1)	
+				);
+			} else {
+				free(source); /* Opportunistic! */
+				duk_call(ctx, 0);
+			}
+			duk_pop(ctx);
 			exit(EXIT_SUCCESS);
 		} else {
 			/* We should never get here. */
@@ -395,7 +414,6 @@ main(int argc, char **argv) {
 	/* TODO: Support check_flag and print_flag */
 
 	duk_destroy_heap(ctx);
-	free(source);
 	uv_loop_close(loop);
 	exit(EXIT_SUCCESS);
 

@@ -166,6 +166,8 @@ MININODE_CFLAGS = $(CFLAGS) \
 		  -Isrc/modules \
 		  -Isrc/contrib/libuv/include/ \
 		  -Isrc/include \
+		  -DDUK_USE_DEBUGGER_SUPPORT \
+		  -DDUK_USE_DEBUGGER_FWD_LOGGING \
 		  -D_XOPEN_SOURCE=600 \
 		  -DMINIZ_NO_TIME
 
@@ -186,7 +188,6 @@ MININODE_OBJS = src/contrib/duktape/duktape.o \
 		src/modules/errors/errors.o \
 		src/modules/events/events.o \
 		src/modules/fs/fs.o \
-		src/modules/globals/globals.o \
 		src/modules/http/http.o \
 		src/modules/https/https.o \
 		src/modules/net/net.o \

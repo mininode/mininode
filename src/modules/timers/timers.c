@@ -9,42 +9,42 @@
  */
 
 duk_ret_t
-timers_setImmediate(duk_context *ctx) {
+mn_bi_timers_setImmediate(duk_context *ctx) {
 	return 0;
 }
 
 duk_ret_t
-timers_setInterval(duk_context *ctx) {
+mn_bi_timers_setInterval(duk_context *ctx) {
 	return 0;
 }
 
 duk_ret_t
-timers_setTimeout(duk_context *ctx) {
+mn_bi_timers_setTimeout(duk_context *ctx) {
 	return 0;
 }
 
 duk_ret_t
-timers_clearImmediate(duk_context *ctx) {
+mn_bi_timers_clearImmediate(duk_context *ctx) {
 	return 0;
 }
 
 duk_ret_t
-timers_clearInterval(duk_context *ctx) {
+mn_bi_timers_clearInterval(duk_context *ctx) {
 	return 0;
 }
 
 duk_ret_t
-timers_clearTimeout(duk_context *ctx) {
+mn_bi_timers_clearTimeout(duk_context *ctx) {
 	return 0;
 }
 
 duk_ret_t
-timers_ref(duk_context *ctx) {
+mn_bi_timers_ref(duk_context *ctx) {
 	return 0;
 }
 
 duk_ret_t
-timers_unref(duk_context *ctx) {
+mn_bi_timers_unref(duk_context *ctx) {
 	return 0;
 }
 
@@ -53,21 +53,21 @@ timers_unref(duk_context *ctx) {
  * TODO: Deterministic event firing order.
  */
 
-duk_ret_t dukopen_timers(duk_context *ctx) {
+duk_ret_t mn_bi_timers(duk_context *ctx) {
 	/* Push the global object onto the value stack */
 	duk_push_global_object(ctx);
 	/* Push the timer functions and JS function handles. */
-	duk_push_c_function(ctx, timers_setImmediate, DUK_VARARGS);
+	duk_push_c_function(ctx, mn_bi_timers_setImmediate, DUK_VARARGS);
 	duk_put_global_string(ctx, "setImmediate");
-	duk_push_c_function(ctx, timers_setInterval, DUK_VARARGS);
+	duk_push_c_function(ctx, mn_bi_timers_setInterval, DUK_VARARGS);
 	duk_put_global_string(ctx, "setInterval");
-	duk_push_c_function(ctx, timers_setTimeout, DUK_VARARGS);
+	duk_push_c_function(ctx, mn_bi_timers_setTimeout, DUK_VARARGS);
 	duk_put_global_string(ctx, "setTimeout");
-	duk_push_c_function(ctx, timers_clearImmediate, 1);
+	duk_push_c_function(ctx, mn_bi_timers_clearImmediate, 1);
 	duk_put_global_string(ctx, "clearImmediate");
-	duk_push_c_function(ctx, timers_clearInterval, 1);
+	duk_push_c_function(ctx, mn_bi_timers_clearInterval, 1);
 	duk_put_global_string(ctx, "clearInterval");
-	duk_push_c_function(ctx, timers_clearTimeout, 1);
+	duk_push_c_function(ctx, mn_bi_timers_clearTimeout, 1);
 	duk_put_global_string(ctx, "clearTimeout");
 
 	return 1;

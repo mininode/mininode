@@ -13,17 +13,17 @@
  *  Module initialization
  */
 
-const duk_function_list_entry string_decoder_funcs[] = {
+const duk_function_list_entry mn_bi_string_decoder_funcs[] = {
 	{ NULL, NULL, 0 }
 };
 
-const duk_number_list_entry string_decoder_consts[] = {
+const duk_number_list_entry mn_bi_string_decoder_consts[] = {
 	{ NULL, 0.0 }
 };
 
-duk_ret_t dukopen_string_decoder(duk_context *ctx) {
+duk_ret_t mn_bi_string_decoder(duk_context *ctx) {
 	duk_push_object(ctx);
-	duk_put_function_list(ctx, -1, string_decoder_funcs);
-	duk_put_number_list(ctx, -1, string_decoder_consts);
+	duk_put_function_list(ctx, -1, mn_bi_string_decoder_funcs);
+	duk_put_number_list(ctx, -1, mn_bi_string_decoder_consts);
 	return 1;
 }

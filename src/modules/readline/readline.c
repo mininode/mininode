@@ -13,17 +13,17 @@
  *  Module initialization
  */
 
-const duk_function_list_entry readline_funcs[] = {
+const duk_function_list_entry mn_bi_readline_funcs[] = {
 	{ NULL, NULL, 0 }
 };
 
-const duk_number_list_entry readline_consts[] = {
+const duk_number_list_entry mn_bi_readline_consts[] = {
 	{ NULL, 0.0 }
 };
 
-duk_ret_t dukopen_readline(duk_context *ctx) {
+duk_ret_t mn_bi_readline(duk_context *ctx) {
 	duk_push_object(ctx);
-	duk_put_function_list(ctx, -1, readline_funcs);
-	duk_put_number_list(ctx, -1, readline_consts);
+	duk_put_function_list(ctx, -1, mn_bi_readline_funcs);
+	duk_put_number_list(ctx, -1, mn_bi_readline_consts);
 	return 1;
 }
