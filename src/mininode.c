@@ -38,7 +38,7 @@ mn_short_help() {
 
 /*
  * Several of these utility functions are based on the Duktape examples.
- * The example code will gradually disappear, but I'm makine a note!
+ * The example code will gradually disappear, but I'm making a note!
  */
 void
 mn_sighandler(int x) {
