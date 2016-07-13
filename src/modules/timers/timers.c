@@ -53,7 +53,8 @@ mn_bi_timers_unref(duk_context *ctx) {
  * TODO: Deterministic event firing order.
  */
 
-duk_ret_t mn_bi_timers(duk_context *ctx) {
+duk_ret_t
+mn_bi_timers(duk_context *ctx) {
 	/* Push the global object onto the value stack */
 	duk_push_global_object(ctx);
 	/* Push the timer functions and JS function handles. */
