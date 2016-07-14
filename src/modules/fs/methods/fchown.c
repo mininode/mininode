@@ -1,6 +1,6 @@
 #include "duktape.h"
 
 duk_ret_t 
-mn_bi_fs_exists(duk_context *ctx) {
+mn_bi_fs_fchown(duk_context *ctx) {
 	return 0;
 }

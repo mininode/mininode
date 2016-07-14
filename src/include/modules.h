@@ -39,6 +39,8 @@ duk_ret_t mn_bi_fs_exists(duk_context *ctx);
 duk_ret_t mn_bi_fs_exists_sync(duk_context *ctx);
 duk_ret_t mn_bi_fs_fchmod(duk_context *ctx);
 duk_ret_t mn_bi_fs_fchmod_sync(duk_context *ctx);
+duk_ret_t mn_bi_fs_fchown(duk_context *ctx);
+duk_ret_t mn_bi_fs_fchown_sync(duk_context *ctx);
 duk_ret_t mn_bi_fs_fdatasync(duk_context *ctx);
 duk_ret_t mn_bi_fs_fdatasync_sync(duk_context *ctx);
 duk_ret_t mn_bi_fs_fstat(duk_context *ctx);
