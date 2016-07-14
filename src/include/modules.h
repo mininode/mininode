@@ -146,7 +146,15 @@ duk_ret_t mn_bi_readline(duk_context *ctx);
 duk_ret_t mn_bi_repl(duk_context *ctx);
 duk_ret_t mn_bi_stream(duk_context *ctx);
 duk_ret_t mn_bi_string_decoder(duk_context *ctx);
+
 duk_ret_t mn_bi_timers(duk_context *ctx);
+duk_ret_t mn_bi_timers_set_immediate(duk_context *ctx);
+duk_ret_t mn_bi_timers_set_interval(duk_context *ctx);
+duk_ret_t mn_bi_timers_set_timeout(duk_context *ctx);
+duk_ret_t mn_bi_timers_clear_immediate(duk_context *ctx);
+duk_ret_t mn_bi_timers_clear_interval(duk_context *ctx);
+duk_ret_t mn_bi_timers_clear_timeout(duk_context *ctx);
+
 duk_ret_t mn_bi_tls(duk_context *ctx);
 duk_ret_t mn_bi_tty(duk_context *ctx);
 duk_ret_t mn_bi_url(duk_context *ctx);

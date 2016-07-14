@@ -9,36 +9,6 @@
  */
 
 duk_ret_t
-mn_bi_timers_setImmediate(duk_context *ctx) {
-	return 0;
-}
-
-duk_ret_t
-mn_bi_timers_setInterval(duk_context *ctx) {
-	return 0;
-}
-
-duk_ret_t
-mn_bi_timers_setTimeout(duk_context *ctx) {
-	return 0;
-}
-
-duk_ret_t
-mn_bi_timers_clearImmediate(duk_context *ctx) {
-	return 0;
-}
-
-duk_ret_t
-mn_bi_timers_clearInterval(duk_context *ctx) {
-	return 0;
-}
-
-duk_ret_t
-mn_bi_timers_clearTimeout(duk_context *ctx) {
-	return 0;
-}
-
-duk_ret_t
 mn_bi_timers_ref(duk_context *ctx) {
 	return 0;
 }
@@ -58,17 +28,17 @@ mn_bi_timers(duk_context *ctx) {
 	/* Push the global object onto the value stack */
 	duk_push_global_object(ctx);
 	/* Push the timer functions and JS function handles. */
-	duk_push_c_function(ctx, mn_bi_timers_setImmediate, DUK_VARARGS);
+	duk_push_c_function(ctx, mn_bi_timers_set_immediate, DUK_VARARGS);
 	duk_put_global_string(ctx, "setImmediate");
-	duk_push_c_function(ctx, mn_bi_timers_setInterval, DUK_VARARGS);
+	duk_push_c_function(ctx, mn_bi_timers_set_interval, DUK_VARARGS);
 	duk_put_global_string(ctx, "setInterval");
-	duk_push_c_function(ctx, mn_bi_timers_setTimeout, DUK_VARARGS);
+	duk_push_c_function(ctx, mn_bi_timers_set_timeout, DUK_VARARGS);
 	duk_put_global_string(ctx, "setTimeout");
-	duk_push_c_function(ctx, mn_bi_timers_clearImmediate, 1);
+	duk_push_c_function(ctx, mn_bi_timers_clear_immediate, 1);
 	duk_put_global_string(ctx, "clearImmediate");
-	duk_push_c_function(ctx, mn_bi_timers_clearInterval, 1);
+	duk_push_c_function(ctx, mn_bi_timers_clear_interval, 1);
 	duk_put_global_string(ctx, "clearInterval");
-	duk_push_c_function(ctx, mn_bi_timers_clearTimeout, 1);
+	duk_push_c_function(ctx, mn_bi_timers_clear_timeout, 1);
 	duk_put_global_string(ctx, "clearTimeout");
 
 	return 1;
