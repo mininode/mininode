@@ -190,6 +190,7 @@ clean:
 	-$(RM) $(LIBUV_OBJS) libuv.a
 	-$(RM) $(HTTP_PARSER_OBJS) libhttparser.a
 	-$(RM) $(MBEDTLS_OBJS) libmbedtls.a
+	-$(RM) $(MININODE_MOD_OBJS)
 	-$(RM) $(MININODE_OBJS) mininode
 
 libuv.a: $(LIBUV_OBJS)

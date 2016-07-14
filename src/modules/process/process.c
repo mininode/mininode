@@ -7,12 +7,9 @@
  *  See https://nodejs.org/dist/v6.2.2/docs/api/process.html
  */
 
-/* Implementation TBD */
-
 /*
  *  Module initialization
  */
-
 const duk_function_list_entry mn_bi_process_funcs[] = {
 	{ "abort",       mn_bi_process_abort,        0         },
 	{ "arch",        mn_bi_process_arch,         0         },
@@ -53,7 +50,6 @@ const duk_function_list_entry mn_bi_process_funcs[] = {
 	{ "version",     mn_bi_process_version,      0         },
 	{ NULL, NULL, 0 }
 };
-
 
 const duk_number_list_entry mn_bi_process_consts[] = {
 	{ NULL, 0.0 }
