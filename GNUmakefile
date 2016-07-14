@@ -16,6 +16,9 @@
 CC ?= gcc
 CFLAGS ?= -Os -std=c99
 
+#Recursive wildcard!
+rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
+
 LIBUV_CFLAGS += $(CFLAGS) \
                 -Wall \
                 -Wextra \
@@ -175,39 +178,10 @@ MININODE_INCLUDES = src/include/mininode.h \
                     src/include/modules.h \
 		    src/include/builtin_hash.h
 
+MININODE_MOD_SRCS = $(call rwildcard, src/modules/,*.c)
+MININODE_MOD_OBJS = $(MININODE_MOD_SRCS:.c=.o)
+
 MININODE_OBJS = src/contrib/duktape/duktape.o \
-                src/modules/assert/assert.o \
-		src/modules/buffer/buffer.o \
-		src/modules/child_process/child_process.o \
-		src/modules/cluster/cluster.o \
-		src/modules/console/console.o \
-		src/modules/crypto/crypto.o \
-		src/modules/debugger/debugger.o \
-		src/modules/dgram/dgram.o \
-		src/modules/dns/dns.o \
-		src/modules/errors/errors.o \
-		src/modules/events/events.o \
-		src/modules/fs/fs.o \
-		src/modules/http/http.o \
-		src/modules/https/https.o \
-		src/modules/net/net.o \
-		src/modules/os/os.o \
-		src/modules/path/path.o \
-		src/modules/process/process.o \
-		src/modules/punycode/punycode.o \
-		src/modules/querystring/querystring.o \
-		src/modules/readline/readline.o \
-		src/modules/repl/repl.o \
-		src/modules/stream/stream.o \
-		src/modules/string_decoder/string_decoder.o \
-		src/modules/timers/timers.o \
-		src/modules/tls/tls.o \
-		src/modules/tty/tty.o \
-		src/modules/url/url.o \
-		src/modules/util/util.o \
-		src/modules/v8/v8.o \
-		src/modules/vm/vm.o \
-		src/modules/zlib/zlib.o \
                 src/mininode.o
 
 all: mininode
@@ -230,7 +204,7 @@ libmbedtls.a: $(MBEDTLS_OBJS)
 src/include/builtin_hash.h: src/include/builtin_hash.gperf
 	gperf -N find_builtin -t $< > $@
 
-mininode: libuv.a libhttparser.a libmbedtls.a $(MININODE_OBJS)
+mininode: libuv.a libhttparser.a libmbedtls.a $(MININODE_OBJS) $(MININODE_MOD_OBJS)
 	$(CC) $^ -o $@
 
 $(LIBUV_OBJS): %.o : %.c $(LIBUV_INCLUDES)
@@ -241,6 +215,9 @@ $(HTTP_PARSER_OBJS): %.o : %.c
 
 $(MBEDTLS_OBJS): %.o : %.c
 	$(CC) $(MBEDTLS_CFLAGS) -c -o $@ $<
+
+$(MININODE_MOD_OBJS): %.o : %.c $(MININODE_INCLUDES)
+	$(CC) $(MININODE_CFLAGS) -c -o $@ $<
 
 $(MININODE_OBJS): %.o : %.c $(MININODE_INCLUDES)
 	$(CC) $(MININODE_CFLAGS) -c -o $@ $<
