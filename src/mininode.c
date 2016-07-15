@@ -57,7 +57,7 @@ mn_set_sigint_handler(void) {
 }
 
 void
-mn_fatal_handler(const char *msg) {
+mn_fatal_handler(duk_context *ctx, duk_errcode_t code, const char *msg) {
 	fprintf(stderr, "*** FATAL ERROR: %s\n", msg ? msg : "no message");
 	fprintf(stderr, "Causing intentional segfault...\n");
 	fflush(stderr);
