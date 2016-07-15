@@ -35,12 +35,6 @@ LIBUV_INCLUDES = src/contrib/libuv/include/tree.h \
                  src/contrib/libuv/src/queue.h \
                  src/contrib/libuv/src/uv-common.h
 
-LIBUV_OBJS = src/contrib/libuv/src/fs-poll.o \
-             src/contrib/libuv/src/inet.o \
-             src/contrib/libuv/src/threadpool.o \
-             src/contrib/libuv/src/uv-common.o \
-             src/contrib/libuv/src/version.o 
-
 HTTP_PARSER_CFLAGS = $(CFLAGS)
 
 HTTP_PARSER_OBJS = src/contrib/http-parser/http_parser.o
@@ -48,7 +42,8 @@ HTTP_PARSER_OBJS = src/contrib/http-parser/http_parser.o
 ifeq ($(OS),Windows_NT)
 $(error Windows is currently unsupported.)
 else
-    LIBUV_OBJS += src/contrib/libuv/src/unix/async.o \
+    LIBUV_OBJS += src/contrib/libuv/src/threadpool.o \
+                  src/contrib/libuv/src/unix/async.o \
 		  src/contrib/libuv/src/unix/dl.o \
 		  src/contrib/libuv/src/unix/fs.o \
 		  src/contrib/libuv/src/unix/getaddrinfo.o \
@@ -56,28 +51,36 @@ else
 		  src/contrib/libuv/src/unix/loop-watcher.o \
 		  src/contrib/libuv/src/unix/loop.o \
 		  src/contrib/libuv/src/unix/pipe.o \
-		  src/contrib/libuv/src/unix/poll.o \
 		  src/contrib/libuv/src/unix/process.o \
-		  src/contrib/libuv/src/unix/proctitle.o \
-		  src/contrib/libuv/src/unix/pthread-barrier.o \
-		  src/contrib/libuv/src/unix/pthread-fixes.o \
 		  src/contrib/libuv/src/unix/signal.o \
 		  src/contrib/libuv/src/unix/stream.o \
 		  src/contrib/libuv/src/unix/tcp.o \
 		  src/contrib/libuv/src/unix/thread.o \
 		  src/contrib/libuv/src/unix/timer.o \
 		  src/contrib/libuv/src/unix/tty.o \
-		  src/contrib/libuv/src/unix/udp.o
+		  src/contrib/libuv/src/unix/udp.o \
+		  src/contrib/libuv/src/version.o \
+		  src/contrib/libuv/src/inet.o \
+		  src/contrib/libuv/src/fs-poll.o
 
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
-	# TBD
+        LIBUV_OBJS += src/contrib/libuv/src/unix/linux-core.o \
+	              src/contrib/libuv/src/unix/linux-inotify.o \
+		      src/contrib/libuv/src/unix/linux-syscalls.o \
+		      src/contrib/libuv/src/unix/proctitle.o
+
     else ifeq ($(UNAME_S),Darwin)
         LIBUV_OBJS += src/contrib/libuv/src/unix/core.o \
                       src/contrib/libuv/src/unix/darwin.o \
 	              src/contrib/libuv/src/unix/darwin-proctitle.o \
 		      src/contrib/libuv/src/unix/kqueue.o \
-		      src/contrib/libuv/src/unix/fsevents.o
+		      src/contrib/libuv/src/unix/fsevents.o \
+		      src/contrib/libuv/src/uv-common.o \
+		      src/contrib/libuv/src/unix/pthread-barrier.o \
+		      src/contrib/libuv/src/unix/pthread-fixes.o \
+		      src/contrib/libuv/src/unix/poll.o
+		      
     else ifeq ($(UNAME_S),SunOS)
         # TBD
     endif

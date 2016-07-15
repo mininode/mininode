@@ -1,6 +1,5 @@
 #include "duktape.h"
 #include <unistd.h> /* for chown() */
-#include <string.h> /* for strlen() */
 #include <errno.h>
 
 /*
@@ -41,7 +40,7 @@ mn_bi_fs_chown_sync(duk_context *ctx) {
 		err_idx = duk_push_error_object(
 			ctx,
 			DUK_ERR_API_ERROR,
-			"chown() returned error: %d",
+			"chown() returned error: -%i",
 			errno
 		);
 		duk_throw(ctx);

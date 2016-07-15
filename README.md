@@ -16,7 +16,7 @@ to be tit-for-tat compatible with every nuance of the V8 Node.js runtime. Since
 the standard library is written in C (as opposed to Javascript), it may not be 
 possible to (for example) access the prototypes of built-in modules unless this 
 has been explicitly implemented. I'd like to do a websockets implementation in 
-C, as well as an implementation of the [proposed iot.js GPIO API](7) and 
+C, as well as an implementation of the [proposed iot.js GPIO API][7] and 
 eventually an NPM registry specifically for mininode.
 
 So, while I'd like for the overall development experience to be very similar, 
@@ -25,12 +25,11 @@ mainline Node.js runtime will likely need to be ported.
 
 ## Build Instructions
 
-This uses GNU make and it should work on Linux, MacOS, Illumos/Solaris, and 
-FreeBSD (possibly with minimal porting effort).
+This uses GNU make and it is currently being developed on MacOS X, and 
+other systems are not yet supported but this should also work on Linux, 
+Illumos/Solaris, and FreeBSD (possibly with minimal porting effort).
 
-Other systems are possible provided that they are supported by libuv.
-
-I've only tested with `gcc` and `clang`. Others may work! Please let me know.
+From a MacOS X system:
 
     git clone https://github.com/hypoalex/mininode.git
     cd mininode
@@ -38,7 +37,12 @@ I've only tested with `gcc` and `clang`. Others may work! Please let me know.
     git submodule update
     make -j4
 
-For use on embedded systems, musl libc and Linux are recommended.
+For use on embedded systems, musl libc and Linux are recommended (in general).
+
+## Developing with Vagrant
+
+The included `Vagrantfile` runs Debian Jessie and is meant for Virtualbox 5.x 
+on MacOS hosts. It mounts the mininode sources at /src. 
 
 ## What's the point?
 
