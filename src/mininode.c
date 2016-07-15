@@ -378,6 +378,7 @@ main(int argc, char **argv) {
 	mn_bi_buffer(ctx);
 	mn_bi_process(ctx);
 	mn_bi_console(ctx);
+	duk_pop(ctx);
 
 	/* TODO: Work out how to set __dirname and __filename! */
 	/* See https://nodejs.org/dist/v6.2.2/docs/api/modules.html */

@@ -91,9 +91,11 @@ const duk_number_list_entry mn_bi_fs_consts[] = {
 };
 
 duk_ret_t mn_bi_fs(duk_context *ctx) {
+	duk_bool_t ret = NULL;
 	duk_push_object(ctx);
-	duk_put_function_list(ctx, -1, mn_bi_fs_funcs);
-	duk_put_number_list(ctx, -1, mn_bi_fs_consts);
-	duk_put_global_string(ctx, "fs");
-	return 1;
+	duk_put_function_list(ctx, -3, mn_bi_fs_funcs);
+	duk_put_number_list(ctx, -3, mn_bi_fs_consts);
+	ret = duk_put_prop_string(ctx, -3, "fs");
+	duk_pop(ctx);
+	return ret;
 }
