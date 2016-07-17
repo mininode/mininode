@@ -9,6 +9,13 @@ This aims to implement the Node.js standard library entirely in C.
 
 This is very early in development. Any feedback is very welcome!
 
+## NOTE: PRE-ALPHA QUALITY!
+
+I've posted this for early feedback and to receive input during the development 
+process, but this is not close to being usable. I intend to borrow a lot of 
+code from [Dukluv][8] and track the upstream Duktape development process, but 
+any thoughts (in, say, the form of issues) would be appreciated!
+
 ## Notes on Compatibility
 
 While this aspires to be compatible with the Node 6.2.2 API, it does not aspire 
@@ -16,7 +23,7 @@ to be tit-for-tat compatible with every nuance of the V8 Node.js runtime. Since
 the standard library is written in C (as opposed to Javascript), it may not be 
 possible to (for example) access the prototypes of built-in modules unless this 
 has been explicitly implemented. I'd like to do a websockets implementation in 
-C, as well as an implementation of the [proposed iot.js GPIO API][7] and 
+C, as well as an implementation of the [proposed iot.js GPIO API][8] and 
 eventually an NPM registry specifically for mininode.
 
 So, while I'd like for the overall development experience to be very similar, 
@@ -59,4 +66,5 @@ in C using duktape.
 [4]: https://www.progville.com/c/miniz-fast-small-zip/
 [5]: http://duktape.org
 [6]: https://nodejs.org/dist/v6.2.2/docs/api/
-[7]: https://github.com/Samsung/iotjs/wiki/GPIO-API-candidate
+[7]: https://github.com/creationix/dukluv/tree/master/src
+[8]: https://github.com/Samsung/iotjs/wiki/GPIO-API-candidate
