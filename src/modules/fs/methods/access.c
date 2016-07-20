@@ -11,11 +11,24 @@ duk_ret_t mn_bi_fs_access(duk_context *ctx) {
 	if (nargs == 3) {
 		mode = duk_require_int(ctx, -2);
 		path = duk_require_string(ctx, -3);
-	} else {
+	} else if (nargs == 2){
 		mode = F_OK;
 		path = duk_require_string(ctx, -2);
+	} else if (nargs < 2) {
+		duk_pop_n(ctx, nargs);
+		duk_push_error_object(
+			ctx,
+			DUK_ERR_TYPE_ERROR,
+			"invalid arguments"
+		);
+		duk_push_string(ctx, "src/modules/fs/methods/access.c");
+		duk_put_prop_string(ctx, -2, "fileName");
+		duk_push_int(ctx, 17);
+		duk_put_prop_string(ctx, -2, "lineNumber");
+		duk_throw(ctx);
+		return 1;
 	}
-	
+
 	req = duk_push_fixed_buffer(ctx, sizeof(*req));
 	req->data = mn_setup_req(ctx, -2);
 	uv_fs_access(mn_loop, req, path, mode, mn_fs_cb);
