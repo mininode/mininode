@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "miniz.c"
 #include "duktape.h"
-#include "modules.h"
+#include "mininode.h"
 
 /*
  *  Duktape/C functions providing Node.js 'zlib' module functionality.

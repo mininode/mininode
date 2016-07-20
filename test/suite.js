@@ -24,7 +24,6 @@ const readline = require('readline');
 const repl = require('repl');
 const stream = require('stream');
 const string_decoder = require('string_decoder');
-const timers = require('timers');
 const tls = require('tls');
 const tty = require('tty');
 const url = require('url');
@@ -32,3 +31,5 @@ const util = require('util');
 const v8 = require('v8');
 const vm = require('vm');
 const zlib = require('zlib');
+
+console.log("Testing!")

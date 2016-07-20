@@ -49,7 +49,12 @@ For use on embedded systems, musl libc and Linux are recommended (in general).
 ## Developing with Vagrant
 
 The included `Vagrantfile` runs Debian Jessie and is meant for Virtualbox 5.x 
-on MacOS hosts. It mounts the mininode sources at /src. 
+on MacOS hosts. It mounts the mininode sources at /src.
+
+    vagrant up
+    vagrant ssh
+    cd /src
+    make
 
 ## What's the point?
 

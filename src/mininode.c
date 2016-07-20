@@ -1,9 +1,11 @@
 /**
- * mininode - Node.js for Embedded Systems.
+ * @file mininode.c
+ * @author Alex Caudill (credit to creationix and midipix)
+ * @date 18 Jul 2016
+ * @brief mininode(1) command line entry point
  *
- * Copyright (c) 2016 Alex Caudill. All rights reserved.
- *
- * See LICENSE.txt for the MIT license.
+ * mininode.c parses command line arguments and starts the event loop,
+ * then immediately hands off control of execution to Javascript code.
  */
 
 #include <stdio.h>
@@ -17,7 +19,6 @@
 #include "uv.h"
 #include "duktape.h"
 #include "mininode.h"
-#include "modules.h"
 #include "builtin_hash.h"
 
 /* Accepted flags for getopt() */
@@ -30,39 +31,12 @@ static int check_flag = 0;
 static int interactive_flag = 0;
 /* Flag set by --z */
 static int zero_fill_flag = 0;
+/* The event loop. */
+uv_loop_t *mn_loop;
 
 void
 mn_short_help() {
 	printf("Usage: mininode [options] script.js\n");
-}
-
-/*
- * Several of these utility functions are based on the Duktape examples.
- * The example code will gradually disappear, but I'm making a note!
- */
-void
-mn_sighandler(int x) {
-	/*
-	 * TODO: Signals should be passed upstack to the
-	 * Javascript runtime. For now, just print them.
-	 */
-	fprintf(stderr, "Got signal %d\n", x);
-	fflush(stderr);
-}
-
-void
-mn_set_sigint_handler(void) {
-	(void)signal(SIGINT, mn_sighandler);
-	(void)signal(SIGPIPE, SIG_IGN);  /* avoid SIGPIPE killing process */
-}
-
-void
-mn_fatal_handler(duk_context *ctx, duk_errcode_t code, const char *msg) {
-	fprintf(stderr, "*** FATAL ERROR: %s\n", msg ? msg : "no message");
-	fprintf(stderr, "Causing intentional segfault...\n");
-	fflush(stderr);
-	*((volatile unsigned int *) 0) = (unsigned int) 0xdeadbeefUL;
-	abort();
 }
 
 int
@@ -85,6 +59,23 @@ mn_get_stack_raw(duk_context *ctx) {
 	return 1;
 }
 
+duk_ret_t
+mn_stash_argv(duk_context *ctx) {
+	char **argv = (char **) duk_require_pointer(ctx, 0);
+	int argc = (int) duk_require_int(ctx, 1);
+	int i;
+
+	duk_push_global_stash(ctx);
+	duk_push_array(ctx);
+	for (i = 0; i < argc; i++) {
+		duk_push_string(ctx, argv[i]);
+		duk_put_prop_index(ctx, -2, i);
+	}
+	duk_put_prop_string(ctx, -2, "argv");
+	duk_pop(ctx);
+	return 0;
+}
+
 /* Print error to stderr and pop error. */
 void
 mn_print_pop_error(duk_context *ctx, FILE *f) {
@@ -93,16 +84,38 @@ mn_print_pop_error(duk_context *ctx, FILE *f) {
 	 * Note that getting the stack trace may throw an error
 	 * so this also needs to be safe call wrapped.
 	 */
-	(void)duk_safe_call(ctx, mn_get_stack_raw, 1 /*nargs*/, 1 /*nrets*/);
-	fprintf(f, "%s\n", duk_safe_to_string(ctx, -1));
+	//(void)duk_safe_call(ctx, mn_get_stack_raw, 1 /*nargs*/, 1 /*nrets*/);
+	
+	//fprintf(f, "%s\n", duk_safe_to_string(ctx, -1));
 	fflush(f);
 	duk_pop(ctx);
 }
 
-void *
-mn_zmalloc(size_t size) {
-	void *ret = calloc(1, size);
-	return ret;
+void
+mn_dump_error(duk_context *ctx, duk_idx_t idx) {
+	fprintf(stderr, "\nUncaught Exception:\n");
+	if (duk_is_error(ctx, idx)) {
+		duk_get_prop_string(ctx, -1, "stack");
+		fprintf(stderr, "\n%s\n\n", duk_get_string(ctx, -1));
+		duk_pop(ctx);
+	} else {
+		fprintf(
+			stderr,
+			"\nThrown Value: %s\n\n",
+			duk_json_encode(ctx, idx)
+		);
+	}
+}
+
+
+void
+mn_fatal_handler(duk_context *ctx, duk_errcode_t code, const char *msg) {
+	mn_dump_error(ctx, -1);
+	fprintf(stderr, "*** FATAL ERROR: %s\n", msg ? msg : "no message");
+	fprintf(stderr, "Causing intentional segfault...\n");
+	fflush(stderr);
+	*((volatile unsigned int *) 0) = (unsigned int) 0xdeadbeefUL;
+	abort();
 }
 
 /* 
@@ -188,20 +201,62 @@ mn_mod_search(duk_context *ctx) {
 	}
 
 	/* Just punt on file lookup logic for now. */
+	duk_push_sprintf(ctx, "Cannot find module '%s'", modname);
+	duk_throw(ctx);
 	return 1;
+}
+
+duk_ret_t
+cb_resolve_module(duk_context *ctx) {
+	/*
+	 *  Entry stack: [ requested_id parent_id ]
+	 */
+	const char *requested_id = duk_get_string(ctx, 0);
+	const char *parent_id = duk_get_string(ctx, 1);  /* calling module */
+	/* FIXME */
+	const char *resolved_id = requested_id;
+
+	/* Arrive at the canonical module ID somehow. */
+	duk_push_string(ctx, resolved_id);
+	return 1; /*nrets*/
+}
+
+duk_ret_t
+cb_load_module(duk_context *ctx) {
+	/*
+	 *  Entry stack: [ resolved_id exports module ]
+	 */
+	const char *modname = duk_require_string(ctx, 0	);
+	builtin *module = find_builtin(modname, strlen(modname));
+
+	if (module) {
+		module->loader(ctx);
+		return 0;
+	} else {
+		/* Arrive at the JS source code for the module somehow. */
+		//duk_push_string(ctx, module_source);
+		return 0;  /*nrets*/
+	}
+
+	/* Just punt on file lookup logic for now. */
+	duk_push_sprintf(ctx, "Cannot find module '%s'", modname);
+	duk_throw(ctx);
+	return 1;
+
 }
 
 int
 main(int argc, char **argv) {
-
 	duk_context *ctx = NULL; /* The heart of mininode! */
 	int c = 0;               /* Used by getopt. */
 	char *filename = NULL;   /* Kinda self-explanatory. */
 	FILE *script = NULL;     /* Pointer to the script to execute */
 	char *source = NULL;     /* The actual source to execute. */
 	long srclen;             /* The length of source buffer */
-	size_t srcsz;		 /* Size of NUL-terminated source buffer. */
-	uv_loop_t *loop =  NULL; /* The event loop. */
+	size_t srcsz = 0;        /* Size of NUL-terminated source buffer. */
+
+	/* This isn't strictly necessary, but we'll do it anyway. */
+	uv_setup_args(argc, argv);
 
 	while ((c = getopt(argc, argv, OPTSTRING)) != -1) {
 		switch (c) {
@@ -253,10 +308,10 @@ main(int argc, char **argv) {
 		}
 	}
 
-	/* Set the sigint handler and initialize the loop. */
-	mn_set_sigint_handler();
-	loop = uv_default_loop();
-
+	/* 
+	 * Initialize the event loop.
+	 */
+	mn_loop = uv_default_loop();
 	/*
 	 * See http://duktape.org/api.html#duk_create_heap
 	 * 
@@ -268,7 +323,7 @@ main(int argc, char **argv) {
 			NULL, /* TODO: calloc() here */
 			NULL,
 			NULL,
-			&loop,
+			&mn_loop,
 			(void *)&mn_fatal_handler
 		);
 	} else {
@@ -276,16 +331,16 @@ main(int argc, char **argv) {
 			NULL,
 			NULL,
 			NULL,
-			&loop,
+			&mn_loop,
 			(void *)&mn_fatal_handler
 		);
 	}
 
 	if (!ctx) {
 		fprintf(stderr, "Failed to create a Duktape context!\n");
-		exit(EXIT_FAILURE);
+		goto sadplace;
 	}
-	
+
 	/* Detect piped input and use it as our script. */
 	/* If we were invoked with -i, try to start the REPL. */
 	if (!isatty(fileno(stdin)) && !interactive_flag) {
@@ -299,14 +354,13 @@ main(int argc, char **argv) {
 		}
 
 		/* If we can't access the file, exit. */
-       		if (access(filename, R_OK) == -1) {
+		if (access(filename, R_OK) == -1) {
 			fprintf(stderr, "Error: cannot read %s\n", filename);
-       			goto sadplace;
-       		} else {
-       			script = fopen(filename, "r");
-       		}
+			goto sadplace;
+		} else {
+			script = fopen(filename, "r");
+		}
 	}
-	
 	/*
 	 * This loads the initial entry point either from the CLI or
 	 * from a tmpfile created via stdin input. This entry script
@@ -318,23 +372,25 @@ main(int argc, char **argv) {
 
 			if (srclen == -1) {
 				fprintf(stderr, "An unknown error occurred!\n");
-				exit(EXIT_FAILURE);
+				goto sadplace;
 			}
 
 			source = malloc(sizeof(char) * (srclen + 1));
 
 			if (fseek(script, 0L, SEEK_SET) != 0) {
 				fprintf(stderr, "An unknown error occurred!\n");
-				exit(EXIT_FAILURE); 
+				goto sadplace;
 			}
-			
 			/*
 			 * TODO: Check for the shebang (#!/path/to/mininode)
 			 * line here and remove it from the source buffer,
 			 * so that files formatted as scripts may be ran
 			 * when passed as file arguments or via stdin.
+			 *
+			 * If the first character is '\n', continue reading.
+			 * If the next two characters are #!, continue until
+			 * we encounter another \n.
 			 */
-
 			srcsz = fread(source, sizeof(char), srclen, script);
 
 			if (ferror(script) != 0) {
@@ -346,16 +402,38 @@ main(int argc, char **argv) {
 		fclose(script);	
 	} else {
 		fprintf(stderr, "Could not open file!\n");
-		exit(EXIT_FAILURE);
+		goto sadplace;
 	}
-
+        /*
+	 * Stash argv and argc for later use by the 'process' module.
+	 */
+	duk_push_pointer(ctx, (void *) argv);
+	duk_push_int(ctx, argc);
+	if (duk_safe_call(ctx, mn_stash_argv, 2, 1)) {
+		mn_print_pop_error(ctx, stderr);
+		//duv_dump_error(ctx, -1);
+		uv_loop_close(mn_loop);
+		duk_destroy_heap(ctx);
+		return 1;
+	}
+	duk_pop(ctx);
+	/* 
+	 * Stash the refs array.
+	 */
+	mn_ref_setup(ctx);
+	/*
+	 * Connect the Duk context with the event loop.
+	 */
+	mn_loop->data = ctx;
 	/*
 	 * Register our module loader with the Duktape context.
 	 */
-	duk_get_global_string(ctx, "Duktape");
-	duk_push_c_function(ctx, mn_mod_search, 4 /*nargs*/);
-	duk_put_prop_string(ctx, -2, "modSearch");
-	duk_pop(ctx);
+	duk_push_object(ctx);
+	duk_push_c_function(ctx, cb_resolve_module, DUK_VARARGS);
+	duk_put_prop_string(ctx, -2, "resolve");
+	duk_push_c_function(ctx, cb_load_module, DUK_VARARGS);
+	duk_put_prop_string(ctx, -2, "load");
+	mn_module_loader_init(ctx);
 	/*
 	 * Register globals.
 	 * See https://nodejs.org/dist/v6.2.2/docs/api/globals.html
@@ -372,19 +450,17 @@ main(int argc, char **argv) {
 	 * included in the global namespace. This is useful
 	 * with mn_bi_util_format() and mn_bi_console_log().
 	 */
-	mn_bi_errors(ctx);
-	mn_bi_timers(ctx);
-	mn_bi_events(ctx);
-	mn_bi_buffer(ctx);
-	mn_bi_process(ctx);
+	//mn_bi_errors(ctx);
+	//mn_bi_timers(ctx);
+	//mn_bi_events(ctx);
+	//mn_bi_buffer(ctx);
+	//mn_bi_process(ctx);
 	mn_bi_console(ctx);
-	duk_pop(ctx);
+	//duk_pop(ctx);
 
 	/* TODO: Work out how to set __dirname and __filename! */
 	/* See https://nodejs.org/dist/v6.2.2/docs/api/modules.html */
 
-	/* Connect the Duk context with the event loop. */
-	loop->data = ctx;
 
 	if (!check_flag && !print_flag) {
 		if (source != NULL) {
@@ -397,15 +473,17 @@ main(int argc, char **argv) {
 					duk_safe_to_string(ctx, -1)	
 				);
 			} else {
-				free(source); /* Opportunistic! */
-				duk_call(ctx, 0);
+				free(source);
+				mn_module_node_eval_main(ctx, filename);
+				duk_call(ctx, 1);
+				uv_run(mn_loop, UV_RUN_DEFAULT);
 			}
 			duk_pop(ctx);
 			exit(EXIT_SUCCESS);
 		} else {
 			/* We should never get here. */
 			fprintf(stderr, "An unknown error occurred!\n");
-			exit(EXIT_FAILURE);
+			goto sadplace;
 		}
 	} else {
 		fprintf(stderr, "-c and -p are currently unimplemented.\n");
@@ -414,8 +492,8 @@ main(int argc, char **argv) {
 
 	/* TODO: Support check_flag and print_flag */
 
+	uv_loop_close(mn_loop);
 	duk_destroy_heap(ctx);
-	uv_loop_close(loop);
 	exit(EXIT_SUCCESS);
 
 	sadplace:

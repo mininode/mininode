@@ -14,7 +14,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 CC ?= gcc
-CFLAGS ?= -Os -std=c99
+CFLAGS ?= -Os -std=gnu99
 
 #Recursive wildcard!
 rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
@@ -40,7 +40,7 @@ HTTP_PARSER_CFLAGS = $(CFLAGS)
 HTTP_PARSER_OBJS = src/contrib/http-parser/http_parser.o
 
 ifeq ($(OS),Windows_NT)
-$(error Windows is currently unsupported.)
+$(error Windows targets are unsupported.)
 else
     LIBUV_OBJS += src/contrib/libuv/src/threadpool.o \
                   src/contrib/libuv/src/unix/async.o \
@@ -61,14 +61,17 @@ else
 		  src/contrib/libuv/src/unix/udp.o \
 		  src/contrib/libuv/src/version.o \
 		  src/contrib/libuv/src/inet.o \
-		  src/contrib/libuv/src/fs-poll.o
+		  src/contrib/libuv/src/fs-poll.o \
+		  src/contrib/libuv/src/unix/proctitle.o \
+		  src/contrib/libuv/src/uv-common.o
 
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
         LIBUV_OBJS += src/contrib/libuv/src/unix/linux-core.o \
 	              src/contrib/libuv/src/unix/linux-inotify.o \
 		      src/contrib/libuv/src/unix/linux-syscalls.o \
-		      src/contrib/libuv/src/unix/proctitle.o
+		      src/contrib/libuv/src/unix/core.o \
+		      src/contrib/libuv/src/unix/poll.o
 
     else ifeq ($(UNAME_S),Darwin)
         LIBUV_OBJS += src/contrib/libuv/src/unix/core.o \
@@ -76,7 +79,6 @@ else
 	              src/contrib/libuv/src/unix/darwin-proctitle.o \
 		      src/contrib/libuv/src/unix/kqueue.o \
 		      src/contrib/libuv/src/unix/fsevents.o \
-		      src/contrib/libuv/src/uv-common.o \
 		      src/contrib/libuv/src/unix/pthread-barrier.o \
 		      src/contrib/libuv/src/unix/pthread-fixes.o \
 		      src/contrib/libuv/src/unix/poll.o
@@ -164,7 +166,7 @@ MBEDTLS_OBJS += src/contrib/mbedtls/library/aes.o \
 		src/contrib/mbedtls/library/xtea.o
 
 
-MININODE_CFLAGS = $(CFLAGS) \
+MN_CFLAGS = $(CFLAGS) \
                   -Wall \
                   -Isrc/contrib/duktape \
 		  -Isrc/contrib \
@@ -174,27 +176,33 @@ MININODE_CFLAGS = $(CFLAGS) \
 		  -Isrc/include \
 		  -DDUK_USE_DEBUGGER_SUPPORT \
 		  -DDUK_USE_DEBUGGER_FWD_LOGGING \
+		  -DDUK_OPT_VERBOSE_ERRORS \
+		  -DDUK_OPT_PARANOID_ERRORS \
+		  -D_POSIX_C_SOURCE=200809L \
 		  -D_XOPEN_SOURCE=600 \
 		  -DMINIZ_NO_TIME
 
-MININODE_INCLUDES = src/include/mininode.h \
-                    src/include/modules.h \
+MN_INCLUDES = src/include/mininode.h \
 		    src/include/builtin_hash.h
 
-MININODE_MOD_SRCS = $(call rwildcard, src/modules/,*.c)
-MININODE_MOD_OBJS = $(MININODE_MOD_SRCS:.c=.o)
+MN_MOD_SRCS = $(call rwildcard, src/modules/,*.c)
+MN_MOD_OBJS = $(MN_MOD_SRCS:.c=.o)
 
-MININODE_OBJS = src/contrib/duktape/duktape.o \
+MN_OBJS = src/contrib/duktape/duktape.o \
+		src/util/ref.o \
+		src/util/util.o \
+		src/util/loader.o \
                 src/mininode.o
 
 all: mininode
 
 clean:
+	-$(RM) src/include/builtin_hash.h
 	-$(RM) $(LIBUV_OBJS) libuv.a
 	-$(RM) $(HTTP_PARSER_OBJS) libhttparser.a
 	-$(RM) $(MBEDTLS_OBJS) libmbedtls.a
-	-$(RM) $(MININODE_MOD_OBJS)
-	-$(RM) $(MININODE_OBJS) mininode
+	-$(RM) $(MN_MOD_OBJS)
+	-$(RM) $(MN_OBJS) mininode
 
 libuv.a: $(LIBUV_OBJS)
 	$(AR) crs $@ $^
@@ -208,8 +216,9 @@ libmbedtls.a: $(MBEDTLS_OBJS)
 src/include/builtin_hash.h: src/include/builtin_hash.gperf
 	gperf -N find_builtin -t $< > $@
 
-mininode: libuv.a libhttparser.a libmbedtls.a $(MININODE_OBJS) $(MININODE_MOD_OBJS)
-	$(CC) $^ -o $@
+mininode: libuv.a libhttparser.a libmbedtls.a $(MN_OBJS) $(MN_MOD_OBJS)
+	$(CC) $(MN_OBJS) $(MN_MOD_OBJS) \
+	-L. -luv -lhttparser -lmbedtls -lm -lpthread -o $@
 
 $(LIBUV_OBJS): %.o : %.c $(LIBUV_INCLUDES)
 	$(CC) $(LIBUV_CFLAGS) -c -o $@ $<
@@ -220,8 +229,8 @@ $(HTTP_PARSER_OBJS): %.o : %.c
 $(MBEDTLS_OBJS): %.o : %.c
 	$(CC) $(MBEDTLS_CFLAGS) -c -o $@ $<
 
-$(MININODE_MOD_OBJS): %.o : %.c $(MININODE_INCLUDES)
-	$(CC) $(MININODE_CFLAGS) -c -o $@ $<
+$(MN_MOD_OBJS): %.o : %.c $(MN_INCLUDES)
+	$(CC) $(MN_CFLAGS) -c -o $@ $<
 
-$(MININODE_OBJS): %.o : %.c $(MININODE_INCLUDES)
-	$(CC) $(MININODE_CFLAGS) -c -o $@ $<
+$(MN_OBJS): %.o : %.c $(MN_INCLUDES)
+	$(CC) $(MN_CFLAGS) -c -o $@ $<

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "duktape.h"
-#include "modules.h"
+#include "mininode.h"
 
 /*
  *  Duktape/C functions providing Node.js 'v8' module functionality.

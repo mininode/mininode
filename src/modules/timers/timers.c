@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "duktape.h"
 #include "mininode.h"
-#include "modules.h"
 
 /*
  *  Duktape/C functions providing Node.js 'timers' module functionality.
@@ -40,6 +39,7 @@ mn_bi_timers(duk_context *ctx) {
 	duk_put_global_string(ctx, "clearInterval");
 	duk_push_c_function(ctx, mn_bi_timers_clear_timeout, 1);
 	duk_put_global_string(ctx, "clearTimeout");
+	duk_pop(ctx);
 
-	return 1;
+	return 0;
 }
