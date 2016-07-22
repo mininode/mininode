@@ -183,7 +183,6 @@ mn_push_fs_result(duk_context *ctx, uv_fs_t *req) {
 
 /*
  *  Module initialization
- * TODO: FS.constants
  */
 const duk_function_list_entry mn_bi_fs_funcs[] = {
 	{"access",            mn_bi_fs_access,              DUK_VARARGS},
@@ -262,16 +261,23 @@ const duk_function_list_entry mn_bi_fs_funcs[] = {
 
 const duk_number_list_entry mn_bi_fs_consts[] = {
 	{ "F_OK", F_OK },
+	{ "R_OK", R_OK },
+	{ "W_OK", W_OK },
+	{ "X_OK", X_OK },
 	{ NULL, 0.0 }
 };
 
 duk_ret_t
 mn_bi_fs(duk_context *ctx) {
-	duk_bool_t ret = NULL;
-	duk_push_object(ctx);
-	duk_put_function_list(ctx, -3, mn_bi_fs_funcs);
-	duk_put_number_list(ctx, -3, mn_bi_fs_consts);
-	ret = duk_put_prop_string(ctx, -3, "fs");
-	duk_pop(ctx);
-	return ret;
+	duk_idx_t fs_idx;
+	fs_idx = duk_push_object(ctx);
+	/*
+	 * This is kludgy, but it's kinda just a placeholder
+	 * until I document the stack values before/after
+	 * each Duktape/C function in mininode.
+	 */
+	duk_put_function_list(ctx, -fs_idx, mn_bi_fs_funcs);
+	duk_put_number_list(ctx, -fs_idx, mn_bi_fs_consts);
+	duk_put_prop_string(ctx, -fs_idx, "fs");
+	return 1;
 }
