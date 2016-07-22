@@ -8,12 +8,12 @@ mn_bi_fs_access(duk_context *ctx) {
 	uv_fs_t *req = NULL;
 	int mode = 0;
 
-	if (nargs == 3) {
-		mode = duk_require_int(ctx, -2);
-		path = duk_require_string(ctx, -3);
-	} else if (nargs == 2) {
+	if (nargs == 2) {
 		mode = F_OK | R_OK;
 		path = duk_require_string(ctx, -2);
+	} else if (nargs == 3) {
+		mode = duk_require_int(ctx, -2);
+		path = duk_require_string(ctx, -3);
 	} else if (nargs < 2 || nargs > 3) {
 		duk_pop_n(ctx, nargs);
 		duk_push_error_object(
@@ -23,7 +23,13 @@ mn_bi_fs_access(duk_context *ctx) {
 		);
 		duk_push_string(ctx, "src/modules/fs/methods/access.c");
 		duk_put_prop_string(ctx, -2, "fileName");
-		duk_push_int(ctx, 17);
+		duk_push_int(ctx, 17); /* Blame line #17. */
+		/*
+		 * Blaming the branch will provide the info necessary
+		 * to actually fix the bug in user code, e.g., it is
+		 * kinda obvious that (nargs < 2 || nargs > 3) was 
+		 * the underlying issue for the exception.
+		 */
 		duk_put_prop_string(ctx, -2, "lineNumber");
 		/*
 		 * All Error objects should set fileName & lineNumber.
