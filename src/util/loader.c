@@ -265,7 +265,7 @@ static duk_int_t mn__eval_module_source(duk_context *ctx) {
 
 /* Load a module as the 'main' module. */
 duk_ret_t
-mn_module_node_eval_main(duk_context *ctx, const char *filename) {
+mn_module_eval_main(duk_context *ctx, const char *filename) {
 	/*
 	 *  Stack: [ ... source ]
 	 */
