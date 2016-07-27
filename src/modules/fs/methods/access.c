@@ -6,7 +6,18 @@ mn_bi_fs_access(duk_context *ctx) {
 	const int nargs = duk_get_top(ctx);
 	const char *path = NULL;
 	uv_fs_t *req = NULL;
+	/* 
+	 * This will eventually transition to something
+	 * more akin to errno in the stdlib. For now,
+	 * we'll do this as a sorta proof of concept.
+	 */
+	int lineNumber = 0;
 	int mode = 0;
+
+	if (!duk_is_function(ctx, -1) || nargs < 2 || nargs > 3) {
+		lineNumber = 17;
+		goto sadplace;
+	}
 
 	if (nargs == 2) {
 		mode = F_OK | R_OK;
@@ -14,7 +25,22 @@ mn_bi_fs_access(duk_context *ctx) {
 	} else if (nargs == 3) {
 		mode = duk_require_int(ctx, -2);
 		path = duk_require_string(ctx, -3);
-	} else if (nargs < 2 || nargs > 3) {
+	}
+
+
+	req = duk_push_fixed_buffer(ctx, sizeof(*req));
+	req->data = mn_setup_req(ctx, -2);
+	uv_fs_access(mn_loop, req, path, mode, mn_fs_cb);
+
+	if (req->result != 0) {
+		mn_push_error_result(ctx, req);
+		duk_throw(ctx);
+		return 1;
+	} else {
+		return 0;
+	}
+
+	sadplace:
 		duk_pop_n(ctx, nargs);
 		duk_push_error_object(
 			ctx,
@@ -23,7 +49,7 @@ mn_bi_fs_access(duk_context *ctx) {
 		);
 		duk_push_string(ctx, "src/modules/fs/methods/access.c");
 		duk_put_prop_string(ctx, -2, "fileName");
-		duk_push_int(ctx, 17); /* Blame line #17. */
+		duk_push_int(ctx, lineNumber); /* Blame line #12. */
 		/*
 		 * Blaming the branch will provide the info necessary
 		 * to actually fix the bug in user code, e.g., it is
@@ -43,17 +69,4 @@ mn_bi_fs_access(duk_context *ctx) {
 		 * the return value stack. It's a meta thing, okay?
 		 */
 		return 1;
-	}
-
-	req = duk_push_fixed_buffer(ctx, sizeof(*req));
-	req->data = mn_setup_req(ctx, -2);
-	uv_fs_access(mn_loop, req, path, mode, mn_fs_cb);
-
-	if (req->result != 0) { 
-		mn_push_error_result(ctx, req);
-		duk_throw(ctx);
-		return 1;
-	} else {
-		return 0;
-	}
 }
