@@ -39,54 +39,6 @@ HTTP_PARSER_CFLAGS = $(CFLAGS)
 
 HTTP_PARSER_OBJS = src/contrib/http-parser/http_parser.o
 
-ifeq ($(OS),Windows_NT)
-$(error Windows targets are unsupported.)
-else
-    LIBUV_OBJS += src/contrib/libuv/src/threadpool.o \
-                  src/contrib/libuv/src/unix/async.o \
-		  src/contrib/libuv/src/unix/dl.o \
-		  src/contrib/libuv/src/unix/fs.o \
-		  src/contrib/libuv/src/unix/getaddrinfo.o \
-		  src/contrib/libuv/src/unix/getnameinfo.o \
-		  src/contrib/libuv/src/unix/loop-watcher.o \
-		  src/contrib/libuv/src/unix/loop.o \
-		  src/contrib/libuv/src/unix/pipe.o \
-		  src/contrib/libuv/src/unix/process.o \
-		  src/contrib/libuv/src/unix/signal.o \
-		  src/contrib/libuv/src/unix/stream.o \
-		  src/contrib/libuv/src/unix/tcp.o \
-		  src/contrib/libuv/src/unix/thread.o \
-		  src/contrib/libuv/src/unix/timer.o \
-		  src/contrib/libuv/src/unix/tty.o \
-		  src/contrib/libuv/src/unix/udp.o \
-		  src/contrib/libuv/src/version.o \
-		  src/contrib/libuv/src/inet.o \
-		  src/contrib/libuv/src/fs-poll.o \
-		  src/contrib/libuv/src/unix/proctitle.o \
-		  src/contrib/libuv/src/uv-common.o
-
-    UNAME_S := $(shell uname -s)
-    ifeq ($(UNAME_S),Linux)
-        LIBUV_OBJS += src/contrib/libuv/src/unix/linux-core.o \
-	              src/contrib/libuv/src/unix/linux-inotify.o \
-		      src/contrib/libuv/src/unix/linux-syscalls.o \
-		      src/contrib/libuv/src/unix/core.o \
-		      src/contrib/libuv/src/unix/poll.o
-
-    else ifeq ($(UNAME_S),Darwin)
-        LIBUV_OBJS += src/contrib/libuv/src/unix/core.o \
-                      src/contrib/libuv/src/unix/darwin.o \
-	              src/contrib/libuv/src/unix/darwin-proctitle.o \
-		      src/contrib/libuv/src/unix/kqueue.o \
-		      src/contrib/libuv/src/unix/fsevents.o \
-		      src/contrib/libuv/src/unix/pthread-barrier.o \
-		      src/contrib/libuv/src/unix/pthread-fixes.o \
-		      src/contrib/libuv/src/unix/poll.o
-		      
-    else ifeq ($(UNAME_S),SunOS)
-        # TBD
-    endif
-endif
 
 MBEDTLS_CFLAGS += $(CFLAGS) \
                 -Wall \
@@ -174,10 +126,15 @@ MN_CFLAGS = $(CFLAGS) \
 		  -Isrc/modules \
 		  -Isrc/contrib/libuv/include/ \
 		  -Isrc/include \
-		  -DDUK_USE_DEBUGGER_SUPPORT \
-		  -DDUK_USE_DEBUGGER_FWD_LOGGING \
 		  -DDUK_OPT_VERBOSE_ERRORS \
 		  -DDUK_OPT_PARANOID_ERRORS \
+		  -DDUK_OPT_AUGMENT_ERRORS \
+		  -DDUK_OPT_NO_BROWSER_LIKE \
+		  -DDUK_OPT_NO_BUFFEROBJECT_SUPPORT \
+		  -DDUK_OPT_NO_COMMONJS_MODULES \
+		  -DDUK_OPT_JSON_STRINGIFY_FASTPATH \
+		  -DDUK_OPT_INTERRUPT_COUNTER \
+		  -DDUK_OPT_FASTINT \
 		  -D_POSIX_C_SOURCE=200809L \
 		  -D_XOPEN_SOURCE=600 \
 		  -DMINIZ_NO_TIME
@@ -193,6 +150,55 @@ MN_OBJS = src/contrib/duktape/duktape.o \
 		src/util/util.o \
 		src/util/loader.o \
                 src/mininode.o
+
+ifeq ($(OS),Windows_NT)
+$(error Windows targets are unsupported.)
+else
+    LIBUV_OBJS += src/contrib/libuv/src/threadpool.o \
+                  src/contrib/libuv/src/unix/async.o \
+		  src/contrib/libuv/src/unix/dl.o \
+		  src/contrib/libuv/src/unix/fs.o \
+		  src/contrib/libuv/src/unix/getaddrinfo.o \
+		  src/contrib/libuv/src/unix/getnameinfo.o \
+		  src/contrib/libuv/src/unix/loop-watcher.o \
+		  src/contrib/libuv/src/unix/loop.o \
+		  src/contrib/libuv/src/unix/pipe.o \
+		  src/contrib/libuv/src/unix/process.o \
+		  src/contrib/libuv/src/unix/signal.o \
+		  src/contrib/libuv/src/unix/stream.o \
+		  src/contrib/libuv/src/unix/tcp.o \
+		  src/contrib/libuv/src/unix/thread.o \
+		  src/contrib/libuv/src/unix/timer.o \
+		  src/contrib/libuv/src/unix/tty.o \
+		  src/contrib/libuv/src/unix/udp.o \
+		  src/contrib/libuv/src/version.o \
+		  src/contrib/libuv/src/inet.o \
+		  src/contrib/libuv/src/fs-poll.o \
+		  src/contrib/libuv/src/unix/proctitle.o \
+		  src/contrib/libuv/src/uv-common.o
+
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        LIBUV_OBJS += src/contrib/libuv/src/unix/linux-core.o \
+	              src/contrib/libuv/src/unix/linux-inotify.o \
+		      src/contrib/libuv/src/unix/linux-syscalls.o \
+		      src/contrib/libuv/src/unix/core.o \
+		      src/contrib/libuv/src/unix/poll.o
+
+    else ifeq ($(UNAME_S),Darwin)
+        LIBUV_OBJS += src/contrib/libuv/src/unix/core.o \
+                      src/contrib/libuv/src/unix/darwin.o \
+	              src/contrib/libuv/src/unix/darwin-proctitle.o \
+		      src/contrib/libuv/src/unix/kqueue.o \
+		      src/contrib/libuv/src/unix/fsevents.o \
+		      src/contrib/libuv/src/unix/pthread-barrier.o \
+		      src/contrib/libuv/src/unix/pthread-fixes.o \
+		      src/contrib/libuv/src/unix/poll.o
+
+    else ifeq ($(UNAME_S),SunOS)
+        # TBD
+    endif
+endif
 
 all: mininode
 
