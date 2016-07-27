@@ -93,7 +93,6 @@ mn_print_pop_error(duk_context *ctx, FILE *f) {
 
 void
 mn_dump_error(duk_context *ctx, duk_idx_t idx) {
-	fprintf(stderr, "\nUncaught Exception:\n");
 	if (duk_is_error(ctx, idx)) {
 		duk_get_prop_string(ctx, -1, "stack");
 		fprintf(stderr, "\n%s\n\n", duk_get_string(ctx, -1));
@@ -101,17 +100,19 @@ mn_dump_error(duk_context *ctx, duk_idx_t idx) {
 	} else {
 		fprintf(
 			stderr,
-			"\nThrown Value: %s\n\n",
+			"\nError: %s\n\n",
 			duk_json_encode(ctx, idx)
 		);
 	}
 }
 
-
+/*
+ * Donate our body to science in the event of death.
+ */
 void
 mn_fatal_handler(duk_context *ctx, duk_errcode_t code, const char *msg) {
-	mn_dump_error(ctx, -1);
-	fprintf(stderr, "*** FATAL ERROR: %s\n", msg ? msg : "no message");
+	fprintf(stderr, "\nUncaught Exception:\n");
+	fprintf(stderr, "*** FATAL: %s\n", msg ? msg : "no message");
 	fprintf(stderr, "Causing intentional segfault...\n");
 	fflush(stderr);
 	*((volatile unsigned int *) 0) = (unsigned int) 0xdeadbeefUL;
@@ -155,57 +156,23 @@ mn_stdin_to_tmpfile() {
 	return ftmp;	
 }
 
-duk_ret_t
-mn_mod_load(FILE *file, duk_context *ctx) {
-	/*
-	 * While the module loader will load files, it does
-	 * so differently than the loader for the entry point.
-	 * There will be no support for shebang lines here,
-	 * it will just register objects in the context.
-	 */
-	return 1;
-}
 
-duk_ret_t
-mn_mod_search(duk_context *ctx) {
-	/*
-	 * We get the following duk stack arguments:
-	 *   index 0: id
-	 *   index 1: require
-	 *   index 2: exports
-	 *   index 3: module
-	 *
-	 * For built-in modules, we need to map from, e.g., 'v8' to 
-	 * dukopen_v8. This is done with a gperf(1) perfect hash,
-	 * see src/include/builtin_hash.gperf for the details.
-	 */
-	const char *modname = duk_safe_to_string(ctx, 0);
-
-	/*
-	 * A required module prefixed with '/' is an absolute path.
-	 * A required module prefixed with './' is a relative path.
-	 *
-	 * If the specified modname is a directory, look in it for
-	 * a package.json file and include the 'main' entry there.
-	 * 
-	 * .js files are interpreted as JavaScript text files, and 
-	 * .json files are parsed as JSON text files
-	 * 
-	 * NOTE: .node files are not supported.
-	 */
-	builtin *module = find_builtin(modname, strlen(modname));
-
-	if (module) {
-		module->loader(ctx);
-		return 1;
-	}
-
-	/* Just punt on file lookup logic for now. */
-	duk_push_sprintf(ctx, "Cannot find module '%s'", modname);
-	duk_throw(ctx);
-	return 1;
-}
-
+/*
+ * A required module prefixed with '/' is an absolute path.
+ * A required module prefixed with './' is a relative path.
+ *
+ * If the specified modname is a directory, look in it for
+ * a package.json file and include the 'main' entry there.
+ *
+ * .js files are interpreted as JavaScript text files, and
+ * .json files are parsed as JSON text files
+ *
+ * NOTE: .node files are not supported.
+ *
+ * For built-in modules, we need to map from, e.g., 'v8' to
+ * dukopen_v8. This is done with a gperf(1) perfect hash,
+ * see src/include/builtin_hash.gperf for the details.
+ */
 duk_ret_t
 cb_resolve_module(duk_context *ctx) {
 	/*
@@ -214,11 +181,20 @@ cb_resolve_module(duk_context *ctx) {
 	const char *requested_id = duk_get_string(ctx, 0);
 	const char *parent_id = duk_get_string(ctx, 1);  /* calling module */
 	/* FIXME */
-	const char *resolved_id = requested_id;
+	builtin *module = find_builtin(requested_id, strlen(requested_id));
+	if (module) {
+		const char *resolved_id = requested_id;
+		duk_push_string(ctx, resolved_id);
+		return 1; /*nrets*/
+	} else {
+		duk_push_sprintf(ctx, "Cannot find module '%s'", requested_id);
+		duk_throw(ctx);
+	}
 
 	/* Arrive at the canonical module ID somehow. */
-	duk_push_string(ctx, resolved_id);
-	return 1; /*nrets*/
+	//duk_push_string(ctx, resolved_id);
+	//return 1; /*nrets*/
+
 }
 
 duk_ret_t
@@ -235,14 +211,12 @@ cb_load_module(duk_context *ctx) {
 	} else {
 		/* Arrive at the JS source code for the module somehow. */
 		//duk_push_string(ctx, module_source);
+		/* Just punt on file lookup logic for now. */
 		return 0;  /*nrets*/
 	}
 
-	/* Just punt on file lookup logic for now. */
-	duk_push_sprintf(ctx, "Cannot find module '%s'", modname);
-	duk_throw(ctx);
-	return 1;
-
+	/* We never get here. */
+	return 0;
 }
 
 int
@@ -298,16 +272,16 @@ main(int argc, char **argv) {
 				goto sadplace;
 		}
 	}
-
+	/*
+	 * Only accept one non-option file argument.
+	 */
 	if (argc > optind) {
-		/* Only accept one non-option file argument. */
 		if (argc - optind > 1) {
 			goto sadplace;
 		} else {
 			filename = argv[optind];
 		}
 	}
-
 	/* 
 	 * Initialize the event loop.
 	 */
@@ -458,10 +432,6 @@ main(int argc, char **argv) {
 	mn_bi_console(ctx);
 	//duk_pop(ctx);
 
-	/* TODO: Work out how to set __dirname and __filename! */
-	/* See https://nodejs.org/dist/v6.2.2/docs/api/modules.html */
-
-
 	if (!check_flag && !print_flag) {
 		if (source != NULL) {
 			/* 
@@ -474,9 +444,13 @@ main(int argc, char **argv) {
 				);
 			} else {
 				free(source);
-				mn_module_node_eval_main(ctx, filename);
-				duk_call(ctx, 1);
-				uv_run(mn_loop, UV_RUN_DEFAULT);
+				mn_module_eval_main(ctx, filename);
+				if (duk_pcall(ctx, 1) == DUK_EXEC_SUCCESS) {
+					uv_run(mn_loop, UV_RUN_DEFAULT);
+				} else {
+					mn_dump_error(ctx, -1);
+					exit(EXIT_FAILURE);
+				}
 			}
 			duk_pop(ctx);
 			exit(EXIT_SUCCESS);
