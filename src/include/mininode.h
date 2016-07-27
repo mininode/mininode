@@ -6,7 +6,7 @@
 #if !defined(MININODE_H)
 #define MININODE_H
 
-/* Semantic versioning, per mainline Node.js */
+/* Semantic versioning, per mn_bi_readline Node.js */
 #define MININODE_VERSION "0.0.1"
 /* Timeout values > TIMEOUT_MAX are set to 1. */
 #define TIMEOUT_MAX UINT32_MAX
@@ -79,7 +79,7 @@ void mn_get_data(duk_context *ctx, int index, uv_buf_t* buf);
 const char *mn_protocol_to_string(int family);
 duk_ret_t mn_loadfile(duk_context *ctx);
 
-duk_ret_t duk_module_node_peval_main(duk_context *ctx, const char *filename);
+duk_ret_t duk_module_eval_main(duk_context *ctx, const char *filename);
 void duk_module_loader_init(duk_context *ctx);
 
 /*** BUILT-IN MODULES ***/
@@ -178,6 +178,11 @@ duk_ret_t mn_bi_fs_write_file(duk_context *ctx);
 duk_ret_t mn_bi_fs_write_file_sync(duk_context *ctx);
 
 duk_ret_t mn_bi_http(duk_context *ctx);
+duk_ret_t mn_bi_http_create_client(duk_context *ctx);
+duk_ret_t mn_bi_http_create_server(duk_context *ctx);
+duk_ret_t mn_bi_http_get(duk_context *ctx);
+duk_ret_t mn_bi_http_request(duk_context *ctx);
+
 duk_ret_t mn_bi_https(duk_context *ctx);
 duk_ret_t mn_bi_net(duk_context *ctx);
 duk_ret_t mn_bi_os(duk_context *ctx);
