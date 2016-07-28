@@ -6,13 +6,13 @@ mn_bi_fs_access(duk_context *ctx) {
 	const int nargs = duk_get_top(ctx);
 	const char *path = NULL;
 	uv_fs_t *req = NULL;
+	int mode = 0;
 	/* 
 	 * This will eventually transition to something
 	 * more akin to errno in the stdlib. For now,
 	 * we'll do this as a sorta proof of concept.
 	 */
 	int lineNumber = 0;
-	int mode = 0;
 
 	if (!duk_is_function(ctx, -1) || nargs < 2 || nargs > 3) {
 		lineNumber = 17;
@@ -20,6 +20,7 @@ mn_bi_fs_access(duk_context *ctx) {
 	}
 
 	if (nargs == 2) {
+		/* TODO: Check actual default in Node. */
 		mode = F_OK | R_OK;
 		path = duk_require_string(ctx, -2);
 	} else if (nargs == 3) {
@@ -49,7 +50,7 @@ mn_bi_fs_access(duk_context *ctx) {
 		);
 		duk_push_string(ctx, "src/modules/fs/methods/access.c");
 		duk_put_prop_string(ctx, -2, "fileName");
-		duk_push_int(ctx, lineNumber); /* Blame line #12. */
+		duk_push_int(ctx, lineNumber);
 		/*
 		 * Blaming the branch will provide the info necessary
 		 * to actually fix the bug in user code, e.g., it is
