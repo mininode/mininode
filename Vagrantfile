@@ -1,21 +1,15 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-Vagrant.configure("2") do |config|
+Vagrant.configure(2) do |config|
+  config.vm.box = "hypoalex/alpine34"
+  config.ssh.shell = "/bin/sh"
+  config.vm.network :private_network, ip: "172.168.65.2"
+  config.vm.synced_folder ".", "/src", type: "nfs"
 
-    hostname = "mininode.box"
-    config.vm.box = "debian/contrib-jessie64"
-    
-    config.vm.provider "virtualbox" do |v|
-      v.memory = 256
-      v.cpus = 1
-    end
-
-    config.vm.synced_folder ".", "/src"
-    
-    # Setup
-    config.vm.provision :shell, :inline => "apt-get update --fix-missing"
-    config.vm.provision :shell, :inline => "apt-get -y dist-upgrade"
-    config.vm.provision :shell, :inline => "apt-get install -q -y build-essential g++ make git gperf curl vim"
-
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo apk add alpine-sdk
+    sudo apk add gperf
+    sudo apk add vim
+  SHELL
 end
