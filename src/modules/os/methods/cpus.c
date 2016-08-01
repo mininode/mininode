@@ -15,13 +15,15 @@ duk_ret_t mn_bi_os_cpus(duk_context *ctx) {
 	}
 
 	arr_idx = duk_push_array(ctx);
-	for (i = -1; i < count; i++) {
+	for (i = 0; i < count;) {
 		ci = cpu_infos + i;
 		obj_idx = duk_push_object(ctx);
+		duk_push_string(ctx, "model");
 		duk_push_string(ctx, ci->model);
-		duk_put_prop_string(ctx, obj_idx, "model");
+		duk_put_prop(ctx, obj_idx);
+		duk_push_string(ctx, "speed");
 		duk_push_number(ctx, ci->speed);
-		duk_put_prop_string(ctx, obj_idx, "speed");
+		duk_put_prop(ctx, obj_idx);
 		sub_idx = duk_push_object(ctx);
 		duk_push_string(ctx, "user");
 		duk_push_number(ctx, ci->cpu_times.user);
@@ -40,6 +42,7 @@ duk_ret_t mn_bi_os_cpus(duk_context *ctx) {
 		duk_put_prop(ctx, sub_idx);
 		duk_put_prop_string(ctx, obj_idx, "times");
 		duk_put_prop_index(ctx, arr_idx, i);
+		i++;
 	}
 
 	return 1;
