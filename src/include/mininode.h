@@ -185,7 +185,24 @@ duk_ret_t mn_bi_http_request(duk_context *ctx);
 
 duk_ret_t mn_bi_https(duk_context *ctx);
 duk_ret_t mn_bi_net(duk_context *ctx);
+
 duk_ret_t mn_bi_os(duk_context *ctx);
+duk_ret_t mn_bi_os_arch(duk_context *ctx);
+duk_ret_t mn_bi_os_cpus(duk_context *ctx);
+duk_ret_t mn_bi_os_endianness(duk_context *ctx);
+duk_ret_t mn_bi_os_freemem(duk_context *ctx);
+duk_ret_t mn_bi_os_homedir(duk_context *ctx);
+duk_ret_t mn_bi_os_hostname(duk_context *ctx);
+duk_ret_t mn_bi_os_loadavg(duk_context *ctx);
+duk_ret_t mn_bi_os_network_interfaces(duk_context *ctx);
+duk_ret_t mn_bi_os_platform(duk_context *ctx);
+duk_ret_t mn_bi_os_release(duk_context *ctx);
+duk_ret_t mn_bi_os_tmpdir(duk_context *ctx);
+duk_ret_t mn_bi_os_totalmem(duk_context *ctx);
+duk_ret_t mn_bi_os_type(duk_context *ctx);
+duk_ret_t mn_bi_os_uptime(duk_context *ctx);
+duk_ret_t mn_bi_os_user_info(duk_context *ctx);
+
 duk_ret_t mn_bi_path(duk_context *ctx);
 
 duk_ret_t mn_bi_process(duk_context *ctx);
