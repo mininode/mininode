@@ -184,6 +184,7 @@ else
 		      src/contrib/libuv/src/unix/linux-syscalls.o \
 		      src/contrib/libuv/src/unix/core.o \
 		      src/contrib/libuv/src/unix/poll.o
+        LIBUV_CFLAGS += -fPIC
 
     else ifeq ($(UNAME_S),Darwin)
         LIBUV_OBJS += src/contrib/libuv/src/unix/core.o \
