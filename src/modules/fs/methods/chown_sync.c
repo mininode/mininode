@@ -39,7 +39,7 @@ mn_bi_fs_chown_sync(duk_context *ctx) {
 		 */
 		err_idx = duk_push_error_object(
 			ctx,
-			DUK_ERR_API_ERROR,
+			DUK_ERR_ERROR,
 			"chown() returned error: -%i",
 			errno
 		);

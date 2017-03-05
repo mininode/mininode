@@ -5,6 +5,12 @@ together with [duktape][5]. The goal here is to produce an implementation of
 the [Node.js 6.2.2 API][6] with a full-fledged Javascript ES5.1 interpreter in 
 a single binary with no runtime dependencies other than a standard C library.
 
+https://github.com/wolfSSL/wolfssl
+https://github.com/warmcat/libwebsockets
+
+https://github.com/haproxy/libslz - for zip compression
+https://github.com/svaarala/lowzip - for zip decompression
+
 This aims to implement the Node.js standard library entirely in C.
 
 This is very early in development. Any feedback is very welcome!

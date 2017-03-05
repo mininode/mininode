@@ -55,8 +55,8 @@ mn_bi_util_format(duk_context *ctx) {
 	}
  
 	/*
-	 * We use negative i to go from left to right, and start at 1 
-	 * to ignore the format string.
+	 * We use negative i to go from left to right, and 
+	 * start at 1 to ignore the format string.
 	 *
 	 * Note that Javascript effectively has no limit on
 	 * the number of arguments a function can take, so 

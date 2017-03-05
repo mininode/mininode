@@ -33,6 +33,10 @@ static int interactive_flag = 0;
 static int zero_fill_flag = 0;
 /* The event loop. */
 uv_loop_t *mn_loop;
+/* The line number of an active exception from the mininode stdlib */
+extern int lineNumber;
+/* The filename which caused an active exception */
+extern char *filename;
 
 void
 mn_short_help() {
@@ -202,7 +206,7 @@ cb_load_module(duk_context *ctx) {
 	/*
 	 *  Entry stack: [ resolved_id exports module ]
 	 */
-	const char *modname = duk_require_string(ctx, 0	);
+	const char *modname = duk_require_string(ctx, 0);
 	builtin *module = find_builtin(modname, strlen(modname));
 
 	if (module) {
@@ -226,7 +230,7 @@ main(int argc, char **argv) {
 	char *filename = NULL;   /* Kinda self-explanatory. */
 	FILE *script = NULL;     /* Pointer to the script to execute */
 	char *source = NULL;     /* The actual source to execute. */
-	long srclen;             /* The length of source buffer */
+	long srclen = 0;         /* The length of source buffer */
 	size_t srcsz = 0;        /* Size of NUL-terminated source buffer. */
 
 	/* This isn't strictly necessary, but we'll do it anyway. */
@@ -383,7 +387,7 @@ main(int argc, char **argv) {
 	 */
 	duk_push_pointer(ctx, (void *) argv);
 	duk_push_int(ctx, argc);
-	if (duk_safe_call(ctx, mn_stash_argv, 2, 1)) {
+	if (duk_safe_call(ctx, mn_stash_argv, 2, 1, 1)) {
 		mn_print_pop_error(ctx, stderr);
 		//duv_dump_error(ctx, -1);
 		uv_loop_close(mn_loop);

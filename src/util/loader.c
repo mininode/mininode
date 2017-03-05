@@ -183,9 +183,9 @@ mn__push_module_object(duk_context *ctx, const char *id, duk_bool_t main) {
 		duk_pop(ctx);
 	}
 	/*
-	 * Node.js uses the canonicalized filename of a module for both module.id
-	 * and module.filename.  We have no concept of a file system here, so just
-	 * use the module ID for both values.
+	 * Node.js uses the canonicalized filename of a module for both 
+	 * module.id and module.filename.  We have no concept of a file
+	 * system here, so just use the module ID for both values.
 	 */
 	duk_push_string(ctx, id);
 	duk_dup(ctx, -1);

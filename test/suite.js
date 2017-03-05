@@ -31,5 +31,3 @@ const util = require('util');
 const v8 = require('v8');
 const vm = require('vm');
 const zlib = require('zlib');
-
-console.log("Testing!")

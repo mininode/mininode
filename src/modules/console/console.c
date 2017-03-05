@@ -23,21 +23,6 @@ mn_bi_console_constructor(duk_context *ctx) {
 	}
 }
 
-duk_ret_t
-mn_bi_console_log(duk_context *ctx) {
-	int nargs = duk_get_top(ctx);
-	
-	/* Mimic Node.js behavior when passed nothing. */
-	if (nargs == 0) {
-		puts("");
-		return 0;
-	}
-
-	const char *str = duk_safe_to_string(ctx, -1);
-	fprintf(stdout, "%s\n", str);
-	return 0;
-}
-
 /*
  *  Module initialization
  */
@@ -57,6 +42,6 @@ mn_bi_console(duk_context *ctx) {
 	duk_put_function_list(ctx, -1, mn_bi_console_funcs);
 	duk_put_number_list(ctx, -1, mn_bi_console_consts);
 	duk_put_global_string(ctx, "console");
-	return 1;
+	return 0;
 }
 

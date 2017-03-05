@@ -9,7 +9,7 @@ duk_ret_t mn_bi_os_uptime(duk_context *ctx) {
 		duk_push_number(ctx, uptime);
 		return 1;
 	} else {
-		duk_push_string(ctx, "uptime() failed!");
+		duk_push_string(ctx, "uv_uptime() failed!");
 		duk_throw(ctx);
 	}
 }
