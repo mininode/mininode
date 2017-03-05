@@ -80,7 +80,6 @@ MBEDTLS_OBJS += src/contrib/mbedtls/library/aes.o \
 		src/contrib/mbedtls/library/md5.o \
 		src/contrib/mbedtls/library/md_wrap.o \
 		src/contrib/mbedtls/library/memory_buffer_alloc.o \
-		src/contrib/mbedtls/library/net.o \
 		src/contrib/mbedtls/library/oid.o \
 		src/contrib/mbedtls/library/padlock.o \
 		src/contrib/mbedtls/library/pem.o \

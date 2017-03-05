@@ -1,9 +1,15 @@
-[submodule "src/contrib/mbedtls"]
-	path = src/contrib/mbedtls
-	url = https://github.com/ARMmbed/mbedtls.git
 [submodule "src/contrib/http-parser"]
 	path = src/contrib/http-parser
 	url = https://github.com/nodejs/http-parser.git
 [submodule "src/contrib/libuv"]
 	path = src/contrib/libuv
 	url = https://github.com/libuv/libuv.git
+[submodule "src/contrib/mbedtls"]
+	path = src/contrib/mbedtls
+	url = https://github.com/ARMmbed/mbedtls.git
+[submodule "src/contrib/libslz"]
+	path = src/contrib/libslz
+	url = https://github.com/haproxy/libslz.git
+[submodule "src/contrib/lowzip"]
+	path = src/contrib/lowzip
+	url = https://github.com/svaarala/lowzip.git

@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "miniz.c"
 #include "duktape.h"
 #include "mininode.h"
 
