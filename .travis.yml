@@ -1,4 +1,7 @@
 language: c
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y gperf
 script: git submodule init && git submodule update && make && make install
 compiler:
   - clang
