@@ -1,10 +1,15 @@
 language: c
-os:
-  - linux
-  - osx
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y gperf
+matrix:
+  include:
+    - os: linux
+      dist: precise
+      sudo: false
+    - os: osx
+      osx_image: xcode8.2
+addons:
+  apt:
+    packages:
+      - graphviz  
 script: git submodule init && git submodule update && make && make install
 compiler:
   - clang
