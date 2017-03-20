@@ -218,7 +218,11 @@ src/include/builtin_hash.h: src/include/builtin_hash.gperf
 
 mininode: libuv.a libhttparser.a libmbedtls.a $(MN_OBJS) $(MN_MOD_OBJS)
 	$(CC) $(MN_OBJS) $(MN_MOD_OBJS) \
-	-L. -luv -lhttparser -lmbedtls -lm -lrt -Wl,--no-as-needed -lm -lpthread -o $@
+	-L. -luv -lhttparser -lmbedtls -lm \
+ifeq ($(UNAME_S),Linux)
+	-lrt -Wl,--no-as-needed \
+endif
+	 -lpthread -o $@
 
 $(LIBUV_OBJS): %.o : %.c $(LIBUV_INCLUDES)
 	$(CC) $(LIBUV_CFLAGS) -c -o $@ $<
