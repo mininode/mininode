@@ -11,8 +11,8 @@ duk_ret_t mn_bi_os_homedir(duk_context *ctx) {
 	if (err) {
 		duk_push_string(ctx, "uv_os_homedir() error!");
 		duk_throw(ctx);
+	} else {
+		duk_push_string(ctx, buf);
+		return 1;
 	}
-
-	duk_push_string(ctx, buf);
-	return 1;
 }
