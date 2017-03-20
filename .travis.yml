@@ -4,9 +4,6 @@ matrix:
     - os: linux
       dist: precise
       sudo: required
-      compiler:
-        - clang
-        - gcc
     - os: osx
       osx_image: xcode8.2
 before_install:
