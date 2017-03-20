@@ -1,5 +1,5 @@
 # MiniNode - Node.js for Embedded Systems
-[![Build Status](https://travis-ci.org/mininode/mininode.svg)](https://travis-ci.org/mininode/mininode)
+[![MIT Licensed](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/mininode/mininode/blob/master/LICENSE.md)[![Build Status](https://travis-ci.org/mininode/mininode.svg)](https://travis-ci.org/mininode/mininode)[![Fuck it! Ship it!](https://img.shields.io/badge/FUCK%20IT!-SHIP%20IT!-brightgreen.svg)](https://hackernoon.com/fuck-it-ship-it-905afd092547#.tnzm8yqap)
 
 This is [libuv][1], [http-parser][2], [mbedtls][3], [libslz][4], and lowzip
 held together with [duktape][5]. The goal here is to produce an implementation of the [Node.js 6.9.2 API][6] with a full-fledged Javascript ES5.1 interpreter in a single binary with no runtime dependencies other than a standard C library.
