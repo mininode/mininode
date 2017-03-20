@@ -1,14 +1,12 @@
 # MiniNode - Node.js for Embedded Systems
+[![Build Status](https://travis-ci.org/mininode/mininode.svg)](https://travis-ci.org/mininode/mininode)
 
-This is [libuv][1], [http-parser][2], [mbedtls][3], and [miniz][4] held 
-together with [duktape][5]. The goal here is to produce an implementation of
-the [Node.js 6.2.2 API][6] with a full-fledged Javascript ES5.1 interpreter in 
-a single binary with no runtime dependencies other than a standard C library.
+This is [libuv][1], [http-parser][2], [mbedtls][3], [libslz][4], and lowzip
+held together with [duktape][5]. The goal here is to produce an implementation of the [Node.js 6.9.2 API][6] with a full-fledged Javascript ES5.1 interpreter in a single binary with no runtime dependencies other than a standard C library.
 
 https://github.com/wolfSSL/wolfssl
 https://github.com/warmcat/libwebsockets
 
-https://github.com/haproxy/libslz - for zip compression
 https://github.com/svaarala/lowzip - for zip decompression
 
 This aims to implement the Node.js standard library entirely in C.
@@ -74,8 +72,8 @@ in C using duktape.
 [1]: https://github.com/libuv/libuv.git
 [2]: https://github.com/nodejs/http-parser.git
 [3]: https://github.com/ARMmbed/mbedtls/tree/mbedtls-2.3
-[4]: https://www.progville.com/c/miniz-fast-small-zip/
+[4]: https://github.com/haproxy/libslz
 [5]: http://duktape.org
-[6]: https://nodejs.org/dist/v6.2.2/docs/api/
+[6]: https://nodejs.org/dist/v6.9.2/docs/api/
 [7]: https://github.com/creationix/dukluv/tree/master/src
 [8]: https://github.com/Samsung/iotjs/wiki/GPIO-API-candidate
