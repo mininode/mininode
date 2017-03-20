@@ -216,13 +216,13 @@ libmbedtls.a: $(MBEDTLS_OBJS)
 src/include/builtin_hash.h: src/include/builtin_hash.gperf
 	gperf -N find_builtin -t $< > $@
 
-mininode: libuv.a libhttparser.a libmbedtls.a $(MN_OBJS) $(MN_MOD_OBJS)
-	$(CC) $(MN_OBJS) $(MN_MOD_OBJS) \
-	-L. -luv -lhttparser -lmbedtls -lm \
-ifeq ($(shell uname -s),Linux)
-	-lrt -Wl,--no-as-needed \
+MN_LINKFLAGS = -L. -luv -lhttparser -lmbedtls -lm -lpthread 
+ifeq ($(UNAME_S),Linux)
+MN_LINKFLAGS += -lrt -Wl,--no-as-needed 
 endif
-	 -lpthread -o $@
+
+mininode: libuv.a libhttparser.a libmbedtls.a $(MN_OBJS) $(MN_MOD_OBJS)
+	$(CC) $(MN_OBJS) $(MN_MOD_OBJS) $(MN_LINKFLAGS) -o $@
 
 $(LIBUV_OBJS): %.o : %.c $(LIBUV_INCLUDES)
 	$(CC) $(LIBUV_CFLAGS) -c -o $@ $<
