@@ -1,7 +1,8 @@
 # The MIT license
 ## For the 3rd party licenses, see src/contrib/*
 
-    Copyright (c) 2017 Alex Caudill.
+    Copyright (c) 2014 Tim Caswell
+    Copyright (c) 2017 Alex Caudill
     
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the
