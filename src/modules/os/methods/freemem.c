@@ -9,7 +9,7 @@ mn_bi_os_freemem(duk_context *ctx) {
 		duk_push_number(ctx, amount);
 		return 1;
 	} else {
-		duk_push_string(ctx, "freemem() failed!");
+		duk_push_string(ctx, "uv_get_free_memory() failed!");
 		duk_throw(ctx);
 	}
 }
