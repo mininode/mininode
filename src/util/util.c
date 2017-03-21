@@ -9,7 +9,7 @@ get_mn_loop(duk_context *ctx) {
 
 mn_handle_t *
 mn_setup_handle(duk_context *ctx) {
-	mn_handle_t* data = duk_alloc(ctx, sizeof(*data));
+	mn_handle_t *data = duk_alloc(ctx, sizeof(*data));
 	duk_push_this(ctx);
 	data->context = mn_ref(ctx);
 	duk_dup(ctx, -1);
@@ -132,21 +132,21 @@ mn_protocol_to_string(int family) {
  */
 duk_ret_t
 mn_loadfile(duk_context *ctx) {
-	const char* path = duk_require_string(ctx, 0);
+	const char *path = duk_require_string(ctx, 0);
 	uv_fs_t req;
 	int fd = 0;
-	uint64_t size;
-	char* chunk;
+	size_t size;
+	char *chunk;
 	uv_buf_t buf;
 
-	if (uv_fs_open(&mn_loop, &req, path, O_RDONLY, 0644, NULL) < 0) {
+	if (uv_fs_open(mn_loop, &req, path, O_RDONLY, 0644, NULL) < 0) {
 		goto fail;
 	}
 
 	uv_fs_req_cleanup(&req);
 	fd = req.result;
 
-	if (uv_fs_fstat(&mn_loop, &req, fd, NULL) < 0) {
+	if (uv_fs_fstat(mn_loop, &req, fd, NULL) < 0) {
 		goto fail;
 	}
 
@@ -155,7 +155,7 @@ mn_loadfile(duk_context *ctx) {
 	chunk = duk_alloc(ctx, size);
 	buf = uv_buf_init(chunk, size);
 
-	if (uv_fs_read(&mn_loop, &req, fd, &buf, 1, 0, NULL) < 0) {
+	if (uv_fs_read(mn_loop, &req, fd, &buf, 1, 0, NULL) < 0) {
 		duk_free(ctx, chunk);
 		goto fail;
 	}
@@ -163,7 +163,7 @@ mn_loadfile(duk_context *ctx) {
 	uv_fs_req_cleanup(&req);
 	duk_push_lstring(ctx, chunk, size);
 	duk_free(ctx, chunk);
-	uv_fs_close(&mn_loop, &req, fd, NULL);
+	uv_fs_close(mn_loop, &req, fd, NULL);
 	uv_fs_req_cleanup(&req);
 
 	return 1;
@@ -171,7 +171,7 @@ mn_loadfile(duk_context *ctx) {
 	fail:
 		uv_fs_req_cleanup(&req);
 		if (fd) {
-			uv_fs_close(&mn_loop, &req, fd, NULL);
+			uv_fs_close(mn_loop, &req, fd, NULL);
 		}
 		uv_fs_req_cleanup(&req);
 
