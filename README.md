@@ -40,7 +40,7 @@ Either `gcc` or `clang` should work, just set the `CC` environment variable.
 
 From a MacOS X system:
 
-    git clone https://github.com/hypoalex/mininode.git
+    git clone https://github.com/mininode/mininode.git
     cd mininode
     git submodule init
     git submodule update
