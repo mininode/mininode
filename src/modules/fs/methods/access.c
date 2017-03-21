@@ -49,13 +49,13 @@ mn_bi_fs_access(duk_context *ctx) {
 		);
 		duk_push_string(ctx, "src/modules/fs/methods/access.c");
 		duk_put_prop_string(ctx, -2, "fileName");
-		duk_push_int(ctx, lineNumber);
 		/*
 		 * Blaming the branch will provide the info necessary
 		 * to actually fix the bug in user code, e.g., it is
 		 * kinda obvious that (nargs < 2 || nargs > 3) was 
 		 * the underlying issue for the exception.
 		 */
+		duk_push_int(ctx, lineNumber);
 		duk_put_prop_string(ctx, -2, "lineNumber");
 		/*
 		 * All Error objects should set fileName & lineNumber.
