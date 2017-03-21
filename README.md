@@ -1,13 +1,10 @@
 # MiniNode - Node.js for Embedded Systems
 [![MIT Licensed](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/mininode/mininode/blob/master/LICENSE.md)[![Build Status](https://travis-ci.org/mininode/mininode.svg)](https://travis-ci.org/mininode/mininode)[![Fuck it! Ship it!](https://img.shields.io/badge/FUCK%20IT!-SHIP%20IT!-brightgreen.svg)](https://hackernoon.com/fuck-it-ship-it-905afd092547#.tnzm8yqap)
 
-This is [libuv][1], [http-parser][2], [mbedtls][3], [libslz][4], and lowzip
-held together with [duktape][5]. The goal here is to produce an implementation of the [Node.js 6.9.2 API][6] with a full-fledged Javascript ES5.1 interpreter in a single binary with no runtime dependencies other than a standard C library.
-
-https://github.com/wolfSSL/wolfssl
-https://github.com/warmcat/libwebsockets
-
-https://github.com/svaarala/lowzip - for zip decompression
+This is [libuv][1], [http-parser][2], [mbedtls][3], [libslz][4], and [lowzip][5]
+held together with [duktape][6]. The goal here is to produce an implementation
+of the [Node.js 6.9.2 API][7] with a full-fledged Javascript interpreter 
+in a single binary with no runtime dependencies other than a standard C library.
 
 This aims to implement the Node.js standard library entirely in C.
 
@@ -36,9 +33,11 @@ mainline Node.js runtime will likely need to be ported.
 
 ## Build Instructions
 
-This uses GNU make and it is currently being developed on MacOS X, and 
-other systems are not yet supported but this should also work on Linux, 
-Illumos/Solaris, and FreeBSD (possibly with minimal porting effort).
+This uses GNU make and it is currently being developed on MacOS X and Linux,
+other systems are not yet supported but this should also work on Illumos/Solaris
+and *BSD (possibly with minimal porting effort).
+
+Either `gcc` or `clang` should work, just set the `CC` environment variable.
 
 From a MacOS X system:
 
@@ -73,7 +72,7 @@ in C using duktape.
 [2]: https://github.com/nodejs/http-parser.git
 [3]: https://github.com/ARMmbed/mbedtls/tree/mbedtls-2.3
 [4]: https://github.com/haproxy/libslz
-[5]: http://duktape.org
-[6]: https://nodejs.org/dist/v6.9.2/docs/api/
-[7]: https://github.com/creationix/dukluv/tree/master/src
-[8]: https://github.com/Samsung/iotjs/wiki/GPIO-API-candidate
+[5]: https://github.com/svaarala/lowzip
+[6]: http://duktape.org
+[7]: https://nodejs.org/dist/v6.9.2/docs/api/
+[8]: https://github.com/creationix/dukluv/tree/master/src
