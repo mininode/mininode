@@ -1,11 +1,12 @@
 #include "duktape.h"
 #include "mininode.h"
 #include "uv.h"
+#include <unistd.h>
 
 duk_ret_t
 mn_bi_os_tmpdir(duk_context *ctx) {
-	char  *buf = NULL;
-	size_t len = 0;
+	char buf[PATH_MAX];
+	size_t len = sizeof(buf);
 
 	uv_os_tmpdir(buf, &len);
 
