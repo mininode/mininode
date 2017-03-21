@@ -3,7 +3,8 @@
 
 /* TODO: Support other POSIX systems. */
 
-duk_ret_t mn_bi_os_type(duk_context *ctx) {
+duk_ret_t
+mn_bi_os_type(duk_context *ctx) {
 #if defined(__linux)
 	duk_push_string(ctx, "Linux");
 #elif defined(__APPLE__)

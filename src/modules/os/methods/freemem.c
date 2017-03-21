@@ -2,7 +2,8 @@
 #include "uv.h"
 #include "mininode.h"
 
-duk_ret_t mn_bi_os_freemem(duk_context *ctx) {
+duk_ret_t
+mn_bi_os_freemem(duk_context *ctx) {
 	double amount = uv_get_free_memory();
 	if (amount >= 0) {
 		duk_push_number(ctx, amount);

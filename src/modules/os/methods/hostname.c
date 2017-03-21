@@ -5,7 +5,8 @@
 #include <unistd.h>      /* gethostname, sysconf */
 #include <sys/param.h>   /* MAXHOSTNAMELEN on Linux and the BSDs. */
 
-duk_ret_t mn_bi_os_hostname(duk_context *ctx) {
+duk_ret_t
+mn_bi_os_hostname(duk_context *ctx) {
 	char buf[MAXHOSTNAMELEN + 1];
 	if (gethostname(buf, sizeof(buf))) {
 		duk_push_string(ctx, "gethostname() failed!");

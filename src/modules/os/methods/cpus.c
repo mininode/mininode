@@ -1,7 +1,8 @@
 #include "duktape.h"
 #include "mininode.h"
 
-duk_ret_t mn_bi_os_cpus(duk_context *ctx) {
+duk_ret_t
+mn_bi_os_cpus(duk_context *ctx) {
 	uv_cpu_info_t *cpu_infos;
 	uv_cpu_info_t *ci;
 	duk_idx_t obj_idx;
