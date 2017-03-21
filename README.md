@@ -51,12 +51,16 @@ For use on embedded systems, musl libc and Linux are recommended (in general).
 
 ## Developing with Vagrant
 
-The included `Vagrantfile` runs Alpine Linux 3.4 and is meant for Virtualbox 5 
-on MacOS hosts. It mounts the mininode sources at /src via NFS.
+The included `Vagrantfile` runs the Alpine Linux edge release and is meant for 
+Virtualbox 5 on MacOS hosts. It mounts the mininode sources at `/mininode` via 
+NFS. It will update to the latest edge release on the first boot.
+
+Note that this assumes you've done `git submodule init` and 
+`git submodule update` on the host system.
 
     vagrant up
     vagrant ssh
-    cd /src
+    cd /mininode
     make
 
 ## What's the point?
