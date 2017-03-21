@@ -1,4 +1,4 @@
-# MiniNode - Node.js for Embedded Systems
+# mininode - Node.js for Embedded Systems
 [![MIT Licensed](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/mininode/mininode/blob/master/LICENSE.md)[![Build Status](https://travis-ci.org/mininode/mininode.svg)](https://travis-ci.org/mininode/mininode)[![Fuck it! Ship it!](https://img.shields.io/badge/FUCK%20IT!-SHIP%20IT!-brightgreen.svg)](https://hackernoon.com/fuck-it-ship-it-905afd092547#.tnzm8yqap)
 
 This is [libuv][1], [http-parser][2], [mbedtls][3], [libslz][4], and [lowzip][5]
