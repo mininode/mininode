@@ -8,7 +8,11 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder ".", "/mininode", type: "nfs"
 
   config.vm.provision "shell", inline: <<-SHELL
+    sudo apk update
+    sudo apk upgrade
     sudo apk add alpine-sdk
+    sudo apk add make
+    sudo apk add gcc
     sudo apk add gperf
     sudo apk add vim
   SHELL
