@@ -44,7 +44,10 @@ From a MacOS X system:
     cd mininode
     git submodule init
     git submodule update
-    make -j4
+    make defconfig
+    make
+    make install
+    make uninstall
 
 For use on embedded systems, musl libc and Linux are recommended (in general).
 
@@ -60,7 +63,9 @@ Note that this assumes you've done `git submodule init` and
     vagrant up
     vagrant ssh
     cd /mininode
+    make defconfig
     make
+    make install
 
 ## What's the point?
 
@@ -79,3 +84,40 @@ in C using duktape.
 [6]: http://duktape.org
 [7]: https://nodejs.org/dist/v6.9.2/docs/api/
 [8]: https://github.com/creationix/dukluv/tree/master/src
+
+# Signed Tags
+
+After mininode 1.0, tags will be signed using a key corresponding to this one:
+
+    -----BEGIN PGP PUBLIC KEY BLOCK-----
+    
+    mQENBFjpWSYBCADU8KvSfJiVr03h7T07TFJFN2ZK7AAnqVFLqjePjVIy4SiHXI2k
+    HVKPE6tQky6bsW6R+Cu1PxsssDEY/Ed/EvkXovEYxL0KM4ChKt5qDA/smGqtANwN
+    BHrzIdgddzFO1HjvgUB/RYej38/41vaDM3n8Gn4ZGuERheGe6lGfMuPtxgTt79VW
+    kaZgUzuBaQDqBSe6/oYvsJ0z+pBqj5+NC2jplwsfnn19MJqd4rBYBMYIeitxCGmk
+    Rrs8pAH6hI33+sQEd9DhmUWCh2xkG0sAJaE9MbBIkkNFXOJJ/kb2F/jsvo4K/FTi
+    Bjw9nnki6i6QHDn8N0ef0am1myS7QW2MUmw1ABEBAAG0KkFsZXggQ2F1ZGlsbCA8
+    YWxleC5jYXVkaWxsQHByb3Rvbm1haWwuY29tPokBVAQTAQgAPhYhBCk2zBOl3lP0
+    8S3Aw+OWGErEWH9dBQJY6VkmAhsDBQkDwmcABQsJCAcCBhUICQoLAgQWAgMBAh4B
+    AheAAAoJEOOWGErEWH9dFRYH/0pOtG6A44vEL1SuJxN+4c8RYB6z3YQN10W/V0Ia
+    YEDAJP8q5Hm7v/++UzeAHV+Yly8izgy0DGmQAqpHWA2OQo+IKu2Z9/8k1+CzLW1g
+    yj+kHyrOcm6gqWqLrgHJfu7ONCsIyhcF8hNwlvTnsYQxC4/gfOufoedFhz/y0lZn
+    z1Zw6tq4AfHmMa+jThGP3XaK9NxYVTGEeOxkJMv4Up8Nnq/3nGHdZnS5DL4vLGAj
+    gAjtEn7Kfjoe6qkKMw2KSyw9EkV/Avncq0pu9cB6rOgx4fUDGpjQVnc5ZVbOeg1t
+    tSiFV1qTfMjucpBt+Wc6q3qV9MLaN6pmO5/MjNxBl8RHKKy5AQ0EWOlZJgEIALSb
+    4GY2WeTKemFSsGq9fLAuoFL+0hhHXMQ5abckw+vqSUg1cfmm0J374VGQVGXRjtaX
+    Fkbaeb9930too7ZcO7HtxlwnpBmYlV4WZk3ns9CtlFpseG5vI9X9Dtz0HKc6wzjs
+    AGyAxdcewGIhViWJAvu/kn8kLBWbv6iW5GOgFjQlKgsBcbQd2DYRhz0+hYQXwoDR
+    W73F8IPRqMxAVc9aMJqJ5S99hT+RFNySrIFgw3kbxkIVTNBeywBFy3s0/6ep/N3h
+    pCZ0iyGImtj4TWqt9XXYKKX5dah8HT9D8/ZfOB/H5JGCwAFEOvhB5iXwC7yt0ubz
+    pkBv9rVac60d2CVisDsAEQEAAYkBPAQYAQgAJhYhBCk2zBOl3lP08S3Aw+OWGErE
+    WH9dBQJY6VkmAhsMBQkDwmcAAAoJEOOWGErEWH9dRlAIAL0SgCgkg0oybHHYmMkx
+    BcrSBKJ3i4gmgk40Dn16eNuN7SinigQpW22CVOwSIqT42c4a4XafsEyhY/nRiKrl
+    p1c5wMEaDSiCJj7UqW01hDuhzs/pAPZsDunfbjfqMiTkBO9AWq+QnBuqSSBRy8Qr
+    mxB5qZAqTZZbRijFYgKsBo//kSV0m/yqUzV/OGUsVY0EktQJyZP2+HAN7R+OjAcb
+    1SjYi8UlvkUA+btMS7fMFSDmtxo9c7c60YACNeO4ZBqIDNBBA/kUCSpOhLBkriZx
+    q+shygUZGmyocV9+n8Rt7mTdE5KjK8asJEHqJy1BRukmI5BxFBIkgbcaUkZAU+1Q
+    d+E=
+    =jgJd
+    -----END PGP PUBLIC KEY BLOCK-----
+
