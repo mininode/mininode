@@ -1,7 +1,7 @@
 /**
  * @file mininode.c
  * @author Alex Caudill (credit to creationix and midipix)
- * @date 18 Jul 2016
+ * @date 7 Apr 2017
  * @brief mininode(1) command line entry point
  *
  * mininode.c parses command line arguments and starts the event loop,
@@ -19,7 +19,6 @@
 #include "uv.h"
 #include "duktape.h"
 #include "mininode.h"
-#include "builtin_hash.h"
 
 /* Accepted flags for getopt() */
 #define OPTSTRING "chipvz"
@@ -64,7 +63,8 @@ mn_get_stack_raw(duk_context *ctx) {
 }
 
 duk_ret_t
-mn_stash_argv(duk_context *ctx) {
+mn_stash_argv(duk_context *ctx, void *udata) {
+	(void) udata; /* unused */
 	char **argv = (char **) duk_require_pointer(ctx, 0);
 	int argc = (int) duk_require_int(ctx, 1);
 	int i;
@@ -154,7 +154,7 @@ mn_stdin_to_tmpfile() {
 			return 0;
 		}
 
-		nread = read(0,buf,sizeof(buf)-1);
+		nread = read(0, buf, sizeof(buf)-1);
 	}
 
 	return ftmp;	
@@ -174,53 +174,31 @@ mn_stdin_to_tmpfile() {
  * NOTE: .node files are not supported.
  *
  * For built-in modules, we need to map from, e.g., 'v8' to
- * dukopen_v8. This is done with a gperf(1) perfect hash,
+ * mn_bi_v8. This is done with a gperf(1) perfect hash,
  * see src/include/builtin_hash.gperf for the details.
  */
 duk_ret_t
-cb_resolve_module(duk_context *ctx) {
+mn_cb_resolve_module(duk_context *ctx) {
 	/*
 	 *  Entry stack: [ requested_id parent_id ]
 	 */
 	const char *requested_id = duk_get_string(ctx, 0);
 	const char *parent_id = duk_get_string(ctx, 1);  /* calling module */
-	/* FIXME */
-	builtin *module = find_builtin(requested_id, strlen(requested_id));
-	if (module) {
-		const char *resolved_id = requested_id;
-		duk_push_string(ctx, resolved_id);
-		return 1; /*nrets*/
-	} else {
-		duk_push_sprintf(ctx, "Cannot find module '%s'", requested_id);
-		duk_throw(ctx);
-	}
-
-	/* Arrive at the canonical module ID somehow. */
-	//duk_push_string(ctx, resolved_id);
-	//return 1; /*nrets*/
+	char *resolved_id = NULL;
 
 }
 
 duk_ret_t
-cb_load_module(duk_context *ctx) {
+mn_cb_load_module(duk_context *ctx) {
 	/*
 	 *  Entry stack: [ resolved_id exports module ]
 	 */
 	const char *modname = duk_require_string(ctx, 0);
-	builtin *module = find_builtin(modname, strlen(modname));
 
-	if (module) {
-		module->loader(ctx);
-		return 0;
-	} else {
-		/* Arrive at the JS source code for the module somehow. */
-		//duk_push_string(ctx, module_source);
-		/* Just punt on file lookup logic for now. */
-		return 0;  /*nrets*/
-	}
-
-	/* We never get here. */
-	return 0;
+	/* Arrive at the JS source code for the module somehow. */
+	//duk_push_string(ctx, module_source);
+	/* Just punt on file lookup logic for now. */
+	return 0;  /*nrets*/
 }
 
 int
@@ -325,7 +303,7 @@ main(int argc, char **argv) {
 		filename = "/dev/stdin";
 		script = mn_stdin_to_tmpfile();
 	} else {
-		/* If invoked without any file arguments, invoke the REPL. */
+		/* If invoked without any file arguments or with -i, invoke the REPL. */
 		if (argc == 1 || interactive_flag) {
 			printf("repl is currently unimplemented.\n");
 			goto sadplace;
@@ -400,21 +378,21 @@ main(int argc, char **argv) {
 	 */
 	mn_ref_setup(ctx);
 	/*
-	 * Connect the Duk context with the event loop.
+	 * Connect the Duktape context with the event loop.
 	 */
 	mn_loop->data = ctx;
 	/*
 	 * Register our module loader with the Duktape context.
 	 */
-	duk_push_object(ctx);
-	duk_push_c_function(ctx, cb_resolve_module, DUK_VARARGS);
+	duk_push_global_stash(ctx);
+	duk_push_c_function(ctx, mn_cb_resolve_module, DUK_VARARGS);
 	duk_put_prop_string(ctx, -2, "resolve");
-	duk_push_c_function(ctx, cb_load_module, DUK_VARARGS);
+	duk_push_c_function(ctx, mn_cb_load_module, DUK_VARARGS);
 	duk_put_prop_string(ctx, -2, "load");
 	mn_module_loader_init(ctx);
 	/*
 	 * Register globals.
-	 * See https://nodejs.org/dist/v6.2.2/docs/api/globals.html
+	 * See https://nodejs.org/dist/v6.9.2/docs/api/globals.html
 	 *
 	 * TODO: Actually implement all the builtin modules!
 	 *

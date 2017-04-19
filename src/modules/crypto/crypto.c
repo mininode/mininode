@@ -3,7 +3,7 @@
 
 /*
  *  Duktape/C functions providing Node.js crypto module functionality.
- *  See https://nodejs.org/dist/v6.2.2/docs/api/crypto.html
+ *  See https://nodejs.org/dist/v6.9.2/docs/api/crypto.html
  */
 
 /* Implementation TBD */

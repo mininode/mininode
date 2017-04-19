@@ -2,5 +2,8 @@ mininode
 *.o
 *.a
 config.mak
+.config
+.config.old
+generated/*
 src/include/builtin_hash.h
 .vagrant

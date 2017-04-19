@@ -1,5 +1,5 @@
-# Copyright (c) 2013, Ben Noordhuis <info@bnoordhuis.nl>
-# Copyright (c) 2016, Alex Caudill
+# Copyright (c) 2013 Ben Noordhuis <info@bnoordhuis.nl>
+# Copyright (c) 2017 Alex Caudill
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -13,8 +13,47 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+VERSION = 0
+PATCHLEVEL = 0
+SUBLEVEL = 1
+EXTRAVERSION = -rc0
+NAME = Cryptocratic Kitten
+
 CC ?= gcc
 CFLAGS ?= -Os -std=gnu99
+KCONFIG_CONFIG ?= .config
+export KCONFIG_CONFIG
+
+# Do not:
+# o  use make's built-in rules and variables
+#    (this increases performance and avoids hard-to-debug behaviour);
+# o  print "Entering directory ...";
+MAKEFLAGS += -rR --no-print-directory
+
+# Avoid funny character set dependencies
+unexport LC_ALL
+LC_COLLATE=C
+LC_NUMERIC=C
+export LC_COLLATE LC_NUMERIC
+
+# Avoid interference with shell env settings
+unexport GREP_OPTIONS
+
+
+ifeq ("$(origin V)", "command line")
+  KBUILD_VERBOSE = $(V)
+endif
+ifndef KBUILD_VERBOSE
+  KBUILD_VERBOSE = 0
+endif
+
+# Read KERNELRELEASE from include/config/kernel.release (if it exists)
+KERNELRELEASE = $(shell cat include/config/mininode.release 2> /dev/null)
+KERNELVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
+
+all: mininode
+
+include kconfig/GNUmakefile
 
 #Recursive wildcard!
 rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
@@ -129,8 +168,7 @@ MN_CFLAGS = $(CFLAGS) \
 		  -DDUK_OPT_PARANOID_ERRORS \
 		  -DDUK_OPT_AUGMENT_ERRORS \
 		  -D_POSIX_C_SOURCE=200809L \
-		  -D_XOPEN_SOURCE=600 \
-		  -DMINIZ_NO_TIME
+		  -D_XOPEN_SOURCE=600
 
 MN_INCLUDES = src/include/mininode.h \
 		    src/include/builtin_hash.h
@@ -194,9 +232,8 @@ else
     endif
 endif
 
-all: mininode
 
-clean:
+clean::
 	-$(RM) src/include/builtin_hash.h
 	-$(RM) $(LIBUV_OBJS) libuv.a
 	-$(RM) $(HTTP_PARSER_OBJS) libhttparser.a

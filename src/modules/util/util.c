@@ -4,7 +4,7 @@
 
 /*
  *  Duktape/C functions providing Node.js 'util' module functionality.
- *  See https://nodejs.org/dist/v6.2.2/docs/api/util.html
+ *  See https://nodejs.org/dist/v6.9.2/docs/api/util.html
  */
 
 /*

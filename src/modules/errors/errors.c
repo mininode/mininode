@@ -3,7 +3,7 @@
 
 /*
  *  Duktape/C functions providing Node.js 'errors' module functionality.
- *  See https://nodejs.org/dist/v6.2.2/docs/api/errors.html
+ *  See https://nodejs.org/dist/v6.9.2/docs/api/errors.html
  */
 
 /* Implementation TBD */

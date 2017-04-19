@@ -4,7 +4,7 @@
 
 /*
  *  Duktape/C functions providing Node.js 'v8' module functionality.
- *  See https://nodejs.org/dist/v6.2.2/docs/api/v8.html
+ *  See https://nodejs.org/dist/v6.9.2/docs/api/v8.html
  */
 
 /* Implementation TBD */

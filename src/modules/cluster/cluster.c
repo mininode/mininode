@@ -3,7 +3,7 @@
 
 /*
  *  Duktape/C functions providing Node.js 'cluster' module functionality.
- *  See https://nodejs.org/dist/v6.2.2/docs/api/cluster.html
+ *  See https://nodejs.org/dist/v6.9.2/docs/api/cluster.html
  */
 
 /* Implementation TBD */

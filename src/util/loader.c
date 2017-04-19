@@ -4,8 +4,10 @@
  *  https://nodejs.org/api/modules.html
  */
 
+
 #include "duktape.h"
 #include "mininode.h"
+#include "builtin_hash.h"
 
 static duk_int_t mn__eval_module_source(duk_context *ctx, void *udata);
 
@@ -33,7 +35,6 @@ mn__get_cached_module(duk_context *ctx, const char *id) {
 static void
 mn__put_cached_module(duk_context *ctx) {
 	/* [ ... module ] */
-
 	duk_push_global_stash(ctx);
 	(void) duk_get_prop_string(ctx, -1, "\xff" "requireCache");
 	duk_dup(ctx, -3);
@@ -57,13 +58,9 @@ mn__del_cached_module(duk_context *ctx, const char *id) {
 
 static duk_ret_t
 mn__handle_require(duk_context *ctx) {
-	/*
-	 *  Value stack handling here is a bit sloppy but should be correct.
-	 *  Call handling will clean up any extra garbage for us.
-	 */
-
 	const char *id;
 	const char *parent_id;
+	builtin *module = NULL;
 	duk_idx_t module_idx;
 	duk_idx_t stash_idx;
 	duk_int_t ret;
@@ -79,6 +76,18 @@ mn__handle_require(duk_context *ctx) {
 	/* [ id stash require parent_id ] */
 
 	id = duk_require_string(ctx, 0);
+
+	/*
+	 * The fast path here is for built-in modules, we just do a 
+	 * hash lookup and call the entry point if we find one.
+	 */
+	module = find_builtin(id, strlen(id));
+
+	if (module) {
+		duk_pop_n(ctx, 3); /* Clean up the stack! */
+		module->loader(ctx);
+		return 1; /* Return the module object. */
+	}
 
 	(void) duk_get_prop_string(ctx, stash_idx, "\xff" "modResolve");
 	duk_dup(ctx, 0);   /* module ID */

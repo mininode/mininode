@@ -5,7 +5,7 @@
 
 /*
  *  Duktape/C functions providing Node.js 'fs' module functionality.
- *  See https://nodejs.org/dist/v6.2.2/docs/api/fs.html
+ *  See https://nodejs.org/dist/v6.9.2/docs/api/fs.html
  */
 
 /*
@@ -269,15 +269,8 @@ const duk_number_list_entry mn_bi_fs_consts[] = {
 
 duk_ret_t
 mn_bi_fs(duk_context *ctx) {
-	duk_idx_t fs_idx;
-	fs_idx = duk_push_object(ctx);
-	/*
-	 * This is kludgy, but it's kinda just a placeholder
-	 * until I document the stack values before/after
-	 * each Duktape/C function in mininode.
-	 */
-	duk_put_function_list(ctx, -fs_idx, mn_bi_fs_funcs);
-	duk_put_number_list(ctx, -fs_idx, mn_bi_fs_consts);
-	duk_put_prop_string(ctx, -fs_idx, "fs");
+	duk_idx_t fs_idx = duk_push_object(ctx);
+	duk_put_function_list(ctx, fs_idx, mn_bi_fs_funcs);
+	duk_put_number_list(ctx, fs_idx, mn_bi_fs_consts);
 	return 1;
 }

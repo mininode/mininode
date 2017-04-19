@@ -20,39 +20,39 @@ extern uv_loop_t *mn_loop;
  * See src/include/builtin_hash.gperf.
  */
 typedef duk_ret_t (*builtin_loader)(duk_context *ctx);
-/*
- * There are two slots for holding callbacks.  One is for the CLOSED event.
- * The other slot is for all others since they never conflict in practice.
- * TODO: ...or do they?
- */
+
 #define mn_callback_id int
+
+typedef uint8_t mn_cb_id_t;
+
 #define MN_CLOSED 0
 #define MN_TIMEOUT 1
-#define MN_PREPARE 1
-#define MN_IDLE 1
-#define MN_CHECK 1
-#define MN_ASYNC 1
-#define MN_POLL 1
-#define MN_SIGNAL 1
-#define MN_EXIT 1
-#define MN_CONNECTION 1
-#define MN_READ 1
-#define MN_RECV 1
-#define MN_FS_EVENT 1
-#define MN_FS_POLL 1
-/*
- * Ref for userdata and event callbacks
- */
+#define MN_PREPARE 2
+#define MN_IDLE 3
+#define MN_CHECK 4
+#define MN_ASYNC 5
+#define MN_POLL 6
+#define MN_SIGNAL 7
+#define MN_EXIT 8
+#define MN_CONNECTION 9
+#define MN_READ 10
+#define MN_RECV 11
+#define MN_FS_EVENT 12
+#define MN_FS_POLL 13
+#define MN_RESERVED_1 14
+#define MN_RESERVED_2 15
+
 typedef struct {
-	int ref;
-	int context;
-	int callbacks[2];
+	uint8_t type; 
+	int32_t ref;
+	int32_t context;
+	mn_cb_id_t callbacks[16]; /* 128 bits */
 } mn_handle_t;
 
 typedef struct {
 	int req_ref; /* ref for uv_req_t's userdata */
 	int context;
-	int callback_ref; /* ref for callback */
+	mn_cb_id_t callback_ref; /* ref for callback */
 	int data_ref;
 	void *data; /* extra data */
 } mn_req_t;

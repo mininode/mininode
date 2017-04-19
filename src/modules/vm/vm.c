@@ -4,7 +4,7 @@
 
 /*
  *  Duktape/C functions providing Node.js 'vm' module functionality.
- *  See https://nodejs.org/dist/v6.2.2/docs/api/vm.html
+ *  See https://nodejs.org/dist/v6.9.2/docs/api/vm.html
  */
 
 /* Implementation TBD */
