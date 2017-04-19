@@ -1,0 +1,381 @@
+mainmenu "mininode configuration"
+
+comment ""
+
+
+menu "Third Party Components"
+menu "Duktape Settings"
+
+config DUK_USE_32BIT_PTRS
+	bool "Use 32-bit pointers"
+	default n
+
+config DUK_USE_64BIT_OPS
+	bool "Use 64-bit integer operations."
+	default y
+
+config DUK_USE_ALIGN_BY
+	bool "Use N-byte alignment for 64-bit integers and IEEE doubles"
+	default n
+
+config DUK_USE_ARCH_STRING
+	bool "Human-readable architecture string"
+	default y
+
+config DUK_USE_ATAN2_WORKAROUNDS
+	bool "Enable workarounds to common atan2() semantics issues"
+	default n
+
+config DUK_USE_AVOID_PLATFORM_FUNCPTRS
+	bool "Don't assume that platform functions are actual functions"
+	default y
+
+config DUK_USE_BRANCH_HINTS
+	bool "Use branch hints if the compiler supports them"
+	default y
+
+config DUK_USE_BYTEORDER
+	bool "Byte order for platform"
+	default y
+
+config DUK_USE_AUGMENT_ERRORS
+	bool "Augment errors"
+	default y
+	
+config DUK_USE_TRACEBACKS
+	bool "Enable tracebacks"
+	default y
+
+config DUK_USE_VERBOSE_ERRORS
+	bool "Enable verbose errors"
+	default y
+
+config DUK_USE_VERBOSE_EXECUTOR_ERRORS
+	bool "Enable verbose executor errors"
+	default y
+
+config DUK_USE_PC2LINE
+	bool "Enable pc2line"
+	default y
+
+config DUK_USE_LEXER_SLIDING_WINDOW
+	bool "Use slower but more compact lexer algorithm"
+	default n
+	
+config DUK_USE_ASSERTIONS
+	bool "Enable assertions"
+	default n
+	help
+	Enable debugging assertions in the Duktape interpreter.
+	This will cause substantial slowdowns.
+
+config DUK_USE_DEBUGGER_SUPPORT
+	bool "Enable debugger"
+	default y
+
+config DUK_USE_INTERRUPT_COUNTER
+	bool "Enable interrupt counter"
+	default y
+
+config DUK_USE_BYTECODE_DUMP_SUPPORT
+	bool "Enable bytecode dump support"
+	default y
+
+config DUK_USE_JX
+	bool "Enable Duktape-specific JX JSON format"
+	default n
+
+config DUK_USE_JC
+	bool "Enable Duktape-specific JC JSON format"
+	default n
+
+endmenu
+
+config MN_HTTP_PARSER
+	bool "Build http_parser"
+	default y
+	help
+	Required for building the 'http' and 'https' modules.
+
+config MN_MBEDTLS
+	bool "Build mbedtls"
+	default y
+	help
+	Required for building the 'https' and 'crypto' modules.
+
+config MN_LIBSLZ
+	bool "Build libslz"
+	default y
+
+config MN_LOWZIP
+	bool "Build lowzip"
+	default y
+
+config MN_C_ARES
+	bool "Build c-ares"
+	default y
+	help
+	Required for building the 'dns' module.
+
+endmenu
+
+menu "Global Settings"
+endmenu
+
+menu "Module Settings"
+
+config MN_MODULE_ASSERT
+	bool "'assert' module"
+	default y
+	help
+	Enable the 'assert' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/assert.html
+
+config MN_MODULE_BUFFER
+	bool "'buffer' module"
+	default y
+	help
+	Enable the 'buffer' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/buffer.html
+	
+config MN_MODULE_CHILD_PROCESS
+	bool "'child_process' module"
+	default y
+	help
+	Enable the 'child_process' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/child_process.html
+
+config MN_MODULE_CLUSTER
+	bool "'cluster' module"
+	default y
+	help
+	Enable the 'cluster' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/cluster.html
+
+config MN_MODULE_CRYPTO
+	bool "'crypto' module"
+	default y
+	help
+	Enable the 'crypto' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/crypto.html
+
+config MN_MODULE_DEBUGGER
+	bool "'debugger' module"
+	default y
+	help
+	Enable the 'debugger' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/debugger.html
+
+config MN_MODULE_DGRAM
+	bool "'dgram' module"
+	default y
+	help
+	Enable the 'dgram' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/dgram.html
+
+config MN_MODULE_DNS
+	bool "'dns' module"
+	default y
+	help
+	Enable the 'dns' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/dns.html
+
+config MN_MODULE_DOMAIN
+	bool "'domain' module"
+	default y
+	help
+	Enable the 'domain' module.
+
+	https://nodejs.org/dist/v6.9.2/docs/api/domain.html
+
+config MN_MODULE_ERRORS
+	bool "'errors' module"
+	default y
+	help
+	Enable the 'errors' module.
+
+	https://nodejs.org/dist/v6.9.2/docs/api/errors.html
+
+config MN_MODULE_EVENTS
+	bool "'events' module"
+	default y
+	help
+	Enable the 'events' module.
+
+	https://nodejs.org/dist/v6.9.2/docs/api/events.html
+
+config MN_MODULE_FS
+	bool "'fs' module"
+	default y
+	help
+	Enable the 'fs' module.
+
+	https://nodejs.org/dist/v6.9.2/docs/api/fs.html
+
+config MN_MODULE_HTTP
+	bool "'http' module"
+	default y
+	help
+	Enable the 'http' module.
+
+	https://nodejs.org/dist/v6.9.2/docs/api/http.html
+
+config MN_MODULE_HTTPS
+	bool "'https' module"
+	default y
+	help
+	Enable the 'https' module.
+
+	https://nodejs.org/dist/v6.9.2/docs/api/https.html
+
+config MN_MODULE_NET
+	bool "'net' module"
+	default y
+	help
+	Enable the 'net' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/net.html
+
+config MN_MODULE_OS
+	bool "'os' module"
+	default y
+	help
+	See https://nodejs.org/dist/v6.9.2/docs/api/os.html
+
+config MN_MODULE_PATH
+	bool "'path' module"
+	default y
+	help
+	Enable the 'path' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/path.html
+
+config MN_MODULE_PROCESS
+	bool "'process' module"
+	default y
+	help
+	Enable the 'process' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/process.html
+
+config MN_MODULE_PUNYCODE
+	bool "'punycode' module"
+	default y
+	help
+	Enable the 'punycode' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/punycode.html
+
+config MN_MODULE_QUERYSTRING
+	bool "'querystring' module"
+	default y
+	help
+	Enable the 'querystring' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/querystring.html
+
+config MN_MODULE_READLINE
+	bool "'readline' module"
+	default y
+	help
+	Enable the 'readline' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/readline.html
+
+config MN_MODULE_REPL
+	bool "'repl' module"
+	default y
+	help
+	Enable the 'repl' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/repl.html
+
+config MN_MODULE_STREAM
+	bool "'stream' module"
+	default y
+	help
+	Enable the 'stream' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/stream.html
+
+config MN_MODULE_STRING_DECODER
+	bool "'string_decoder' module"
+	default y
+	help
+	Enable the 'string_decoder' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/string_decoder.html
+
+config MN_MODULE_TIMERS
+	bool "'timers' module"
+	default y
+	help
+	Enable the 'timers' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/timers.html
+
+config MN_MODULE_TLS
+	bool "'tls' module"
+	default y
+	help
+	Enable the 'tls' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/tls.html
+
+config MN_MODULE_TTY
+	bool "'tty' module"
+	default y
+	help
+	Enable the 'tty' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/tty.html
+
+config MN_MODULE_URL
+	bool "'url' module"
+	default y
+	help
+	Enable the 'url' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/url.html
+
+config MN_MODULE_UTIL
+	bool "'util' module"
+	default y
+	help
+	Enable the 'util' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/util.html
+
+config MN_MODULE_V8
+	bool "'v8' module"
+	default y
+	help
+	Enable the 'v8' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/v8.html
+
+config MN_MODULE_VM
+	bool "'vm' module"
+	default y
+	help
+	Enable the 'vm' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/vm.html
+
+config MN_MODULE_ZLIB
+	bool "'zlib' module"
+	default y
+	help
+	Enable the 'zlib' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/zlib.html
+
+endmenu

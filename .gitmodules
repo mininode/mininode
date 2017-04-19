@@ -13,3 +13,6 @@
 [submodule "src/contrib/lowzip"]
 	path = src/contrib/lowzip
 	url = https://github.com/svaarala/lowzip.git
+[submodule "src/contrib/cares"]
+	path = src/contrib/cares
+	url = https://github.com/c-ares/c-ares.git

@@ -140,14 +140,14 @@ mn_loadfile(duk_context *ctx) {
 	uv_buf_t buf;
 
 	if (uv_fs_open(mn_loop, &req, path, O_RDONLY, 0644, NULL) < 0) {
-		goto fail;
+		goto sadplace;
 	}
 
 	uv_fs_req_cleanup(&req);
 	fd = req.result;
 
 	if (uv_fs_fstat(mn_loop, &req, fd, NULL) < 0) {
-		goto fail;
+		goto sadplace;
 	}
 
 	uv_fs_req_cleanup(&req);
@@ -157,7 +157,7 @@ mn_loadfile(duk_context *ctx) {
 
 	if (uv_fs_read(mn_loop, &req, fd, &buf, 1, 0, NULL) < 0) {
 		duk_free(ctx, chunk);
-		goto fail;
+		goto sadplace;
 	}
 
 	uv_fs_req_cleanup(&req);
@@ -168,7 +168,7 @@ mn_loadfile(duk_context *ctx) {
 
 	return 1;
 
-	fail:
+	sadplace:
 		uv_fs_req_cleanup(&req);
 		if (fd) {
 			uv_fs_close(mn_loop, &req, fd, NULL);
