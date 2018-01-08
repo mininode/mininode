@@ -20,6 +20,8 @@ EXTRAVERSION = -rc0
 NAME = Cryptocratic Kitten
 
 CC ?= gcc
+AR ?= ar
+RM ?= rm
 CFLAGS ?= -Os -std=gnu99
 KCONFIG_CONFIG ?= .config
 export KCONFIG_CONFIG

@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "hypoalex/alpine"
+  config.vm.box = "alpine/alpine64"
   config.vm.provider "virtualbox"
   config.vm.network :private_network, ip: "172.168.65.2"
   config.vm.synced_folder ".", "/mininode", type: "nfs"
