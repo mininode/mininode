@@ -82,6 +82,8 @@ duk_ret_t mn_loadfile(duk_context *ctx);
 duk_ret_t duk_module_eval_main(duk_context *ctx, const char *filename);
 void duk_module_loader_init(duk_context *ctx);
 
+void mn_repl_loop(duk_context *ctx);
+
 /*** BUILT-IN MODULES ***/
 
 duk_ret_t mn_bi_assert(duk_context *ctx);

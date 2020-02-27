@@ -13,6 +13,31 @@
  *  Module initialization
  */
 
+char *mn_repl_read_line(void)
+{
+  char *line = NULL;
+  ssize_t bufsize = 0; // have getline allocate a buffer for us
+  getline(&line, &bufsize, stdin);
+  return line;
+}
+
+
+void mn_repl_loop(duk_context *ctx) {
+  char *line;
+  int status;
+
+  do {
+    printf("> ");
+    line = mn_repl_read_line();
+    duk_eval_string(ctx, line);
+    //duk_call(ctx, 0);
+    //status = duk_eval(line);
+
+    free(line);
+  } while (true); // while(status)
+}
+
+
 const duk_function_list_entry mn_bi_repl_funcs[] = {
 	{ NULL, NULL, 0 }
 };

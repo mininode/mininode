@@ -297,70 +297,7 @@ main(int argc, char **argv) {
 		goto sadplace;
 	}
 
-	/* Detect piped input and use it as our script. */
-	/* If we were invoked with -i, try to start the REPL. */
-	if (!isatty(fileno(stdin)) && !interactive_flag) {
-		filename = "/dev/stdin";
-		script = mn_stdin_to_tmpfile();
-	} else {
-		/* If invoked without any file arguments or with -i, invoke the REPL. */
-		if (argc == 1 || interactive_flag) {
-			printf("repl is currently unimplemented.\n");
-			goto sadplace;
-		}
-
-		/* If we can't access the file, exit. */
-		if (access(filename, R_OK) == -1) {
-			fprintf(stderr, "Error: cannot read %s\n", filename);
-			goto sadplace;
-		} else {
-			script = fopen(filename, "r");
-		}
-	}
-	/*
-	 * This loads the initial entry point either from the CLI or
-	 * from a tmpfile created via stdin input. This entry script
-	 * will have the *true* global __filename and __dirname.
-	 */
-	if (script != NULL) {
-		if (fseek(script, 0L, SEEK_END) == 0) {
-			srclen = ftell(script);
-
-			if (srclen == -1) {
-				fprintf(stderr, "An unknown error occurred!\n");
-				goto sadplace;
-			}
-
-			source = malloc(sizeof(char) * (srclen + 1));
-
-			if (fseek(script, 0L, SEEK_SET) != 0) {
-				fprintf(stderr, "An unknown error occurred!\n");
-				goto sadplace;
-			}
-			/*
-			 * TODO: Check for the shebang (#!/path/to/mininode)
-			 * line here and remove it from the source buffer,
-			 * so that files formatted as scripts may be ran
-			 * when passed as file arguments or via stdin.
-			 *
-			 * If the first character is '\n', continue reading.
-			 * If the next two characters are #!, continue until
-			 * we encounter another \n.
-			 */
-			srcsz = fread(source, sizeof(char), srclen, script);
-
-			if (ferror(script) != 0) {
-				fprintf(stderr, "Error reading file\n");
-			} else {
-				source[srcsz++] = '\0'; /* Just to be safe. */
-			}
-		}
-		fclose(script);	
-	} else {
-		fprintf(stderr, "Could not open file!\n");
-		goto sadplace;
-	}
-        /*
+  /*
 	 * Stash argv and argc for later use by the 'process' module.
 	 */
 	duk_push_pointer(ctx, (void *) argv);
@@ -413,6 +350,70 @@ main(int argc, char **argv) {
 	//mn_bi_process(ctx);
 	mn_bi_console(ctx);
 	//duk_pop(ctx);
+
+/* Detect piped input and use it as our script. */
+	/* If we were invoked with -i, try to start the REPL. */
+	if (!isatty(fileno(stdin)) && !interactive_flag) {
+		filename = "/dev/stdin";
+		script = mn_stdin_to_tmpfile();
+	} else if(filename == NULL){
+		/* If invoked without any file arguments or with -i, invoke the REPL. */
+		if (argc == 1 || interactive_flag) {
+      mn_repl_loop(ctx);
+		}
+  } else {
+    /* If we can't access the file, exit. */
+		if (argc != 1 && access(filename, R_OK) == -1) {
+			fprintf(stderr, "Error: cannot read %s\n", filename);
+			goto sadplace;
+    } else {
+      script = fopen(filename, "r");
+    }
+	}
+	/*
+	 * This loads the initial entry point either from the CLI or
+	 * from a tmpfile created via stdin input. This entry script
+	 * will have the *true* global __filename and __dirname.
+	 */
+	if (script != NULL) {
+		if (fseek(script, 0L, SEEK_END) == 0) {
+			srclen = ftell(script);
+
+			if (srclen == -1) {
+				fprintf(stderr, "An unknown error occurred!\n");
+				goto sadplace;
+			}
+
+			source = malloc(sizeof(char) * (srclen + 1));
+
+			if (fseek(script, 0L, SEEK_SET) != 0) {
+				fprintf(stderr, "An unknown error occurred!\n");
+				goto sadplace;
+			}
+			/*
+			 * TODO: Check for the shebang (#!/path/to/mininode)
+			 * line here and remove it from the source buffer,
+			 * so that files formatted as scripts may be ran
+			 * when passed as file arguments or via stdin.
+			 *
+			 * If the first character is '\n', continue reading.
+			 * If the next two characters are #!, continue until
+			 * we encounter another \n.
+			 */
+			srcsz = fread(source, sizeof(char), srclen, script);
+
+			if (ferror(script) != 0) {
+				fprintf(stderr, "Error reading file\n");
+			} else {
+				source[srcsz++] = '\0'; /* Just to be safe. */
+			}
+		}
+		fclose(script);	
+	} else {
+		fprintf(stderr, "Could not open file!\n");
+		goto sadplace;
+	}
+
 
 	if (!check_flag && !print_flag) {
 		if (source != NULL) {
