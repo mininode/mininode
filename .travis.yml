@@ -2,10 +2,8 @@ language: c
 matrix:
   include:
     - os: linux
-      dist: precise
+      dist: bionic
       sudo: required
-    - os: osx
-      osx_image: xcode8.2
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install gperf; fi
