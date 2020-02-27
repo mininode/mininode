@@ -8,20 +8,20 @@
 
 duk_ret_t
 mn_bi_console_constructor(duk_context *ctx) {
-	
+
 	/* Must be called as a constructor. */
 	if (!duk_is_constructor_call(ctx)) {
 		return DUK_RET_TYPE_ERROR;
 	}
-	
+
 	int nargs = duk_get_top(ctx);
 	duk_set_top(ctx, 1);
 	duk_push_this(ctx);
-	
+
 	if (nargs == 0) {
-		
+
 	}
-	
+
 	return 0;
 }
 
@@ -48,7 +48,7 @@ mn_bi_console(duk_context *ctx) {
 	/*
 	 * Proxy wrapping: ensures any undefined console method calls are
 	 * ignored silently.  This is required specifically by the
-	 * DeveloperToolsWG proposal (and is implemented also by Firefox:
+	 * DeveloperToolsWG proposal (and is implemented by Firefox):
 	 * https://bugzilla.mozilla.org/show_bug.cgi?id=629607).
 	 *
 	 */

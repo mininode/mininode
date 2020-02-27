@@ -34,7 +34,7 @@ mn_bi_os(duk_context *ctx) {
 	duk_push_object(ctx);
 	duk_put_function_list(ctx, 1, mn_bi_os_funcs);
 	/* 
-	 * This sets the 'EOL' property on the 'os' objet. Since we only 
+	 * This sets the 'EOL' property on the 'os' object. Since we only 
 	 * support POSIX systems, this is always an '\n'
 	 */
 	duk_push_string(ctx, "EOL");
