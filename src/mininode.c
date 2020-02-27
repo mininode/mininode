@@ -39,7 +39,7 @@ extern char *filename;
 
 void
 mn_short_help() {
-	printf("Usage: mininode [options] script.js\n");
+	printf("Usage: mininode [options] [optional_filename.js]\n");
 }
 
 int
@@ -114,7 +114,7 @@ mn_dump_error(duk_context *ctx, duk_idx_t idx) {
  * Donate our body to science in the event of death.
  */
 void
-mn_fatal_handler(duk_context *ctx, duk_errcode_t code, const char *msg) {
+mn_fatal_handler(void *udata, const char *msg) {
 	fprintf(stderr, "\nUncaught Exception:\n");
 	fprintf(stderr, "*** FATAL: %s\n", msg ? msg : "no message");
 	fprintf(stderr, "Causing intentional segfault...\n");
