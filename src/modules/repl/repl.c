@@ -7,8 +7,6 @@
  *  See https://nodejs.org/dist/v6.9.2/docs/api/repl.html
  */
 
-/* Implementation TBD */
-
 /*
  *  Module initialization
  */
@@ -16,7 +14,7 @@
 char *mn_repl_read_line(void)
 {
   char *line = NULL;
-  ssize_t bufsize = 0; // have getline allocate a buffer for us
+  ssize_t bufsize = 0;
   getline(&line, &bufsize, stdin);
   return line;
 }
@@ -24,17 +22,14 @@ char *mn_repl_read_line(void)
 
 void mn_repl_loop(duk_context *ctx) {
   char *line;
-  int status;
 
   do {
-    printf("> ");
+    fprintf(stdout, "> ");
+    fflush(stdout);
     line = mn_repl_read_line();
     duk_eval_string(ctx, line);
-    //duk_call(ctx, 0);
-    //status = duk_eval(line);
-
     free(line);
-  } while (true); // while(status)
+  } while (true); 
 }
 
 
