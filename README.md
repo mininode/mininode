@@ -53,7 +53,7 @@ any thoughts (in, say, the form of issues) would be appreciated!
 | util  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/util.html) | INCOMPLETE |   |
 | v8  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/v8.html) | INCOMPLETE |   |
 | vm  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/vm.html) | INCOMPLETE |   |
-| zlib  |   | [nodejs v6.9.[nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/assert.html) 2](http://nodejs.org/dist/v6.9.2/docs/api/zlib.html) | INCOMPLETE |   |
+| zlib  |   | [nodejs v6.9.[nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/zlib.html) | INCOMPLETE |   |
 
 ## Notes on Compatibility
 
