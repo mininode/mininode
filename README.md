@@ -21,39 +21,39 @@ any thoughts (in, say, the form of issues) would be appreciated!
 
 | module name | mininode docs | upstream docs  | status  | notes |
 |---|---|---|---|---|
-| assert  |   |   |   |   |
-| buffer  |   |   |   |   |
-| child_process  |   |   |   |   |
-| cluster  |   |   |   |   |
-| console  |   |   |   |   |
-| crypto  |   |   |   |   |
-| debugger  |   |   |   |   |
-| dgram  |   |   |   |   |
-| dns  |   |   |   |   |
-| domain  |   |   |   |   |
-| errors  |   |   |   |   |
-| events  |   |   |   |   |
-| fs  |   |   |   |   |
-| http  |   |   |   |   |
-| https  |   |   |   |   |
-| net  |   |   |   |   |
-| os  |   |   |   |   |
-| path  |   |   |   |   |
-| process  |   |   |   |   |
-| punycode  |   |   |   |   |
-| querystring  |   |   |   |   |
-| readline  |   |   |   |   |
-| repl  |   |   |   |   |
-| stream  |   |   |   |   |
-| string_decoder  |   |   |   |   |
-| timers  |   |   |   |   |
-| tls  |   |   |   |   |
-| tty  |   |   |   |   |
-| url  |   |   |   |   |
-| util  |   |   |   |   |
-| v8  |   |   |   |   |
-| vm  |   |   |   |   |
-| zlib  |   |   |   |   |
+| assert  |   |   | INCOMPLETE |   |
+| buffer  |   |   | INCOMPLETE  |   |
+| child_process  |   |   | INCOMPLETE |   |
+| cluster  |   |   | INCOMPLETE  |   |
+| console  |   |   | INCOMPLETE  |   |
+| crypto  |   |   |  INCOMPLETE |   |
+| debugger  |   |   |  INCOMPLETE |   |
+| dgram  |   |   |  INCOMPLETE |   |
+| dns  |   |   |  INCOMPLETE |   |
+| domain  |   |   |  INCOMPLETE |   |
+| errors  |   |   |  INCOMPLETE |   |
+| events  |   |   |  INCOMPLETE |   |
+| fs  |   |   |   |  INCOMPLETE |
+| http  |   |   |  INCOMPLETE |   |
+| https  |   |   |  INCOMPLETE |   |
+| net  |   |   |  INCOMPLETE |   |
+| os  |   |   |  INCOMPLETE |   |
+| path  |   |   |  INCOMPLETE |   |
+| process  |   |   |  INCOMPLETE |   |
+| punycode  |   |   | INCOMPLETE |   |
+| querystring  |   |   | INCOMPLETE |   |
+| readline  |   |   | INCOMPLETE  |   |
+| repl  |   |   |  INCOMPLETE |   |
+| stream  |   |   |  INCOMPLETE |   |
+| string_decoder  |   |   | INCOMPLETE |   |
+| timers  |   |   | INCOMPLETE |   |
+| tls  |   |   | INCOMPLETE |   |
+| tty  |   |   | INCOMPLETE |   |
+| url  |   |   | INCOMPLETE |   |
+| util  |   |   | INCOMPLETE |   |
+| v8  |   |   | INCOMPLETE |   |
+| vm  |   |   | INCOMPLETE |   |
+| zlib  |   |   | INCOMPLETE |   |
 
 ## Notes on Compatibility
 
