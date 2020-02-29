@@ -43,7 +43,7 @@ any thoughts (in, say, the form of issues) would be appreciated!
 | punycode  |   |   | INCOMPLETE |   |
 | querystring  |   |   | INCOMPLETE |   |
 | readline  |   |   | INCOMPLETE  |   |
-| repl  |   |   |  INCOMPLETE |   |
+| repl  |   |   |  COMPLETE | Don't expect a feature-rich REPL! I may add a few more, but it will remain light. |
 | stream  |   |   |  INCOMPLETE |   |
 | string_decoder  |   |   | INCOMPLETE |   |
 | timers  |   |   | INCOMPLETE |   |
