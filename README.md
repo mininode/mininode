@@ -21,39 +21,39 @@ any thoughts (in, say, the form of issues) would be appreciated!
 
 | module name | mininode docs | upstream docs  | status  | notes |
 |---|---|---|---|---|
-| assert  |   | [nodejs v6.9.2 'assert'](http://nodejs.org/dist/v6.9.2/docs/api/assert.html) | INCOMPLETE |   |
-| buffer  |   | [nodejs v6.9.2 'buffer'](http://nodejs.org/dist/v6.9.2/docs/api/buffer.html) | INCOMPLETE  |   |
-| child_process  | [nodejs v6.9.2 'child_process'](http://nodejs.org/dist/v6.9.2/docs/api/child_process.html)   |   | INCOMPLETE |   |
-| cluster  |   | [nodejs v6.9.2 'cluster'](http://nodejs.org/dist/v6.9.2/docs/api/cluster.html) | INCOMPLETE  |   |
-| console  |   | [nodejs v6.9.2 'console'](http://nodejs.org/dist/v6.9.2/docs/api/console.html) | INCOMPLETE  |   |
-| crypto  |   | [nodejs v6.9.2 'crypto'](http://nodejs.org/dist/v6.9.2/docs/api/crypto.html) |  INCOMPLETE |   |
-| debugger  |   | [nodejs v6.9.2 'debugger'](http://nodejs.org/dist/v6.9.2/docs/api/debugger.html) |  INCOMPLETE |   |
-| dgram  |   |  [nodejs v6.9.2 'dgram'](http://nodejs.org/dist/v6.9.2/docs/api/dgram.html) |  INCOMPLETE |   |
-| dns  |   | [nodejs v6.9.2 'dns'](http://nodejs.org/dist/v6.9.2/docs/api/dns.html) |  INCOMPLETE |   |
-| domain  |   | [nodejs v6.9.2 'domain'](http://nodejs.org/dist/v6.9.2/docs/api/domain.html) | INCOMPLETE |   |
-| errors  |   | [nodejs v6.9.2 'errors'](http://nodejs.org/dist/v6.9.2/docs/api/errors.html) | INCOMPLETE |   |
-| events  |   | [nodejs v6.9.2 'events'](http://nodejs.org/dist/v6.9.2/docs/api/events.html) | INCOMPLETE |   |
-| fs  |   | [nodejs v6.9.2 'fs'](http://nodejs.org/dist/v6.9.2/docs/api/fs.html) | INCOMPLETE | |
-| http  |   | [nodejs v6.9.2 'http'](http://nodejs.org/dist/v6.9.2/docs/api/http.html) |  INCOMPLETE |   |
-| https  |   | [nodejs v6.9.2 'https'](http://nodejs.org/dist/v6.9.2/docs/api/https.html) |  INCOMPLETE |   |
-| net  |   | [nodejs v6.9.2 'net'](http://nodejs.org/dist/v6.9.2/docs/api/net.html) |  INCOMPLETE |   |
-| os  |   | [nodejs v6.9.2 'os'](http://nodejs.org/dist/v6.9.2/docs/api/os.html) |  INCOMPLETE |   |
-| path  |   | [nodejs v6.9.2 'path'](http://nodejs.org/dist/v6.9.2/docs/api/path.html) |  INCOMPLETE |   |
-| process  |   | [nodejs v6.9.2 'process'](http://nodejs.org/dist/v6.9.2/docs/api/process.html) | INCOMPLETE |   |
-| punycode  |   | [nodejs v6.9.2 'punycode'](http://nodejs.org/dist/v6.9.2/docs/api/punycode.html) | INCOMPLETE |   |
-| querystring  |   | [nodejs v6.9.2 'querystring'](http://nodejs.org/dist/v6.9.2/docs/api/querystring.html) | INCOMPLETE |   |
-| readline  |   | [nodejs v6.9.2 'readline'](http://nodejs.org/dist/v6.9.2/docs/api/readline.html) | INCOMPLETE  |   |
-| repl  |   | [nodejs v6.9.2 'repl](http://nodejs.org/dist/v6.9.2/docs/api/repl.html) |  COMPLETE | Don't expect a feature-rich REPL! I may add a few more, but it will remain light. |
-| stream  |   | [nodejs v6.9.2 'stream'](http://nodejs.org/dist/v6.9.2/docs/api/stream.html) |  INCOMPLETE |   |
-| string_decoder  |   | [nodejs v6.9.2 'string_decoder'](http://nodejs.org/dist/v6.9.2/docs/api/string_decoder.html) | INCOMPLETE |   |
-| timers  |   | [nodejs v6.9.2 'timers'](http://nodejs.org/dist/v6.9.2/docs/api/timers.html)  | INCOMPLETE |   |
-| tls  |   | [nodejs v6.9.2 'tls'](http://nodejs.org/dist/v6.9.2/docs/api/tls.html) | INCOMPLETE |   |
-| tty  |   | [nodejs v6.9.2 'tty'](http://nodejs.org/dist/v6.9.2/docs/api/tty.html) | INCOMPLETE |   |
-| url  |   | [nodejs v6.9.2 'url'](http://nodejs.org/dist/v6.9.2/docs/api/url.html) | INCOMPLETE |   |
-| util  |   | [nodejs v6.9.2 'util'](http://nodejs.org/dist/v6.9.2/docs/api/util.html) | INCOMPLETE |   |
-| v8  |   | [nodejs v6.9.2 'v8'](http://nodejs.org/dist/v6.9.2/docs/api/v8.html) | INCOMPLETE |   |
-| vm  |   | [nodejs v6.9.2 'vm'](http://nodejs.org/dist/v6.9.2/docs/api/vm.html) | INCOMPLETE |   |
-| zlib  |   | [nodejs v6.9.2 'zlib'](http://nodejs.org/dist/v6.9.2/docs/api/zlib.html) | INCOMPLETE |   |
+| assert  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/assert.html) | INCOMPLETE |   |
+| buffer  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/buffer.html) | INCOMPLETE  |   |
+| child_process | | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/child_process.html) | INCOMPLETE |   |
+| cluster  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/cluster.html) | INCOMPLETE  |   |
+| console  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/console.html) | INCOMPLETE  |   |
+| crypto  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/crypto.html) |  INCOMPLETE |   |
+| debugger  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/debugger.html) |  INCOMPLETE |   |
+| dgram  |   |  [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/dgram.html) |  INCOMPLETE |   |
+| dns  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/dns.html) |  INCOMPLETE |   |
+| domain  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/domain.html) | INCOMPLETE |   |
+| errors  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/errors.html) | INCOMPLETE |   |
+| events  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/events.html) | INCOMPLETE |   |
+| fs  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/fs.html) | INCOMPLETE | |
+| http  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/http.html) |  INCOMPLETE |   |
+| https  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/https.html) |  INCOMPLETE |   |
+| net  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/net.html) |  INCOMPLETE |   |
+| os  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/os.html) |  INCOMPLETE |   |
+| path  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/path.html) |  INCOMPLETE |   |
+| process  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/process.html) | INCOMPLETE |   |
+| punycode  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/punycode.html) | INCOMPLETE |   |
+| querystring  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/querystring.html) | INCOMPLETE |   |
+| readline  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/readline.html) | INCOMPLETE  |   |
+| repl  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/repl.html) |  COMPLETE | Don't expect a feature-rich REPL! I may add a few more, but it will remain light. |
+| stream  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/stream.html) |  INCOMPLETE |   |
+| string_decoder  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/string_decoder.html) | INCOMPLETE |   |
+| timers  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/timers.html)  | INCOMPLETE |   |
+| tls  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/tls.html) | INCOMPLETE |   |
+| tty  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/tty.html) | INCOMPLETE |   |
+| url  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/url.html) | INCOMPLETE |   |
+| util  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/util.html) | INCOMPLETE |   |
+| v8  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/v8.html) | INCOMPLETE |   |
+| vm  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/vm.html) | INCOMPLETE |   |
+| zlib  |   | [nodejs v6.9.[nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/assert.html) 2](http://nodejs.org/dist/v6.9.2/docs/api/zlib.html) | INCOMPLETE |   |
 
 ## Notes on Compatibility
 
