@@ -17,6 +17,44 @@ process, but this is not close to being usable. I intend to borrow a lot of
 code from [Dukluv][8] and track the upstream Duktape development process, but 
 any thoughts (in, say, the form of issues) would be appreciated!
 
+## Supported Modules Matrix
+
+| module name | mininode docs | upstream docs  | status  | notes |
+|---|---|---|---|---|
+| assert  |   |   |   |   |
+| buffer  |   |   |   |   |
+| child_process  |   |   |   |   |
+| cluster  |   |   |   |   |
+| console  |   |   |   |   |
+| crypto  |   |   |   |   |
+| debugger  |   |   |   |   |
+| dgram  |   |   |   |   |
+| dns  |   |   |   |   |
+| domain  |   |   |   |   |
+| errors  |   |   |   |   |
+| events  |   |   |   |   |
+| fs  |   |   |   |   |
+| http  |   |   |   |   |
+| https  |   |   |   |   |
+| net  |   |   |   |   |
+| os  |   |   |   |   |
+| path  |   |   |   |   |
+| process  |   |   |   |   |
+| punycode  |   |   |   |   |
+| querystring  |   |   |   |   |
+| readline  |   |   |   |   |
+| repl  |   |   |   |   |
+| stream  |   |   |   |   |
+| string_decoder  |   |   |   |   |
+| timers  |   |   |   |   |
+| tls  |   |   |   |   |
+| tty  |   |   |   |   |
+| url  |   |   |   |   |
+| util  |   |   |   |   |
+| v8  |   |   |   |   |
+| vm  |   |   |   |   |
+| zlib  |   |   |   |   |
+
 ## Notes on Compatibility
 
 While this aspires to be compatible with the Node 6.9.2 API, it does not aspire 
@@ -32,8 +70,8 @@ mainline Node.js runtime will likely need to be ported.
 
 ## Build Instructions
 
-This uses GNU make and it is currently being developed on MacOS X and Linux,
-other systems are not yet supported but this should also work on Illumos/Solaris
+This uses GNU make and it is currently being developed on and forLinux,
+other systems are not yet supported but this should also work on OSX, Illumos/Solaris
 and *BSD (possibly with minimal porting effort).
 
 Either `gcc` or `clang` should work, just set the `CC` environment variable.
