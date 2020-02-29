@@ -33,7 +33,7 @@ any thoughts (in, say, the form of issues) would be appreciated!
 | domain  |   |   |  INCOMPLETE |   |
 | errors  |   |   |  INCOMPLETE |   |
 | events  |   |   |  INCOMPLETE |   |
-| fs  |   |   |   |  INCOMPLETE |
+| fs  |   |   | INCOMPLETE | |
 | http  |   |   |  INCOMPLETE |   |
 | https  |   |   |  INCOMPLETE |   |
 | net  |   |   |  INCOMPLETE |   |
