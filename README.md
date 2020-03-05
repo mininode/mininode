@@ -1,7 +1,7 @@
 # mininode - Node.js for Embedded Systems
 [![MIT Licensed](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/mininode/mininode/blob/master/LICENSE.md)[![Build Status](https://travis-ci.org/mininode/mininode.svg)](https://travis-ci.org/mininode/mininode)[![Fuck it! Ship it!](https://img.shields.io/badge/FUCK%20IT!-SHIP%20IT!-brightgreen.svg)](https://hackernoon.com/fuck-it-ship-it-905afd092547#.tnzm8yqap)
 
-This is [libuv][1], [http-parser][2], [mbedtls][3], [libslz][4], and [lowzip][5]
+This is [libuv][1], [http-parser][2], [bearssl][3], [libslz][4], and [lowzip][5]
 held together with [duktape][6]. The goal here is to produce an implementation
 of the [Node.js 6.9.2 API][7] with a full-fledged Javascript interpreter 
 in a single binary with no runtime dependencies other than a standard C library.
@@ -76,7 +76,7 @@ and *BSD (possibly with minimal porting effort).
 
 Either `gcc` or `clang` should work, just set the `CC` environment variable.
 
-From a MacOS X system:
+From a Linux system:
 
     git clone https://github.com/mininode/mininode.git
     cd mininode
@@ -89,22 +89,6 @@ From a MacOS X system:
 
 For use on embedded systems, musl libc and Linux are recommended (in general).
 
-## Developing with Vagrant
-
-The included `Vagrantfile` runs the Alpine Linux edge release and is meant for 
-Virtualbox 5 on MacOS hosts. It mounts the mininode sources at `/mininode` via 
-NFS. It will update to the latest edge release on the first boot.
-
-Note that this assumes you've done `git submodule init` and 
-`git submodule update` on the host system.
-
-    vagrant up
-    vagrant ssh
-    cd /mininode
-    make defconfig
-    make
-    make install
-
 ## What's the point?
 
 This is intended aid in rapid development of small embedded clients, with 
@@ -116,7 +100,7 @@ in C using duktape.
 
 [1]: https://github.com/libuv/libuv.git
 [2]: https://github.com/nodejs/http-parser.git
-[3]: https://github.com/ARMmbed/mbedtls/tree/mbedtls-2.3
+[3]: https://bearssl.org
 [4]: https://github.com/haproxy/libslz
 [5]: https://github.com/svaarala/lowzip
 [6]: http://duktape.org
