@@ -871,7 +871,7 @@ int main(int ac, char **av)
 	conf_parse(av[1] ? av[1] : "");
 	conf_read(NULL);
 
-	sym = sym_lookup("KERNELVERSION", 0);
+	sym = sym_lookup("MININODEVERSION", 0);
 	sym_calc_value(sym);
 	sprintf(menu_backtitle, _(PROJECT_NAME" v%s configuration"),
 		sym_get_string_value(sym));
