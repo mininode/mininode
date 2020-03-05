@@ -62,10 +62,10 @@ void sym_init(void)
 	if (p)
 		sym_add_default(sym, p);
 
-	sym = sym_lookup("KERNELVERSION", 0);
+	sym = sym_lookup("MININODEVERSION", 0);
 	sym->type = S_STRING;
 	sym->flags |= SYMBOL_AUTO;
-	p = getenv("KERNELVERSION");
+	p = getenv("MININODEVERSION");
 	if (p)
 		sym_add_default(sym, p);
 
