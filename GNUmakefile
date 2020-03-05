@@ -1,5 +1,5 @@
 # Copyright (c) 2013 Ben Noordhuis <info@bnoordhuis.nl>
-# Copyright (c) 2017 Alex Caudill
+# Copyright (c) 2020 Alex Caudill <alex.caudill@pm.me>
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -16,14 +16,17 @@
 VERSION = 0
 PATCHLEVEL = 0
 SUBLEVEL = 1
-EXTRAVERSION = -rc0
+EXTRAVERSION = rc0
 NAME = Cryptocratic Kitten
 
 CC ?= gcc
 AR ?= ar
 RM ?= rm
-CFLAGS ?= -Os -std=gnu99
+CFLAGS ?= -O2 -std=gnu99
+
+MININODEVERSION=$(VERSION).$(PATCHLEVEL).$(SUBLEVEL)-$(EXTRAVERSION)
 KCONFIG_CONFIG ?= .config
+export MININODEVERSION
 export KCONFIG_CONFIG
 
 # Do not:
@@ -86,77 +89,6 @@ MBEDTLS_CFLAGS += $(CFLAGS) \
                 -Wextra \
                 -Wno-unused-parameter \
 								-Isrc/contrib/mbedtls/include
-
-# FIXME: All of these mbedtls objects aren't necessary.
-MBEDTLS_OBJS += src/contrib/mbedtls/library/aes.o \
-                src/contrib/mbedtls/library/aesni.o \
-								src/contrib/mbedtls/library/arc4.o \
-								src/contrib/mbedtls/library/asn1parse.o \
-								src/contrib/mbedtls/library/asn1write.o \
-								src/contrib/mbedtls/library/base64.o \
-								src/contrib/mbedtls/library/bignum.o \
-								src/contrib/mbedtls/library/blowfish.o \
-								src/contrib/mbedtls/library/camellia.o \
-								src/contrib/mbedtls/library/ccm.o \
-								src/contrib/mbedtls/library/certs.o \
-								src/contrib/mbedtls/library/cipher.o \
-								src/contrib/mbedtls/library/cipher_wrap.o \
-								src/contrib/mbedtls/library/ctr_drbg.o \
-								src/contrib/mbedtls/library/debug.o \
-								src/contrib/mbedtls/library/des.o \
-								src/contrib/mbedtls/library/dhm.o \
-								src/contrib/mbedtls/library/ecdh.o \
-								src/contrib/mbedtls/library/ecjpake.o \
-								src/contrib/mbedtls/library/ecp.o \
-								src/contrib/mbedtls/library/ecp_curves.o \
-								src/contrib/mbedtls/library/entropy.o \
-								src/contrib/mbedtls/library/entropy_poll.o \
-								src/contrib/mbedtls/library/error.o \
-								src/contrib/mbedtls/library/gcm.o \
-								src/contrib/mbedtls/library/havege.o \
-								src/contrib/mbedtls/library/hmac_drbg.o \
-								src/contrib/mbedtls/library/md.o \
-								src/contrib/mbedtls/library/md2.o \
-								src/contrib/mbedtls/library/md4.o \
-								src/contrib/mbedtls/library/md5.o \
-								src/contrib/mbedtls/library/md_wrap.o \
-								src/contrib/mbedtls/library/memory_buffer_alloc.o \
-								src/contrib/mbedtls/library/oid.o \
-								src/contrib/mbedtls/library/padlock.o \
-								src/contrib/mbedtls/library/pem.o \
-								src/contrib/mbedtls/library/pk.o \
-								src/contrib/mbedtls/library/pk_wrap.o \
-								src/contrib/mbedtls/library/pkcs11.o \
-								src/contrib/mbedtls/library/pkcs12.o \
-								src/contrib/mbedtls/library/pkcs5.o \
-								src/contrib/mbedtls/library/pkparse.o \
-								src/contrib/mbedtls/library/pkwrite.o \
-								src/contrib/mbedtls/library/platform.o \
-								src/contrib/mbedtls/library/ripemd160.o \
-								src/contrib/mbedtls/library/rsa.o \
-								src/contrib/mbedtls/library/sha1.o \
-								src/contrib/mbedtls/library/sha256.o \
-								src/contrib/mbedtls/library/sha512.o \
-								src/contrib/mbedtls/library/ssl_cache.o \
-								src/contrib/mbedtls/library/ssl_ciphersuites.o \
-								src/contrib/mbedtls/library/ssl_cli.o \
-								src/contrib/mbedtls/library/ssl_cookie.o \
-								src/contrib/mbedtls/library/ssl_srv.o \
-								src/contrib/mbedtls/library/ssl_ticket.o \
-								src/contrib/mbedtls/library/ssl_tls.o \
-								src/contrib/mbedtls/library/threading.o \
-								src/contrib/mbedtls/library/timing.o \
-								src/contrib/mbedtls/library/version.o \
-								src/contrib/mbedtls/library/version_features.o \
-								src/contrib/mbedtls/library/x509.o \
-								src/contrib/mbedtls/library/x509_create.o \
-								src/contrib/mbedtls/library/x509_crl.o \
-								src/contrib/mbedtls/library/x509_crt.o \
-								src/contrib/mbedtls/library/x509_csr.o \
-								src/contrib/mbedtls/library/x509write_crt.o \
-								src/contrib/mbedtls/library/x509write_csr.o \
-								src/contrib/mbedtls/library/xtea.o
-
 
 MN_CFLAGS = $(CFLAGS) \
 						-Wall \
@@ -249,18 +181,15 @@ libuv.a: $(LIBUV_OBJS)
 libhttparser.a: $(HTTP_PARSER_OBJS)
 	ar crs $@ $^
 
-libmbedtls.a: $(MBEDTLS_OBJS)
-	ar crs $@ $^
-
 src/include/builtin_hash.h: src/include/builtin_hash.gperf
 	gperf -N find_builtin -t $< > $@
 
-MN_LINKFLAGS = -L. -luv -lhttparser -lmbedtls -lm -lpthread 
+MN_LINKFLAGS = -L. -luv -lhttparser -lm -lpthread 
 ifeq ($(UNAME_S),Linux)
 MN_LINKFLAGS += -lrt -Wl,--no-as-needed 
 endif
 
-mininode: libuv.a libhttparser.a libmbedtls.a $(MN_OBJS) $(MN_MOD_OBJS)
+mininode: libuv.a libhttparser.a $(MN_OBJS) $(MN_MOD_OBJS)
 	$(CC) $(MN_OBJS) $(MN_MOD_OBJS) $(MN_LINKFLAGS) -o $@
 
 $(LIBUV_OBJS): %.o : %.c $(LIBUV_INCLUDES)
@@ -268,9 +197,6 @@ $(LIBUV_OBJS): %.o : %.c $(LIBUV_INCLUDES)
 
 $(HTTP_PARSER_OBJS): %.o : %.c
 	$(CC) $(HTTP_PARSER_CFLAGS) -c -o $@ $<
-
-$(MBEDTLS_OBJS): %.o : %.c
-	$(CC) $(MBEDTLS_CFLAGS) -c -o $@ $<
 
 $(MN_MOD_OBJS): %.o : %.c $(MN_INCLUDES)
 	$(CC) $(MN_CFLAGS) -c -o $@ $<
