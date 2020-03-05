@@ -97,8 +97,8 @@ config MN_HTTP_PARSER
 	help
 	Required for building the 'http' and 'https' modules.
 
-config MN_MBEDTLS
-	bool "Build mbedtls"
+config MN_BEARSSL
+	bool "Build BearSSL"
 	default y
 	help
 	Required for building the 'https' and 'crypto' modules.
@@ -188,14 +188,6 @@ config MN_MODULE_DNS
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/dns.html
 
-config MN_MODULE_DOMAIN
-	bool "'domain' module"
-	default y
-	help
-	Enable the 'domain' module.
-
-	https://nodejs.org/dist/v6.9.2/docs/api/domain.html
-
 config MN_MODULE_ERRORS
 	bool "'errors' module"
 	default y
@@ -225,6 +217,15 @@ config MN_MODULE_HTTP
 	default y
 	help
 	Enable the 'http' module.
+
+	https://nodejs.org/dist/v6.9.2/docs/api/http.html
+
+
+config MN_MODULE_HTTP2
+	bool "'http2' module"
+	default y
+	help
+	Enable the 'http2' module.
 
 	https://nodejs.org/dist/v6.9.2/docs/api/http.html
 
