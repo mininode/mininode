@@ -4,9 +4,6 @@
 [submodule "src/contrib/libuv"]
 	path = src/contrib/libuv
 	url = https://github.com/libuv/libuv.git
-[submodule "src/contrib/mbedtls"]
-	path = src/contrib/mbedtls
-	url = https://github.com/ARMmbed/mbedtls.git
 [submodule "src/contrib/libslz"]
 	path = src/contrib/libslz
 	url = https://github.com/haproxy/libslz.git
@@ -16,3 +13,6 @@
 [submodule "src/contrib/cares"]
 	path = src/contrib/cares
 	url = https://github.com/c-ares/c-ares.git
+[submodule "src/contrib/BearSSL"]
+	path = src/contrib/BearSSL
+	url = https://www.bearssl.org/git/BearSSL
