@@ -24,7 +24,6 @@ AR ?= ar
 RM ?= rm
 CFLAGS ?= -O2 -std=gnu99
 
-MININODEVERSION=$(VERSION).$(PATCHLEVEL).$(SUBLEVEL)-$(EXTRAVERSION)
 KCONFIG_CONFIG ?= .config
 export MININODEVERSION
 export KCONFIG_CONFIG
@@ -52,9 +51,8 @@ ifndef KBUILD_VERBOSE
   KBUILD_VERBOSE = 0
 endif
 
-# Read KERNELRELEASE from include/config/kernel.release (if it exists)
-KERNELRELEASE = $(shell cat include/config/mininode.release 2> /dev/null)
-KERNELVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
+MININODERELEASE = $(shell cat include/config/mininode.release 2> /dev/null)
+MININODEVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
 
 all: mininode
 

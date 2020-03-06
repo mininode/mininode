@@ -26,7 +26,7 @@ const duk_number_list_entry mn_bi_util_consts[] = {
 duk_ret_t
 mn_bi_util(duk_context *ctx) {
 	duk_push_object(ctx);
-	duk_put_function_list(ctx, -3, mn_bi_util_funcs);
-	duk_put_number_list(ctx, -3, mn_bi_util_consts);
+	duk_put_function_list(ctx, 0, mn_bi_util_funcs);
+	duk_put_number_list(ctx, 0, mn_bi_util_consts);
 	return 1;
 }

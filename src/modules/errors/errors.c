@@ -22,7 +22,7 @@ const duk_number_list_entry mn_bi_errors_consts[] = {
 
 duk_ret_t
 mn_bi_errors(duk_context *ctx) {
-	duk_push_object(ctx);
+	duk_push_global_object(ctx);
 	duk_put_function_list(ctx, -1, mn_bi_errors_funcs);
 	duk_put_number_list(ctx, -1, mn_bi_errors_consts);
 	return 1;

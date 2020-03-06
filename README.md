@@ -1,12 +1,14 @@
 # mininode - Node.js for Embedded Systems
 [![MIT Licensed](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/mininode/mininode/blob/master/LICENSE.md)[![Build Status](https://travis-ci.org/mininode/mininode.svg)](https://travis-ci.org/mininode/mininode)[![Fuck it! Ship it!](https://img.shields.io/badge/FUCK%20IT!-SHIP%20IT!-brightgreen.svg)](https://hackernoon.com/fuck-it-ship-it-905afd092547#.tnzm8yqap)
 
-This is [libuv][1], [http-parser][2], [bearssl][3], [libslz][4], and [lowzip][5]
-held together with [duktape][6]. The goal here is to produce an implementation
-of the [Node.js 6.9.2 API][7] with a full-fledged Javascript interpreter 
+This is [libuv][1], [http-parser][2], [c-ares][3], [bearssl][4], [libslz][5], and [lowzip][6]
+held together with [duktape][7]. The goal here is to produce an implementation
+of the [Node.js 6.9.2 API][8] with a full-fledged Javascript interpreter 
 in a single binary with no runtime dependencies other than a standard C library.
 
-This aims to implement the Node.js standard library entirely in C.
+This aims to implement the Node.js standard library entirely in C. Deprecated 
+features will be removed entirely and some functionality (http2) will be 
+included from the 13.x release series.
 
 This is very early in development. Any feedback is very welcome!
 
@@ -14,7 +16,7 @@ This is very early in development. Any feedback is very welcome!
 
 I've posted this for early feedback and to receive input during the development 
 process, but this is not close to being usable. I intend to borrow a lot of 
-code from [Dukluv][8] and track the upstream Duktape development process, but 
+code from [Dukluv][9] and track the upstream Duktape development process, but 
 any thoughts (in, say, the form of issues) would be appreciated!
 
 ## Supported Modules Matrix
@@ -27,18 +29,19 @@ any thoughts (in, say, the form of issues) would be appreciated!
 | cluster  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/cluster.html) | INCOMPLETE  |   |
 | console  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/console.html) | INCOMPLETE  |   |
 | crypto  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/crypto.html) |  INCOMPLETE |   |
-| debugger  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/debugger.html) |  INCOMPLETE |   |
-| dgram  |   |  [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/dgram.html) |  INCOMPLETE |   |
-| dns  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/dns.html) |  INCOMPLETE |   |
-| domain  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/domain.html) | INCOMPLETE |   |
+| debugger  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/debugger.html) | INCOMPLETE |   |
+| dgram  |   |  [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/dgram.html) | INCOMPLETE |   |
+| dns  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/dns.html) | INCOMPLETE |   |
+| domain  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/domain.html) | DEPRECATED |   |
 | errors  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/errors.html) | INCOMPLETE |   |
 | events  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/events.html) | INCOMPLETE |   |
 | fs  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/fs.html) | INCOMPLETE | |
 | http  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/http.html) |  INCOMPLETE |   |
+| http2  |   | [nodejs v13.x](https://nodejs.org/docs/latest-v13.x/api/http2.html) |  INCOMPLETE |   |
 | https  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/https.html) |  INCOMPLETE |   |
 | net  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/net.html) |  INCOMPLETE |   |
-| os  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/os.html) |  INCOMPLETE |   |
-| path  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/path.html) |  INCOMPLETE |   |
+| os  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/os.html) | COMPLETE |   |
+| path  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/path.html) | INCOMPLETE |   |
 | process  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/process.html) | INCOMPLETE |   |
 | punycode  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/punycode.html) | INCOMPLETE |   |
 | querystring  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/querystring.html) | INCOMPLETE |   |
@@ -100,12 +103,13 @@ in C using duktape.
 
 [1]: https://github.com/libuv/libuv.git
 [2]: https://github.com/nodejs/http-parser.git
-[3]: https://bearssl.org
-[4]: https://github.com/haproxy/libslz
-[5]: https://github.com/svaarala/lowzip
-[6]: http://duktape.org
-[7]: https://nodejs.org/dist/v6.9.2/docs/api/
-[8]: https://github.com/creationix/dukluv/tree/master/src
+[3]: https://c-ares.haxx.se/
+[4]: https://bearssl.org
+[5]: https://github.com/haproxy/libslz
+[6]: https://github.com/svaarala/lowzip
+[7]: http://duktape.org
+[8]: https://nodejs.org/dist/v6.9.2/docs/api/
+[9]: https://github.com/creationix/dukluv/tree/master/src
 
 # Signed Tags
 

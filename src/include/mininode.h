@@ -6,7 +6,7 @@
 #if !defined(MININODE_H)
 #define MININODE_H
 
-/* Semantic versioning, per mn_bi_readline Node.js */
+/* Semantic versioning */
 #define MININODE_VERSION "0.0.1"
 /* Timeout values > TIMEOUT_MAX are set to 1. */
 #define TIMEOUT_MAX UINT32_MAX
@@ -21,8 +21,7 @@ extern uv_loop_t *mn_loop;
  */
 typedef duk_ret_t (*builtin_loader)(duk_context *ctx);
 
-#define mn_callback_id int
-
+/* Currently a maximum of 256 callbacks can be registered simultaneously. */
 typedef uint8_t mn_cb_id_t;
 
 #define MN_CLOSED 0
@@ -84,6 +83,30 @@ void duk_module_loader_init(duk_context *ctx);
 
 void mn_repl_loop(duk_context *ctx);
 
+/*** Internal structures ***/
+
+typedef struct mn_event_emitter_class mn_event_emitter_class;
+struct mn_event_emitter_class {
+  size_t context_size;
+  uint32_t desc;
+  uint32_t max_listeners;
+  void (*init)(const mn_event_emitter_class **ctx);
+  void (*emit)(const mn_event_emitter_class *const *ctx);
+};
+
+typedef struct mn_event_emitter_ctx mn_event_emitter_ctx;
+struct mn_event_emitter_ctx {
+  const mn_event_emitter_class *vtable;
+  unsigned char buffer[256];
+  uint32_t listeners[256];
+  uint64_t count;
+};
+
+typedef union {
+  const mn_event_emitter_class *vtable;
+  mn_event_emitter_ctx emitter;
+} mn_event_emitter_compat_ctx;
+
 /*** BUILT-IN MODULES ***/
 
 duk_ret_t mn_bi_assert(duk_context *ctx);
@@ -98,15 +121,14 @@ duk_ret_t mn_bi_crypto(duk_context *ctx);
 duk_ret_t mn_bi_debugger(duk_context *ctx);
 duk_ret_t mn_bi_dgram(duk_context *ctx);
 duk_ret_t mn_bi_dns(duk_context *ctx);
-duk_ret_t mn_bi_domain(duk_context *ctx);
 duk_ret_t mn_bi_errors(duk_context *ctx);
 duk_ret_t mn_bi_events(duk_context *ctx);
 
 duk_ret_t mn_bi_fs(duk_context *ctx);
 void mn_push_error_result(duk_context *ctx, uv_fs_t* req);
-void mn_push_fs_result(duk_context *ctx, uv_fs_t* req);
-void mn_push_stats_table(duk_context *ctx, const uv_stat_t* s);
-void mn_fs_cb(uv_fs_t* req);
+void mn_push_fs_result(duk_context *ctx, uv_fs_t *req);
+void mn_push_stats_table(duk_context *ctx, const uv_stat_t *s);
+void mn_fs_cb(uv_fs_t *req);
 duk_ret_t mn_bi_fs_access(duk_context *ctx);
 duk_ret_t mn_bi_fs_access_sync(duk_context *ctx);
 duk_ret_t mn_bi_fs_append_file(duk_context *ctx);
@@ -185,7 +207,10 @@ duk_ret_t mn_bi_http_create_server(duk_context *ctx);
 duk_ret_t mn_bi_http_get(duk_context *ctx);
 duk_ret_t mn_bi_http_request(duk_context *ctx);
 
+duk_ret_t mn_bi_http2(duk_context *ctx);
+
 duk_ret_t mn_bi_https(duk_context *ctx);
+
 duk_ret_t mn_bi_net(duk_context *ctx);
 
 duk_ret_t mn_bi_os(duk_context *ctx);

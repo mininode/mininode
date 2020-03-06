@@ -1,7 +1,7 @@
 /**
  * @file mininode.c
  * @author Alex Caudill (credit to creationix and midipix)
- * @date 7 Apr 2017
+ * @date 1 Jan 2020
  * @brief mininode(1) command line entry point
  *
  * mininode.c parses command line arguments and starts the event loop,
@@ -343,15 +343,15 @@ main(int argc, char **argv) {
 	 * included in the global namespace. This is useful
 	 * with mn_bi_util_format() and mn_bi_console_log().
 	 */
-	//mn_bi_errors(ctx);
-	//mn_bi_timers(ctx);
-	//mn_bi_events(ctx);
-	//mn_bi_buffer(ctx);
-	//mn_bi_process(ctx);
+	mn_bi_errors(ctx);
+	mn_bi_timers(ctx);
+	mn_bi_events(ctx);
+	mn_bi_buffer(ctx);
+	mn_bi_process(ctx);
 	mn_bi_console(ctx);
-	//duk_pop(ctx);
+	duk_pop(ctx);
 
-/* Detect piped input and use it as our script. */
+  /* Detect piped input and use it as our script. */
 	/* If we were invoked with -i, try to start the REPL. */
 	if (!isatty(fileno(stdin)) && !interactive_flag) {
 		filename = "/dev/stdin";
@@ -359,6 +359,7 @@ main(int argc, char **argv) {
 	} else if(filename == NULL){
 		/* If invoked without any file arguments or with -i, invoke the REPL. */
 		if (argc == 1 || interactive_flag) {
+      fprintf(stdout, "Welcome to mininode...\n");
       mn_repl_loop(ctx);
 		}
   } else {
@@ -399,6 +400,10 @@ main(int argc, char **argv) {
 			 * If the first character is '\n', continue reading.
 			 * If the next two characters are #!, continue until
 			 * we encounter another \n.
+       *
+       * If we are invoked with the shebang, we need to 
+       * treat argv differenty.
+       *
 			 */
 			srcsz = fread(source, sizeof(char), srclen, script);
 

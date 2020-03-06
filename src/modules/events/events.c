@@ -6,7 +6,7 @@
  *  See https://nodejs.org/dist/v6.9.2/docs/api/events.html
  */
 
-/* Implementation TBD */
+/* This returns an instance of the EventEmitter class. */
 
 /*
  *  Module initialization
@@ -22,7 +22,7 @@ const duk_number_list_entry mn_bi_events_consts[] = {
 
 duk_ret_t
 mn_bi_events(duk_context *ctx) {
-	duk_push_object(ctx);
+	duk_push_global_object(ctx);
 	duk_put_function_list(ctx, -1, mn_bi_events_funcs);
 	duk_put_number_list(ctx, -1, mn_bi_events_consts);
 	return 1;

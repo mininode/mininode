@@ -1,4 +1,5 @@
 #include "mininode.h"
+#include "uv.h"
 #include <unistd.h>
 
 duk_ret_t
@@ -28,6 +29,7 @@ mn_bi_fs_access(duk_context *ctx) {
 		path = duk_require_string(ctx, -3);
 	}
 
+  //duk_pop(ctx);
 	req = duk_push_fixed_buffer(ctx, sizeof(*req));
 	req->data = mn_setup_req(ctx, -2);
 	uv_fs_access(mn_loop, req, path, mode, mn_fs_cb);

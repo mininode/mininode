@@ -14,7 +14,6 @@ crypto, &mn_bi_crypto
 debugger, &mn_bi_debugger
 dgram, &mn_bi_dgram
 dns, &mn_bi_dns
-domain, &mn_bi_domain
 events, &mn_bi_events
 fs, &mn_bi_fs
 http, &mn_bi_http

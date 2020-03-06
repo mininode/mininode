@@ -40,9 +40,9 @@ const duk_number_list_entry mn_bi_console_consts[] = {
 
 duk_ret_t
 mn_bi_console(duk_context *ctx) {
-	duk_push_object(ctx);
-	duk_put_function_list(ctx, -1, mn_bi_console_funcs);
-	duk_put_number_list(ctx, -1, mn_bi_console_consts);
+	duk_idx_t console_idx = duk_push_object(ctx);
+	duk_put_function_list(ctx, console_idx, mn_bi_console_funcs);
+	duk_put_number_list(ctx, console_idx, mn_bi_console_consts);
 	duk_put_global_string(ctx, "console");
 
 	/*
