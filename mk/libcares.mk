@@ -1,0 +1,71 @@
+CARES_SRCS = src/contrib/cares/ares__close_sockets.c \
+  src/contrib/cares/ares__get_hostent.c              \
+  src/contrib/cares/ares__read_line.c                \
+  src/contrib/cares/ares__timeval.c                  \
+  src/contrib/cares/ares_cancel.c                    \
+  src/contrib/cares/ares_data.c                      \
+  src/contrib/cares/ares_destroy.c                   \
+  src/contrib/cares/ares_expand_name.c               \
+  src/contrib/cares/ares_expand_string.c             \
+  src/contrib/cares/ares_fds.c                       \
+  src/contrib/cares/ares_free_hostent.c              \
+  src/contrib/cares/ares_free_string.c               \
+  src/contrib/cares/ares_getenv.c                    \
+  src/contrib/cares/ares_gethostbyaddr.c             \
+  src/contrib/cares/ares_gethostbyname.c             \
+  src/contrib/cares/ares_getnameinfo.c               \
+  src/contrib/cares/ares_getsock.c                   \
+  src/contrib/cares/ares_init.c                      \
+  src/contrib/cares/ares_library_init.c              \
+  src/contrib/cares/ares_llist.c                     \
+  src/contrib/cares/ares_mkquery.c                   \
+  src/contrib/cares/ares_create_query.c              \
+  src/contrib/cares/ares_nowarn.c                    \
+  src/contrib/cares/ares_options.c                   \
+  src/contrib/cares/ares_parse_a_reply.c             \
+  src/contrib/cares/ares_parse_aaaa_reply.c          \
+  src/contrib/cares/ares_parse_mx_reply.c            \
+  src/contrib/cares/ares_parse_naptr_reply.c         \
+  src/contrib/cares/ares_parse_ns_reply.c            \
+  src/contrib/cares/ares_parse_ptr_reply.c           \
+  src/contrib/cares/ares_parse_soa_reply.c           \
+  src/contrib/cares/ares_parse_srv_reply.c           \
+  src/contrib/cares/ares_parse_txt_reply.c           \
+  src/contrib/cares/ares_platform.c                  \
+  src/contrib/cares/ares_process.c                   \
+  src/contrib/cares/ares_query.c                     \
+  src/contrib/cares/ares_search.c                    \
+  src/contrib/cares/ares_send.c                      \
+  src/contrib/cares/ares_strcasecmp.c                \
+  src/contrib/cares/ares_strdup.c                    \
+  src/contrib/cares/ares_strerror.c                  \
+  src/contrib/cares/ares_timeout.c                   \
+  src/contrib/cares/ares_version.c                   \
+  src/contrib/cares/ares_writev.c                    \
+  src/contrib/cares/bitncmp.c                        \
+  src/contrib/cares/inet_net_pton.c                  \
+  src/contrib/cares/inet_ntop.c
+
+CARES_HDRS = ares.h    \
+  ares_build.h         \
+  ares_data.h          \
+  ares_dns.h           \
+  ares_getenv.h				 \
+  ares_inet_net_pton.h \
+  ares_iphlpapi.h      \
+  ares_ipv6.h          \
+  ares_library_init.h  \
+  ares_llist.h         \
+  ares_nowarn.h        \
+  ares_platform.h      \
+  ares_private.h       \
+  ares_rules.h         \
+  ares_strcasecmp.h    \
+  ares_strdup.h        \
+  ares_version.h       \
+  ares_writev.h        \
+  bitncmp.h            \
+  nameser.h            \
+  ares_setup.h         \
+  setup_once.h
+

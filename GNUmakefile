@@ -1,4 +1,3 @@
-# Copyright (c) 2013 Ben Noordhuis <info@bnoordhuis.nl>
 # Copyright (c) 2020 Alex Caudill <alex.caudill@pm.me>
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -22,12 +21,16 @@ NAME = Cryptocratic Kitten
 CC ?= gcc
 AR ?= ar
 RM ?= rm
-CFLAGS ?= -O2 -std=gnu99
+CFLAGS ?= -Os -std=gnu99
+
+SRCDIR := $(realpath .)
+OBJDIR ?= $(SRCDIR)/obj
 
 KCONFIG_CONFIG ?= .config
 export MININODEVERSION
 export KCONFIG_CONFIG
 
+include $(KCONFIG_CONFIG)
 # Do not:
 # o  use make's built-in rules and variables
 #    (this increases performance and avoids hard-to-debug behaviour);
@@ -43,7 +46,6 @@ export LC_COLLATE LC_NUMERIC
 # Avoid interference with shell env settings
 unexport GREP_OPTIONS
 
-
 ifeq ("$(origin V)", "command line")
   KBUILD_VERBOSE = $(V)
 endif
@@ -51,153 +53,93 @@ ifndef KBUILD_VERBOSE
   KBUILD_VERBOSE = 0
 endif
 
-MININODERELEASE = $(shell cat include/config/mininode.release 2> /dev/null)
 MININODEVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
 
-all: mininode
+UNAME_S := $(shell uname -s)
+
+all: $(OBJDIR)/build/mininode
+
+$(OBJDIR):
+	-mkdir -p $(OBJDIR)/src/core
+	-mkdir -p $(OBJDIR)/src/include
+	-mkdir -p $(OBJDIR)/src/contrib/duktape
+	-mkdir -p $(OBJDIR)/src/contrib/http-parser
+	-mkdir -p $(OBJDIR)/src/contrib/BearSSL
+	-mkdir -p $(OBJDIR)/src/contrib/libuv/src/unix
+	-mkdir -p $(OBJDIR)/src/contrib/cares
+	-mkdir -p $(OBJDIR)/src/contrib/libslz
+	-mkdir -p $(OBJDIR)/src/contrib/lowzip
+	-mkdir -p $(OBJDIR)/build
 
 include kconfig/GNUmakefile
 
-#Recursive wildcard!
-rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
+CORE_DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
 
-LIBUV_CFLAGS += $(CFLAGS) \
-                -Wall \
-                -Wextra \
-                -Wno-unused-parameter \
-								-Isrc/contrib/libuv/include \
-								-Isrc/contrib/libuv/src
-
-LIBUV_INCLUDES = src/contrib/libuv/include/tree.h \
-                 src/contrib/libuv/include/uv-errno.h \
-                 src/contrib/libuv/include/uv-threadpool.h \
-                 src/contrib/libuv/include/uv-version.h \
-                 src/contrib/libuv/include/uv.h \
-                 src/contrib/libuv/src/heap-inl.h \
-                 src/contrib/libuv/src/queue.h \
-                 src/contrib/libuv/src/uv-common.h
-
-HTTP_PARSER_CFLAGS = $(CFLAGS)
-
-HTTP_PARSER_OBJS = src/contrib/http-parser/http_parser.o
-
-
-MBEDTLS_CFLAGS += $(CFLAGS) \
-                -Wall \
-                -Wextra \
-                -Wno-unused-parameter \
-								-Isrc/contrib/mbedtls/include
-
-MN_CFLAGS = $(CFLAGS) \
-						-Wall \
-						-Isrc/contrib/duktape \
-						-Isrc/contrib \
-						-Isrc/contrib/libz \
-						-Isrc/modules \
-						-Isrc/contrib/libuv/include/ \
-						-Isrc/include \
-						-DDUK_OPT_VERBOSE_ERRORS \
-						-DDUK_OPT_PARANOID_ERRORS \
-						-DDUK_OPT_AUGMENT_ERRORS \
-						-D_POSIX_C_SOURCE=200809L \
+CORE_CFLAGS = $(CFLAGS)                             \
+						-fPIE                                 \
+  					-Wall                                 \
+						-I$(OBJDIR)/src/include               \
+						-I$(SRCDIR)/src/contrib/duktape       \
+						-I$(SRCDIR)/src/contrib/http-parser   \
+						-I$(SRCDIR)/src/contrib/libuv/include \
+						-I$(SRCDIR)/src/include               \
+						-DDUK_OPT_VERBOSE_ERRORS              \
+						-DDUK_OPT_PARANOID_ERRORS             \
+						-DDUK_OPT_AUGMENT_ERRORS              \
+						-D_POSIX_C_SOURCE=200809L             \
 						-D_XOPEN_SOURCE=600
 
-MN_INCLUDES = src/include/mininode.h \
-							src/include/builtin_hash.h
+CORE_HDRS = src/include/mininode.h
 
-MN_MOD_SRCS = $(call rwildcard, src/modules/,*.c)
-MN_MOD_OBJS = $(MN_MOD_SRCS:.c=.o)
+CORE_SRCS = $(SRCDIR)/src/core/ref.c     \
+						$(SRCDIR)/src/core/core.c    \
+						$(SRCDIR)/src/core/loader.c  \
+						$(SRCDIR)/src/core/mininode.c
 
-MN_OBJS = src/contrib/duktape/duktape.o \
-					src/util/ref.o \
-					src/util/util.o \
-					src/util/loader.o \
-					src/mininode.o
+CORE_DEPS = $(subst $(SRCDIR),$(OBJDIR),$(CORE_SRCS:.c=.d))
+CORE_OBJS = $(subst $(SRCDIR),$(OBJDIR),$(CORE_SRCS:.c=.o))
 
-ifeq ($(OS),Windows_NT)
-$(error Windows targets are unsupported.)
-else
-    LIBUV_OBJS += src/contrib/libuv/src/threadpool.o \
-                  src/contrib/libuv/src/unix/async.o \
-									src/contrib/libuv/src/unix/dl.o \
-									src/contrib/libuv/src/unix/fs.o \
-									src/contrib/libuv/src/unix/getaddrinfo.o \
-									src/contrib/libuv/src/unix/getnameinfo.o \
-									src/contrib/libuv/src/unix/loop-watcher.o \
-									src/contrib/libuv/src/unix/loop.o \
-									src/contrib/libuv/src/unix/pipe.o \
-									src/contrib/libuv/src/unix/process.o \
-									src/contrib/libuv/src/unix/signal.o \
-									src/contrib/libuv/src/unix/stream.o \
-									src/contrib/libuv/src/unix/tcp.o \
-									src/contrib/libuv/src/unix/thread.o \
-									src/contrib/libuv/src/unix/timer.o \
-									src/contrib/libuv/src/unix/tty.o \
-									src/contrib/libuv/src/unix/udp.o \
-									src/contrib/libuv/src/version.o \
-									src/contrib/libuv/src/inet.o \
-									src/contrib/libuv/src/fs-poll.o \
-									src/contrib/libuv/src/unix/proctitle.o \
-									src/contrib/libuv/src/uv-common.o
+CORE_LINKFLAGS = -L$(OBJDIR)/build/ -lduktape -luv -lbearssl -lhttparser -lm -lpthread -lrt -Wl,--no-as-needed 
 
-    UNAME_S := $(shell uname -s)
-    ifeq ($(UNAME_S),Linux)
-        LIBUV_OBJS += src/contrib/libuv/src/unix/linux-core.o \
-											src/contrib/libuv/src/unix/linux-inotify.o \
-											src/contrib/libuv/src/unix/linux-syscalls.o \
-											src/contrib/libuv/src/unix/core.o \
-											src/contrib/libuv/src/unix/poll.o
-        LIBUV_CFLAGS += -fPIC
+$(info $$CORE_DEPS is [${CORE_DEPS}])
 
-    else ifeq ($(UNAME_S),Darwin)
-        LIBUV_OBJS += src/contrib/libuv/src/unix/core.o \
-                      src/contrib/libuv/src/unix/darwin.o \
-											src/contrib/libuv/src/unix/darwin-proctitle.o \
-											src/contrib/libuv/src/unix/kqueue.o \
-											src/contrib/libuv/src/unix/fsevents.o \
-											src/contrib/libuv/src/unix/pthread-barrier.o \
-											src/contrib/libuv/src/unix/pthread-fixes.o \
-											src/contrib/libuv/src/unix/poll.o
+$(OBJDIR)/src/include/builtin_hash.h: | $(OBJDIR)
+	gperf -N find_builtin -t $(SRCDIR)/src/include/builtin_hash.gperf > $@
 
-    else ifeq ($(UNAME_S),SunOS)
-        # TBD
-    endif
-endif
+define generateRules
+$(info creating rule for ${1})
+$(subst $(SRCDIR),$(OBJDIR),$(1:.c=.o)): $1 $(subst $(SRCDIR),$(OBJDIR),$(1:.c=.d)) | $(OBJDIR)
+	@echo Building $$@
+	$(CC) -c $(CORE_CFLAGS) -o $@ $< -MMD -MP -MF $(subst $(SRCDIR),$(OBJDIR),$(1:.c=.d))
+endef
 
+$(foreach(file, $(CORE_SRCS), $(eval $(call generateRules, $(file)))))
+
+#$(CORE_DEPS): $(OBJDIR)/%.d | $(OBJDIR)/src/include/builtin_hash.h $(OBJDIR)/build/libduktape.a $(OBJDIR)
+#	$(CC) $(CORE_CFLAGS) $(CORE_DEPFLAGS) -c -o $@ $^
+# $(subst $(OBJDIR),$(SRCDIR),$(@:.o=.c))
+
+$(OBJDIR)/build/mininode: $(OBJDIR) $(OBJDIR)/src/include/builtin_hash.h $(OBJDIR)/build/libduktape.a $(OBJDIR)/build/libhttparser.a $(OBJDIR)/build/libbearssl.a $(OBJDIR)/build/libuv.a $(CORE_OBJS) $(MN_MOD_OBJS) | $(OBJDIR)
+	$(CC) $(CORE_OBJS) $(MN_MOD_OBJS) $(CORE_LINKFLAGS) -o $@
+
+#include $(CORE_DEPS)
+
+# In the case of BearSSL, we're just going to rely on their Makefile.
+# With code that is so security sensitive, I think it's best to be 
+# clear that this project hasn't touched it at all. We just grab it 
+# from git and build a static library.
+$(OBJDIR)/build/libbearssl.a: $(OBJDIR)
+	$(MAKE) AROUT=$(OBJDIR)/ OBJDIR=$(OBJDIR)/src/contrib/BearSSL/obj -C src/contrib/BearSSL lib
+
+include mk/duktape.mk
+include mk/httparser.mk
+include mk/libcares.mk
+include mk/libslz.mk
+include mk/libuv.mk
+include mk/lowzip.mk
+include mk/modules.mk
 
 clean::
-	rm -f src/include/builtin_hash.h
-	rm -f $(LIBUV_OBJS) libuv.a
-	rm -f $(HTTP_PARSER_OBJS) libhttparser.a
-	rm -f $(MBEDTLS_OBJS) libmbedtls.a
-	rm -f $(MN_MOD_OBJS)
-	rm -f $(MN_OBJS) mininode
+	rm -rf $(OBJDIR)/*
 
-libuv.a: $(LIBUV_OBJS)
-	ar crs $@ $^
 
-libhttparser.a: $(HTTP_PARSER_OBJS)
-	ar crs $@ $^
-
-src/include/builtin_hash.h: src/include/builtin_hash.gperf
-	gperf -N find_builtin -t $< > $@
-
-MN_LINKFLAGS = -L. -luv -lhttparser -lm -lpthread 
-ifeq ($(UNAME_S),Linux)
-MN_LINKFLAGS += -lrt -Wl,--no-as-needed 
-endif
-
-mininode: libuv.a libhttparser.a $(MN_OBJS) $(MN_MOD_OBJS)
-	$(CC) $(MN_OBJS) $(MN_MOD_OBJS) $(MN_LINKFLAGS) -o $@
-
-$(LIBUV_OBJS): %.o : %.c $(LIBUV_INCLUDES)
-	$(CC) $(LIBUV_CFLAGS) -c -o $@ $<
-
-$(HTTP_PARSER_OBJS): %.o : %.c
-	$(CC) $(HTTP_PARSER_CFLAGS) -c -o $@ $<
-
-$(MN_MOD_OBJS): %.o : %.c $(MN_INCLUDES)
-	$(CC) $(MN_CFLAGS) -c -o $@ $<
-
-$(MN_OBJS): %.o : %.c $(MN_INCLUDES)
-	$(CC) $(MN_CFLAGS) -c -o $@ $<
