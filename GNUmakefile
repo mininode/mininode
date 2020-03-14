@@ -59,17 +59,8 @@ UNAME_S := $(shell uname -s)
 
 all: $(OBJDIR)/build/mininode
 
-$(OBJDIR):
-	-mkdir -p $(OBJDIR)/src/core
-	-mkdir -p $(OBJDIR)/src/include
-	-mkdir -p $(OBJDIR)/src/contrib/duktape
-	-mkdir -p $(OBJDIR)/src/contrib/http-parser
-	-mkdir -p $(OBJDIR)/src/contrib/BearSSL
-	-mkdir -p $(OBJDIR)/src/contrib/libuv/src/unix
-	-mkdir -p $(OBJDIR)/src/contrib/cares
-	-mkdir -p $(OBJDIR)/src/contrib/libslz
-	-mkdir -p $(OBJDIR)/src/contrib/lowzip
-	-mkdir -p $(OBJDIR)/build
+objdir:
+	find "$(SRCDIR)" -type d | sed -e "s?$(SRCDIR)?$(OBJDIR)?" | xargs mkdir -p
 
 include kconfig/GNUmakefile
 
@@ -103,24 +94,8 @@ CORE_LINKFLAGS = -L$(OBJDIR)/build/ -lm -lpthread -lrt -Wl,--no-as-needed
 
 $(info $$CORE_DEPS is [${CORE_DEPS}])
 
-$(OBJDIR)/src/include/builtin_hash.h: | $(OBJDIR)
+$(OBJDIR)/src/include/builtin_hash.h: | objdir
 	gperf -N find_builtin -t $(SRCDIR)/src/include/builtin_hash.gperf > $@
-
-define generateRules
-$(info creating rule for ${1})
-$(subst $(SRCDIR),$(OBJDIR),$(1:.c=.o)): $1 $(subst $(SRCDIR),$(OBJDIR),$(1:.c=.d)) | $(OBJDIR)
-	@echo Building $$@
-	$(CC) -c $(CORE_CFLAGS) -o $@ $< -MMD -MP -MF $(subst $(SRCDIR),$(OBJDIR),$(1:.c=.d))
-endef
-
-$(foreach(file, $(CORE_SRCS), $(eval $(call generateRules, $(file)))))
-
-#$(CORE_DEPS): $(OBJDIR)/%.d | $(OBJDIR)/src/include/builtin_hash.h $(OBJDIR)/build/libduktape.a $(OBJDIR)
-#	$(CC) $(CORE_CFLAGS) $(CORE_DEPFLAGS) -c -o $@ $^
-# $(subst $(OBJDIR),$(SRCDIR),$(@:.o=.c))
-
-$(OBJDIR)/build/mininode: $(OBJDIR) $(OBJDIR)/src/include/builtin_hash.h $(OBJDIR)/build/libduktape.a $(OBJDIR)/build/libhttparser.a $(OBJDIR)/build/libbearssl.a $(OBJDIR)/build/libuv.a $(CORE_OBJS) $(MN_MOD_OBJS) | $(OBJDIR)
-	$(CC) $(CORE_OBJS) $(MN_MOD_OBJS) $(CORE_LINKFLAGS) -o $@
 
 #include $(CORE_DEPS)
 
@@ -131,13 +106,7 @@ $(OBJDIR)/build/mininode: $(OBJDIR) $(OBJDIR)/src/include/builtin_hash.h $(OBJDI
 $(OBJDIR)/build/libbearssl.a: $(OBJDIR)
 	$(MAKE) AROUT=$(OBJDIR)/ OBJDIR=$(OBJDIR)/src/contrib/BearSSL/obj -C src/contrib/BearSSL lib
 
-include mk/duktape.mk
-include mk/httparser.mk
-include mk/libcares.mk
-include mk/libslz.mk
-include mk/libuv.mk
-include mk/lowzip.mk
-include mk/modules.mk
+-include mk/rules.mk
 
 clean::
 	rm -rf $(OBJDIR)/*

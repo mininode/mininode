@@ -60,6 +60,7 @@ configReader.on('line', function(line) {
 });
 
 configReader.on('close', function(){
+  //console.log(config)
   var requiredTargets = [];
   var requireString = "";
   var libString = "";
@@ -72,7 +73,9 @@ configReader.on('close', function(){
     libString += "-l" + srcs.contrib[dep].name + " ";
     requiredTargets.push(srcs.contrib[dep].target);
     printRules(srcs.contrib[dep].srcs, srcs.contrib[dep].incs, srcs.contrib[dep].objs, config.srcdir, config.objdir);
-    printTarget(config.objdir, srcs.contrib[dep].target, srcs.contrib[dep].objs);
+    if(dep !== 'bearssl') {
+      printTarget(config.objdir, srcs.contrib[dep].target, srcs.contrib[dep].objs);
+    }
   });
   Object.keys(config.modules).map(function(key, idx) {
     let dep = config.modules[idx];
@@ -355,10 +358,8 @@ var srcs = {
         'src/modules/dgram/classes/socket/socket.c',
         'src/modules/dgram/classes/socket/methods/add_membership.c',
         'src/modules/dgram/classes/socket/methods/address.c',
-        'src/modules/dgram/classes/socket/methods/address.c',
         'src/modules/dgram/classes/socket/methods/bind.c',
         'src/modules/dgram/classes/socket/methods/close.c',
-        'src/modules/dgram/classes/socket/methods/add_membership.c',
         'src/modules/dgram/classes/socket/methods/ref.c',
         'src/modules/dgram/classes/socket/methods/send.c',
         'src/modules/dgram/classes/socket/methods/set_broadcast.c',
@@ -454,7 +455,7 @@ var srcs = {
         'src/modules/fs/methods/stat_sync.c',
         'src/modules/fs/methods/symlink.c',
         'src/modules/fs/methods/symlink_sync.c',
-        'src/modules/fs/methods/ftruncate.c',
+        'src/modules/fs/methods/truncate.c',
         'src/modules/fs/methods/truncate_sync.c',
         'src/modules/fs/methods/unlink.c',
         'src/modules/fs/methods/unlink_sync.c',

@@ -91,29 +91,29 @@ config DUK_USE_JC
 
 endmenu
 
-config MN_HTTP_PARSER
+config MN_CONTRIB_HTTP_PARSER
 	bool "Build http_parser"
 	default y
 	help
 	Required for building the 'http' and 'https' modules.
 
-config MN_BEARSSL
+config MN_CONTRIB_BEARSSL
 	bool "Build BearSSL"
 	default y
 	help
 	Required for building the 'https' and 'crypto' modules.
 
-config MN_LIBSLZ
+config MN_CONTRIB_LIBSLZ
 	bool "Build libslz"
 	default y
 
-config MN_LOWZIP
+config MN_CONTRIB_LOWZIP
 	bool "Build lowzip"
 	default y
 
-config MN_C_ARES
+config MN_CONTRIB_LIBCARES
 	bool "Build c-ares"
-	default y
+	default n
 	help
 	Required for building the 'dns' module.
 
