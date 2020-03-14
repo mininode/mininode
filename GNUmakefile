@@ -99,7 +99,7 @@ CORE_SRCS = $(SRCDIR)/src/core/ref.c     \
 CORE_DEPS = $(subst $(SRCDIR),$(OBJDIR),$(CORE_SRCS:.c=.d))
 CORE_OBJS = $(subst $(SRCDIR),$(OBJDIR),$(CORE_SRCS:.c=.o))
 
-CORE_LINKFLAGS = -L$(OBJDIR)/build/ -lduktape -luv -lbearssl -lhttparser -lm -lpthread -lrt -Wl,--no-as-needed 
+CORE_LINKFLAGS = -L$(OBJDIR)/build/ -lm -lpthread -lrt -Wl,--no-as-needed 
 
 $(info $$CORE_DEPS is [${CORE_DEPS}])
 
