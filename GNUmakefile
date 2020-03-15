@@ -61,6 +61,7 @@ all: $(OBJDIR)/build/mininode
 
 objdir:
 	find "$(SRCDIR)" -type d | sed -e "s?$(SRCDIR)?$(OBJDIR)?" | xargs mkdir -p
+	mkdir -p $(OBJDIR)/build
 
 include kconfig/GNUmakefile
 

@@ -91,6 +91,13 @@ config DUK_USE_JC
 
 endmenu
 
+
+config MN_CONTRIB_DUKTAPE
+	bool "Build the duktape javascript interpreter"
+	default y
+	help
+	Required for, well, everything.
+
 config MN_CONTRIB_HTTP_PARSER
 	bool "Build http_parser"
 	default y
@@ -123,6 +130,12 @@ menu "Global Settings"
 endmenu
 
 menu "Module Settings"
+
+config MN_MODULE_CORE
+	bool "The core of mininode (the CLI and module loader)"
+	default y
+	help
+	Enable the 'assert' module.
 
 config MN_MODULE_ASSERT
 	bool "'assert' module"

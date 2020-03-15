@@ -76,6 +76,11 @@ configReader.on('close', function(){
     if(dep !== 'bearssl') {
       printTarget(config.objdir, srcs.contrib[dep].target, srcs.contrib[dep].objs);
     }
+    if(dep == 'duktape') {
+      srcs.contrib[dep].objs.map(function(object) {
+        requiredObjs += object + " ";
+      });
+    }
   });
   Object.keys(config.modules).map(function(key, idx) {
     let dep = config.modules[idx];
@@ -87,8 +92,8 @@ configReader.on('close', function(){
   requiredTargets.map(function(t) {
     requireString += "$(OBJDIR)/build/" + t + " "; 
   });
-  console.log("$(OBJDIR)/build/mininode: " + requireString + requiredObjs + "| objdir");
-	console.log("\t$(CC) $(CORE_CFLAGS) $(CORE_LINKFLAGS)" + libString + "$^ -o $@");
+  console.log("$(OBJDIR)/build/mininode: " + requiredObjs + "| " + requireString + " objdir");
+	console.log("\t$(CC) $(CORE_CFLAGS) " + libString + "$(CORE_LINKFLAGS) $^ -o $@");
 })
 
 var srcs = {
@@ -562,7 +567,44 @@ var srcs = {
     },
     'process': {
       srcs: [
-        'src/modules/process/process.c'
+        'src/modules/process/process.c',
+        'src/modules/process/methods/abort.c',
+        'src/modules/process/methods/arch.c',
+        'src/modules/process/methods/argv.c',
+        'src/modules/process/methods/chdir.c',
+        'src/modules/process/methods/config.c',
+        'src/modules/process/methods/connected.c',
+        'src/modules/process/methods/cpu_usage.c',
+        'src/modules/process/methods/cwd.c',
+        'src/modules/process/methods/disconnect.c',
+        'src/modules/process/methods/emit_warning.c',
+        'src/modules/process/methods/env.c',
+        'src/modules/process/methods/exec_argv.c',
+        'src/modules/process/methods/exec_path.c',
+        'src/modules/process/methods/exit.c',
+        'src/modules/process/methods/getegid.c',
+        'src/modules/process/methods/geteuid.c',
+        'src/modules/process/methods/getgid.c',
+        'src/modules/process/methods/getgroups.c',
+        'src/modules/process/methods/getuid.c',
+        'src/modules/process/methods/hrtime.c',
+        'src/modules/process/methods/initgroups.c',
+        'src/modules/process/methods/kill.c',
+        'src/modules/process/methods/main_module.c',
+        'src/modules/process/methods/memory_usage.c',
+        'src/modules/process/methods/next_tick.c',
+        'src/modules/process/methods/pid.c',
+        'src/modules/process/methods/platform.c',
+        'src/modules/process/methods/release.c',
+        'src/modules/process/methods/send.c',
+        'src/modules/process/methods/setegid.c',
+        'src/modules/process/methods/seteuid.c',
+        'src/modules/process/methods/setgid.c',
+        'src/modules/process/methods/setgroups.c',
+        'src/modules/process/methods/setuid.c',
+        'src/modules/process/methods/umask.c',
+        'src/modules/process/methods/uptime.c',
+        'src/modules/process/methods/version.c'
       ],
       incs: [],
       objs: [],
@@ -644,7 +686,13 @@ var srcs = {
     },
     'timers': {
       srcs: [
-        'src/modules/timers/timers.c'
+        'src/modules/timers/timers.c',
+        'src/modules/timers/methods/clear_immediate.c',
+        'src/modules/timers/methods/clear_interval.c',
+        'src/modules/timers/methods/clear_timeout.c',
+        'src/modules/timers/methods/set_immediate.c',
+        'src/modules/timers/methods/set_interval.c',
+        'src/modules/timers/methods/set_timeout.c',
       ],
       incs: [],
       objs: [],
@@ -674,7 +722,13 @@ var srcs = {
     },
     'util': {
       srcs: [
-        'src/modules/util/util.c'
+        'src/modules/util/util.c',
+        'src/modules/util/methods/debuglog.c',
+        'src/modules/util/methods/deprecate.c',
+        'src/modules/util/methods/format.c',
+        'src/modules/util/methods/inherits.c',
+        'src/modules/util/methods/inspect.c'
+
       ],
       incs: [],
       objs: [],
