@@ -67,7 +67,7 @@ include kconfig/GNUmakefile
 
 CORE_DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
 
-CORE_CFLAGS = $(CFLAGS)                             \
+CORE_CFLAGS = $(CFLAGS)                           \
 						-fPIE                                 \
   					-Wall                                 \
 						-I$(OBJDIR)/src/include               \
@@ -79,6 +79,7 @@ CORE_CFLAGS = $(CFLAGS)                             \
 						-DDUK_OPT_PARANOID_ERRORS             \
 						-DDUK_OPT_AUGMENT_ERRORS              \
 						-D_POSIX_C_SOURCE=200809L             \
+						-D_GNU_SOURCE                         \
 						-D_XOPEN_SOURCE=600
 
 CORE_HDRS = src/include/mininode.h
@@ -88,12 +89,7 @@ CORE_SRCS = $(SRCDIR)/src/core/ref.c     \
 						$(SRCDIR)/src/core/loader.c  \
 						$(SRCDIR)/src/core/mininode.c
 
-CORE_DEPS = $(subst $(SRCDIR),$(OBJDIR),$(CORE_SRCS:.c=.d))
-CORE_OBJS = $(subst $(SRCDIR),$(OBJDIR),$(CORE_SRCS:.c=.o))
-
 CORE_LINKFLAGS = -L$(OBJDIR)/build/ -lm -lpthread -lrt -Wl,--no-as-needed 
-
-$(info $$CORE_DEPS is [${CORE_DEPS}])
 
 $(OBJDIR)/src/include/builtin_hash.h: | objdir
 	gperf -N find_builtin -t $(SRCDIR)/src/include/builtin_hash.gperf > $@

@@ -18,7 +18,7 @@ function printRules(srcs, incs, objs, srcdir, objdir) {
       }
     }
     console.log("%s: %s | objdir", obj, src);
-    console.log("\t$(CC) $(CORE_CFLAGS) %s -c $< -o $@ -MMD -MP -MT'$@' -MF %s", includes, dep);
+    console.log("\t$(CC) $(CORE_CFLAGS) %s -c $< -o $@ -fPIC -MMD -MP -MT'$@' -MF %s", includes, dep);
     //console.log("MODULE_OBJS += %s", obj);
     console.log("CORE_DEPS += %s", dep);
   }
