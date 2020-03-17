@@ -126,7 +126,6 @@ endif
 ifeq ($(CONFIG_CONTRIB_LIBCARES),y)
 	include mk/contrib/libcares.mk
 endif
-
 ifeq ($(CONFIG_MODULE_ASSERT),y)
 	include mk/modules/assert.mk
 endif
@@ -231,7 +230,7 @@ endif
 $(foreach file,$(CORE_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
 
 $(OBJDIR)/build/mininode: $(OBJDIR)/src/include/builtin_hash.h $(CORE_OBJS) | objdir $(OBJDIR)/build/libduktape.a $(OBJDIR)/build/libuv.a
-	$(CC) $(CORE_CFLAGS) -flto -fPIE $(CORE_OBJS) -lpthread -ldl -lm -L$(OBJDIR)/build -l:libduktape.a -l:libuv.a -o $@
+	$(CC) $(CORE_CFLAGS) -flto -fPIE $(CORE_OBJS) -L$(OBJDIR)/build -l:libduktape.a -l:libuv.a -lpthread -ldl -lm -o $@
 
 clean::
 	rm -rf $(OBJDIR)/*
