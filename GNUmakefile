@@ -230,7 +230,7 @@ endif
 #include $(CORE_DEPS)
 $(foreach file,$(CORE_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
 
-$(OBJDIR)/build/mininode: $(OBJDIR)/src/include/builtin_hash.h $(CORE_OBJS) | objdir $(OBJDIR)/build/libduktape.a $(OBJDIR)/build/libuv.a
+$(OBJDIR)/build/mininode: $(OBJDIR)/src/include/builtin_hash.h $(OBJDIR)/build/libduktape.a $(OBJDIR)/build/libuv.a $(CORE_OBJS) | objdir 
 	$(CC) $(CORE_CFLAGS) -flto -fPIE $(CORE_OBJS) -L$(OBJDIR)/build -l:libduktape.a -l:libuv.a -lpthread -ldl -lm -o $@
 
 clean::
