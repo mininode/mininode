@@ -91,29 +91,29 @@ config DUK_USE_JC
 
 endmenu
 
-config MN_HTTP_PARSER
+config CONTRIB_HTTP_PARSER
 	bool "Build http_parser"
 	default y
 	help
 	Required for building the 'http' and 'https' modules.
 
-config MN_BEARSSL
+config CONTRIB_BEARSSL
 	bool "Build BearSSL"
 	default y
 	help
 	Required for building the 'https' and 'crypto' modules.
 
-config MN_LIBSLZ
+config CONTRIB_LIBSLZ
 	bool "Build libslz"
 	default y
 
-config MN_LOWZIP
+config CONTRIB_LOWZIP
 	bool "Build lowzip"
 	default y
 
-config MN_C_ARES
+config CONTRIB_LIBCARES
 	bool "Build c-ares"
-	default y
+	default n
 	help
 	Required for building the 'dns' module.
 
@@ -124,7 +124,7 @@ endmenu
 
 menu "Module Settings"
 
-config MN_MODULE_ASSERT
+config MODULE_ASSERT
 	bool "'assert' module"
 	default y
 	help
@@ -132,15 +132,24 @@ config MN_MODULE_ASSERT
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/assert.html
 
-config MN_MODULE_BUFFER
+config MODULE_BUFFER
 	bool "'buffer' module"
 	default y
 	help
 	Enable the 'buffer' module.
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/buffer.html
-	
-config MN_MODULE_CHILD_PROCESS
+
+config MODULE_CONSOLE
+	bool "'buffer' module"
+	default y
+	help
+	Enable the 'console' module.
+
+	See https://nodejs.org/dist/v6.9.2/docs/api/console.html
+
+
+config MODULE_CHILD_PROCESS
 	bool "'child_process' module"
 	default y
 	help
@@ -148,7 +157,7 @@ config MN_MODULE_CHILD_PROCESS
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/child_process.html
 
-config MN_MODULE_CLUSTER
+config MODULE_CLUSTER
 	bool "'cluster' module"
 	default y
 	help
@@ -156,7 +165,7 @@ config MN_MODULE_CLUSTER
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/cluster.html
 
-config MN_MODULE_CRYPTO
+config MODULE_CRYPTO
 	bool "'crypto' module"
 	default y
 	help
@@ -164,7 +173,7 @@ config MN_MODULE_CRYPTO
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/crypto.html
 
-config MN_MODULE_DEBUGGER
+config MODULE_DEBUGGER
 	bool "'debugger' module"
 	default y
 	help
@@ -172,7 +181,7 @@ config MN_MODULE_DEBUGGER
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/debugger.html
 
-config MN_MODULE_DGRAM
+config MODULE_DGRAM
 	bool "'dgram' module"
 	default y
 	help
@@ -180,7 +189,7 @@ config MN_MODULE_DGRAM
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/dgram.html
 
-config MN_MODULE_DNS
+config MODULE_DNS
 	bool "'dns' module"
 	default y
 	help
@@ -188,7 +197,7 @@ config MN_MODULE_DNS
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/dns.html
 
-config MN_MODULE_ERRORS
+config MODULE_ERRORS
 	bool "'errors' module"
 	default y
 	help
@@ -196,7 +205,7 @@ config MN_MODULE_ERRORS
 
 	https://nodejs.org/dist/v6.9.2/docs/api/errors.html
 
-config MN_MODULE_EVENTS
+config MODULE_EVENTS
 	bool "'events' module"
 	default y
 	help
@@ -204,7 +213,7 @@ config MN_MODULE_EVENTS
 
 	https://nodejs.org/dist/v6.9.2/docs/api/events.html
 
-config MN_MODULE_FS
+config MODULE_FS
 	bool "'fs' module"
 	default y
 	help
@@ -212,7 +221,7 @@ config MN_MODULE_FS
 
 	https://nodejs.org/dist/v6.9.2/docs/api/fs.html
 
-config MN_MODULE_HTTP
+config MODULE_HTTP
 	bool "'http' module"
 	default y
 	help
@@ -221,7 +230,7 @@ config MN_MODULE_HTTP
 	https://nodejs.org/dist/v6.9.2/docs/api/http.html
 
 
-config MN_MODULE_HTTP2
+config MODULE_HTTP2
 	bool "'http2' module"
 	default y
 	help
@@ -229,7 +238,7 @@ config MN_MODULE_HTTP2
 
 	https://nodejs.org/dist/v6.9.2/docs/api/http.html
 
-config MN_MODULE_HTTPS
+config MODULE_HTTPS
 	bool "'https' module"
 	default y
 	help
@@ -237,7 +246,7 @@ config MN_MODULE_HTTPS
 
 	https://nodejs.org/dist/v6.9.2/docs/api/https.html
 
-config MN_MODULE_NET
+config MODULE_NET
 	bool "'net' module"
 	default y
 	help
@@ -245,13 +254,13 @@ config MN_MODULE_NET
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/net.html
 
-config MN_MODULE_OS
+config MODULE_OS
 	bool "'os' module"
 	default y
 	help
 	See https://nodejs.org/dist/v6.9.2/docs/api/os.html
 
-config MN_MODULE_PATH
+config MODULE_PATH
 	bool "'path' module"
 	default y
 	help
@@ -259,7 +268,7 @@ config MN_MODULE_PATH
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/path.html
 
-config MN_MODULE_PROCESS
+config MODULE_PROCESS
 	bool "'process' module"
 	default y
 	help
@@ -267,7 +276,7 @@ config MN_MODULE_PROCESS
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/process.html
 
-config MN_MODULE_PUNYCODE
+config MODULE_PUNYCODE
 	bool "'punycode' module"
 	default y
 	help
@@ -275,7 +284,7 @@ config MN_MODULE_PUNYCODE
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/punycode.html
 
-config MN_MODULE_QUERYSTRING
+config MODULE_QUERYSTRING
 	bool "'querystring' module"
 	default y
 	help
@@ -283,7 +292,7 @@ config MN_MODULE_QUERYSTRING
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/querystring.html
 
-config MN_MODULE_READLINE
+config MODULE_READLINE
 	bool "'readline' module"
 	default y
 	help
@@ -291,7 +300,7 @@ config MN_MODULE_READLINE
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/readline.html
 
-config MN_MODULE_REPL
+config MODULE_REPL
 	bool "'repl' module"
 	default y
 	help
@@ -299,7 +308,7 @@ config MN_MODULE_REPL
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/repl.html
 
-config MN_MODULE_STREAM
+config MODULE_STREAM
 	bool "'stream' module"
 	default y
 	help
@@ -307,7 +316,7 @@ config MN_MODULE_STREAM
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/stream.html
 
-config MN_MODULE_STRING_DECODER
+config MODULE_STRING_DECODER
 	bool "'string_decoder' module"
 	default y
 	help
@@ -315,7 +324,7 @@ config MN_MODULE_STRING_DECODER
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/string_decoder.html
 
-config MN_MODULE_TIMERS
+config MODULE_TIMERS
 	bool "'timers' module"
 	default y
 	help
@@ -323,7 +332,7 @@ config MN_MODULE_TIMERS
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/timers.html
 
-config MN_MODULE_TLS
+config MODULE_TLS
 	bool "'tls' module"
 	default y
 	help
@@ -331,7 +340,7 @@ config MN_MODULE_TLS
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/tls.html
 
-config MN_MODULE_TTY
+config MODULE_TTY
 	bool "'tty' module"
 	default y
 	help
@@ -339,7 +348,7 @@ config MN_MODULE_TTY
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/tty.html
 
-config MN_MODULE_URL
+config MODULE_URL
 	bool "'url' module"
 	default y
 	help
@@ -347,7 +356,7 @@ config MN_MODULE_URL
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/url.html
 
-config MN_MODULE_UTIL
+config MODULE_UTIL
 	bool "'util' module"
 	default y
 	help
@@ -355,7 +364,7 @@ config MN_MODULE_UTIL
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/util.html
 
-config MN_MODULE_V8
+config MODULE_V8
 	bool "'v8' module"
 	default y
 	help
@@ -363,7 +372,7 @@ config MN_MODULE_V8
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/v8.html
 
-config MN_MODULE_VM
+config MODULE_VM
 	bool "'vm' module"
 	default y
 	help
@@ -371,7 +380,7 @@ config MN_MODULE_VM
 
 	See https://nodejs.org/dist/v6.9.2/docs/api/vm.html
 
-config MN_MODULE_ZLIB
+config MODULE_ZLIB
 	bool "'zlib' module"
 	default y
 	help

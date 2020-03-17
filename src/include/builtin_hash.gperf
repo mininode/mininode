@@ -17,6 +17,7 @@ dns, &mn_bi_dns
 events, &mn_bi_events
 fs, &mn_bi_fs
 http, &mn_bi_http
+http2, &mn_bi_http2
 https, &mn_bi_https
 net, &mn_bi_net
 os, &mn_bi_os

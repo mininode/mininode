@@ -65,13 +65,13 @@ mn_setup_req(duk_context *ctx, int callback_index) {
 }
 
 void
-mn_get_data(duk_context *ctx, int index, uv_buf_t* buf) {
+mn_get_data(duk_context *ctx, int idx, uv_buf_t* buf) {
 	duk_size_t len;
 
-	if (duk_is_string(ctx, index)) {
-		buf->base = (char*) duk_get_lstring(ctx, index, &len);
+	if (duk_is_string(ctx, idx)) {
+		buf->base = (char*) duk_get_lstring(ctx, idx, &len);
 	} else {
-		buf->base = duk_get_buffer(ctx, index, &len);
+		buf->base = duk_get_buffer(ctx, idx, &len);
 	}
 
 	buf->len = len;

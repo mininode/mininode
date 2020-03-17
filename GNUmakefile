@@ -1,4 +1,3 @@
-# Copyright (c) 2013 Ben Noordhuis <info@bnoordhuis.nl>
 # Copyright (c) 2020 Alex Caudill <alex.caudill@pm.me>
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -20,14 +19,19 @@ EXTRAVERSION = rc0
 NAME = Cryptocratic Kitten
 
 CC ?= gcc
+LD ?= ld
 AR ?= ar
 RM ?= rm
 CFLAGS ?= -O2 -std=gnu99
+
+SRCDIR := $(realpath .)
+OBJDIR ?= $(SRCDIR)/obj
 
 KCONFIG_CONFIG ?= .config
 export MININODEVERSION
 export KCONFIG_CONFIG
 
+include $(KCONFIG_CONFIG)
 # Do not:
 # o  use make's built-in rules and variables
 #    (this increases performance and avoids hard-to-debug behaviour);
@@ -43,7 +47,6 @@ export LC_COLLATE LC_NUMERIC
 # Avoid interference with shell env settings
 unexport GREP_OPTIONS
 
-
 ifeq ("$(origin V)", "command line")
   KBUILD_VERBOSE = $(V)
 endif
@@ -51,153 +54,187 @@ ifndef KBUILD_VERBOSE
   KBUILD_VERBOSE = 0
 endif
 
-MININODERELEASE = $(shell cat include/config/mininode.release 2> /dev/null)
 MININODEVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
 
-all: mininode
+UNAME_S := $(shell uname -s)
+
+define generateRule
+$2 += $(patsubst %.c, %.o, $(subst $(SRCDIR), $(OBJDIR), ${1}))
+$(patsubst %.c, %.o, $(subst $(SRCDIR), $(OBJDIR), ${1})): $(1) | objdir
+	$$(CC) -c -fPIC $$(CORE_CFLAGS) $$(LIBUV_CFLAGS) $$^ -o $$@
+endef
+
+all: $(OBJDIR)/build/mininode
+
+objdir:
+	find "$(SRCDIR)" -type d | sed -e "s?$(SRCDIR)?$(OBJDIR)?" | xargs mkdir -p
+	mkdir -p $(OBJDIR)/build
 
 include kconfig/GNUmakefile
 
-#Recursive wildcard!
-rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
+CORE_DEPFLAGS = -MT $@ -MMD -MP -MF $(OBJDIR)/$*.d
 
-LIBUV_CFLAGS += $(CFLAGS) \
-                -Wall \
-                -Wextra \
-                -Wno-unused-parameter \
-								-Isrc/contrib/libuv/include \
-								-Isrc/contrib/libuv/src
+CORE_CFLAGS = $(CFLAGS)                           \
+  					-Wall                                 \
+						-I$(OBJDIR)/src/include               \
+						-I$(SRCDIR)/src/contrib/duktape       \
+						-I$(SRCDIR)/src/contrib/http-parser   \
+						-I$(SRCDIR)/src/contrib/libuv/include \
+						-I$(SRCDIR)/src/include               \
+						-DDUK_OPT_VERBOSE_ERRORS              \
+						-DDUK_OPT_PARANOID_ERRORS             \
+						-DDUK_OPT_AUGMENT_ERRORS              \
+						-D_POSIX_C_SOURCE=200809L             \
+						-D_GNU_SOURCE                         \
+						-D_XOPEN_SOURCE=700
 
-LIBUV_INCLUDES = src/contrib/libuv/include/tree.h \
-                 src/contrib/libuv/include/uv-errno.h \
-                 src/contrib/libuv/include/uv-threadpool.h \
-                 src/contrib/libuv/include/uv-version.h \
-                 src/contrib/libuv/include/uv.h \
-                 src/contrib/libuv/src/heap-inl.h \
-                 src/contrib/libuv/src/queue.h \
-                 src/contrib/libuv/src/uv-common.h
+CORE_HDRS = src/include/mininode.h
 
-HTTP_PARSER_CFLAGS = $(CFLAGS)
+CORE_SRCS = $(SRCDIR)/src/core/ref.c     \
+						$(SRCDIR)/src/core/core.c    \
+						$(SRCDIR)/src/core/loader.c  \
+						$(SRCDIR)/src/core/mininode.c
 
-HTTP_PARSER_OBJS = src/contrib/http-parser/http_parser.o
+MININODE_OBJS =
 
+CORE_LINKFLAGS = -L$(OBJDIR)/build/ -lm -lpthread -lrt -Wl,--no-as-needed 
 
-MBEDTLS_CFLAGS += $(CFLAGS) \
-                -Wall \
-                -Wextra \
-                -Wno-unused-parameter \
-								-Isrc/contrib/mbedtls/include
+%.o: %.c
+	$(CC) $(CORE_CFLAGS) $(CORE_DEPFLAGS) $^ -o $@
 
-MN_CFLAGS = $(CFLAGS) \
-						-Wall \
-						-Isrc/contrib/duktape \
-						-Isrc/contrib \
-						-Isrc/contrib/libz \
-						-Isrc/modules \
-						-Isrc/contrib/libuv/include/ \
-						-Isrc/include \
-						-DDUK_OPT_VERBOSE_ERRORS \
-						-DDUK_OPT_PARANOID_ERRORS \
-						-DDUK_OPT_AUGMENT_ERRORS \
-						-D_POSIX_C_SOURCE=200809L \
-						-D_XOPEN_SOURCE=600
+$(OBJDIR)/src/include/builtin_hash.gperf: | objdir
+	cp $(SRCDIR)/src/include/builtin_hash.gperf $(OBJDIR)/src/include/builtin_hash.gperf
 
-MN_INCLUDES = src/include/mininode.h \
-							src/include/builtin_hash.h
+$(OBJDIR)/src/include/builtin_hash.h: $(OBJDIR)/src/include/builtin_hash.gperf
+	gperf -N find_builtin -t $^ > $@
 
-MN_MOD_SRCS = $(call rwildcard, src/modules/,*.c)
-MN_MOD_OBJS = $(MN_MOD_SRCS:.c=.o)
+include mk/contrib/duktape.mk
+include mk/contrib/libuv.mk
 
-MN_OBJS = src/contrib/duktape/duktape.o \
-					src/util/ref.o \
-					src/util/util.o \
-					src/util/loader.o \
-					src/mininode.o
-
-ifeq ($(OS),Windows_NT)
-$(error Windows targets are unsupported.)
-else
-    LIBUV_OBJS += src/contrib/libuv/src/threadpool.o \
-                  src/contrib/libuv/src/unix/async.o \
-									src/contrib/libuv/src/unix/dl.o \
-									src/contrib/libuv/src/unix/fs.o \
-									src/contrib/libuv/src/unix/getaddrinfo.o \
-									src/contrib/libuv/src/unix/getnameinfo.o \
-									src/contrib/libuv/src/unix/loop-watcher.o \
-									src/contrib/libuv/src/unix/loop.o \
-									src/contrib/libuv/src/unix/pipe.o \
-									src/contrib/libuv/src/unix/process.o \
-									src/contrib/libuv/src/unix/signal.o \
-									src/contrib/libuv/src/unix/stream.o \
-									src/contrib/libuv/src/unix/tcp.o \
-									src/contrib/libuv/src/unix/thread.o \
-									src/contrib/libuv/src/unix/timer.o \
-									src/contrib/libuv/src/unix/tty.o \
-									src/contrib/libuv/src/unix/udp.o \
-									src/contrib/libuv/src/version.o \
-									src/contrib/libuv/src/inet.o \
-									src/contrib/libuv/src/fs-poll.o \
-									src/contrib/libuv/src/unix/proctitle.o \
-									src/contrib/libuv/src/uv-common.o
-
-    UNAME_S := $(shell uname -s)
-    ifeq ($(UNAME_S),Linux)
-        LIBUV_OBJS += src/contrib/libuv/src/unix/linux-core.o \
-											src/contrib/libuv/src/unix/linux-inotify.o \
-											src/contrib/libuv/src/unix/linux-syscalls.o \
-											src/contrib/libuv/src/unix/core.o \
-											src/contrib/libuv/src/unix/poll.o
-        LIBUV_CFLAGS += -fPIC
-
-    else ifeq ($(UNAME_S),Darwin)
-        LIBUV_OBJS += src/contrib/libuv/src/unix/core.o \
-                      src/contrib/libuv/src/unix/darwin.o \
-											src/contrib/libuv/src/unix/darwin-proctitle.o \
-											src/contrib/libuv/src/unix/kqueue.o \
-											src/contrib/libuv/src/unix/fsevents.o \
-											src/contrib/libuv/src/unix/pthread-barrier.o \
-											src/contrib/libuv/src/unix/pthread-fixes.o \
-											src/contrib/libuv/src/unix/poll.o
-
-    else ifeq ($(UNAME_S),SunOS)
-        # TBD
-    endif
+ifeq ($(CONFIG_CONTRIB_HTTP_PARSER),y)
+	include mk/contrib/httparser.mk
+endif
+ifeq ($(CONFIG_CONTRIB_BEARSSL),y)
+	include mk/contrib/bearssl.mk
+endif
+ifeq ($(CONFIG_CONTRIB_LIBSLZ),y)
+	include mk/contrib/libslz.mk
+endif
+ifeq ($(CONFIG_CONTRIB_LOWZIP),y)
+	include mk/contrib/lowzip.mk
+endif
+ifeq ($(CONFIG_CONTRIB_LIBCARES),y)
+	include mk/contrib/libcares.mk
+endif
+ifeq ($(CONFIG_MODULE_ASSERT),y)
+	include mk/modules/assert.mk
+endif
+ifeq ($(CONFIG_MODULE_BUFFER),y)
+	include mk/modules/buffer.mk
+endif
+ifeq ($(CONFIG_MODULE_CHILD_PROCESS),y)
+	include mk/modules/child_process.mk
+endif
+ifeq ($(CONFIG_MODULE_CONSOLE),y)
+	include mk/modules/console.mk
+endif
+ifeq ($(CONFIG_MODULE_CLUSTER),y)
+	include mk/modules/cluster.mk
+endif
+ifeq ($(CONFIG_MODULE_CRYPTO),y)
+	include mk/modules/crypto.mk
+endif
+ifeq ($(CONFIG_MODULE_DEBUGGER),y)
+	include mk/modules/debugger.mk
+endif
+ifeq ($(CONFIG_MODULE_DGRAM),y)
+	include mk/modules/dgram.mk
+endif
+ifeq ($(CONFIG_MODULE_DNS),y)
+	include mk/modules/dns.mk
+endif
+ifeq ($(CONFIG_MODULE_ERRORS),y)
+	include mk/modules/errors.mk
+endif
+ifeq ($(CONFIG_MODULE_EVENTS),y)
+	include mk/modules/events.mk
+endif
+ifeq ($(CONFIG_MODULE_FS),y)
+	include mk/modules/fs.mk
+endif
+ifeq ($(CONFIG_MODULE_HTTP),y)
+	include mk/modules/http.mk
+endif
+ifeq ($(CONFIG_MODULE_HTTP2),y)
+	include mk/modules/http2.mk
+endif
+ifeq ($(CONFIG_MODULE_HTTPS),y)
+	include mk/modules/https.mk
+endif
+ifeq ($(CONFIG_MODULE_NET),y)
+	include mk/modules/net.mk
+endif
+ifeq ($(CONFIG_MODULE_OS),y)
+	include mk/modules/os.mk
+endif
+ifeq ($(CONFIG_MODULE_PATH),y)
+	include mk/modules/path.mk
+endif
+ifeq ($(CONFIG_MODULE_PROCESS),y)
+	include mk/modules/process.mk
+endif
+ifeq ($(CONFIG_MODULE_PUNYCODE),y)
+	include mk/modules/punycode.mk
+endif
+ifeq ($(CONFIG_MODULE_QUERYSTRING),y)
+	include mk/modules/querystring.mk
+endif
+ifeq ($(CONFIG_MODULE_READLINE),y)
+	include mk/modules/readline.mk
+endif
+ifeq ($(CONFIG_MODULE_REPL),y)
+	include mk/modules/repl.mk
+endif
+ifeq ($(CONFIG_MODULE_STREAM),y)
+	include mk/modules/stream.mk
+endif
+ifeq ($(CONFIG_MODULE_STRING_DECODER),y)
+	include mk/modules/string_decoder.mk
+endif
+ifeq ($(CONFIG_MODULE_TIMERS),y)
+	include mk/modules/timers.mk
+endif
+ifeq ($(CONFIG_MODULE_TLS),y)
+	include mk/modules/tls.mk
+endif
+ifeq ($(CONFIG_MODULE_TTY),y)
+	include mk/modules/tty.mk
+endif
+ifeq ($(CONFIG_MODULE_URL),y)
+	include mk/modules/url.mk
+endif
+ifeq ($(CONFIG_MODULE_UTIL),y)
+	include mk/modules/util.mk
+endif
+ifeq ($(CONFIG_MODULE_V8),y)
+	include mk/modules/v8.mk
+endif
+ifeq ($(CONFIG_MODULE_VM),y)
+	include mk/modules/vm.mk
+endif
+ifeq ($(CONFIG_MODULE_ZLIB),y)
+	include mk/modules/zlib.mk
 endif
 
+#include $(CORE_DEPS)
+$(foreach file,$(CORE_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+
+$(OBJDIR)/build/mininode: $(OBJDIR)/src/include/builtin_hash.h $(CORE_OBJS) | objdir $(OBJDIR)/build/libduktape.a $(OBJDIR)/build/libuv.a
+	$(CC) $(CORE_CFLAGS) -flto -fPIE $(CORE_OBJS) -L$(OBJDIR)/build -l:libduktape.a -l:libuv.a -lpthread -ldl -lm -o $@
 
 clean::
-	rm -f src/include/builtin_hash.h
-	rm -f $(LIBUV_OBJS) libuv.a
-	rm -f $(HTTP_PARSER_OBJS) libhttparser.a
-	rm -f $(MBEDTLS_OBJS) libmbedtls.a
-	rm -f $(MN_MOD_OBJS)
-	rm -f $(MN_OBJS) mininode
+	rm -rf $(OBJDIR)/*
 
-libuv.a: $(LIBUV_OBJS)
-	ar crs $@ $^
-
-libhttparser.a: $(HTTP_PARSER_OBJS)
-	ar crs $@ $^
-
-src/include/builtin_hash.h: src/include/builtin_hash.gperf
-	gperf -N find_builtin -t $< > $@
-
-MN_LINKFLAGS = -L. -luv -lhttparser -lm -lpthread 
-ifeq ($(UNAME_S),Linux)
-MN_LINKFLAGS += -lrt -Wl,--no-as-needed 
-endif
-
-mininode: libuv.a libhttparser.a $(MN_OBJS) $(MN_MOD_OBJS)
-	$(CC) $(MN_OBJS) $(MN_MOD_OBJS) $(MN_LINKFLAGS) -o $@
-
-$(LIBUV_OBJS): %.o : %.c $(LIBUV_INCLUDES)
-	$(CC) $(LIBUV_CFLAGS) -c -o $@ $<
-
-$(HTTP_PARSER_OBJS): %.o : %.c
-	$(CC) $(HTTP_PARSER_CFLAGS) -c -o $@ $<
-
-$(MN_MOD_OBJS): %.o : %.c $(MN_INCLUDES)
-	$(CC) $(MN_CFLAGS) -c -o $@ $<
-
-$(MN_OBJS): %.o : %.c $(MN_INCLUDES)
-	$(CC) $(MN_CFLAGS) -c -o $@ $<
+.config:
+	touch .config
+	make defconfig

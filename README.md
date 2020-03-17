@@ -24,7 +24,7 @@ any thoughts (in, say, the form of issues) would be appreciated!
 | module name | mininode docs | upstream docs  | status  | notes |
 |---|---|---|---|---|
 | assert  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/assert.html) | INCOMPLETE |   |
-| buffer  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/buffer.html) | INCOMPLETE  |   |
+| buffer  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/buffer.html) | COMPLETE  | Duktape provides a compatible implementation.  |
 | child_process | | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/child_process.html) | INCOMPLETE |   |
 | cluster  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/cluster.html) | INCOMPLETE  |   |
 | console  |   | [nodejs v6.9.2](http://nodejs.org/dist/v6.9.2/docs/api/console.html) | INCOMPLETE  |   |

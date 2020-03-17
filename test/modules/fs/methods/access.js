@@ -10,9 +10,9 @@ fs.access("/tmp", fs.F_OK | fs.R_OK, function(err) {
 
 fs.access("/etc/passwd", fs.F_OK | fs.W_OK, function(err) {
 	if (err) {
-		console.log("success");
-	} else {
 		console.log("failure");
+	} else {
+		console.log("success");
 	}
 });
 

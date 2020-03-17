@@ -13,6 +13,11 @@ static duk_int_t mn__eval_module_source(duk_context *ctx, void *udata);
 
 static void mn__push_module_object(duk_context *ctx, const char *id, duk_bool_t main);
 
+static duk_ret_t mn__unimplemented_module(duk_context *ctx) {
+  (void) duk_error(ctx, DUK_ERR_TYPE_ERROR, "module is unimplemented");
+  return 0;
+}
+
 static duk_bool_t
 mn__get_cached_module(duk_context *ctx, const char *id) {
 	duk_push_global_stash(ctx);

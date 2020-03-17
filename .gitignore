@@ -6,6 +6,7 @@ kconfig/zconf.hash.c
 kconfig/zconf.tab.c
 obj
 *.o
+*.dwo
 *.a
 config.mak
 .config
