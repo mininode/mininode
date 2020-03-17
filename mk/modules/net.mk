@@ -7,7 +7,6 @@ NET_SRCS = $(SRCDIR)/src/modules/net/net.c \
 					 $(SRCDIR)/src/modules/net/methods/is_ip_v6.c \
 					 $(SRCDIR)/src/modules/net/classes/server/server.c \
 					 $(SRCDIR)/src/modules/net/classes/server/methods/address.c \
-					 $(SRCDIR)/src/modules/net/classes/server/methods/address.c \
 					 $(SRCDIR)/src/modules/net/classes/server/methods/close.c \
 					 $(SRCDIR)/src/modules/net/classes/server/methods/get_connections.c \
 					 $(SRCDIR)/src/modules/net/classes/server/methods/listen.c \
