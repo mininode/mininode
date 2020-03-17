@@ -85,10 +85,19 @@ From a Linux system:
     cd mininode
     git submodule init
     git submodule update
-    make defconfig
-    make
-    make install
-    make uninstall
+    make && sudo make install
+
+Alternatively, if you wish to customize your build you may do:
+
+    make menuconfig
+
+The same kconfig system you might remember from the Linux kernel is used to build 
+`mininode`, so you can save configurations and point at them with like so:
+
+    KCONFIG_CONFIG=/path/to/saved/.config OBJDIR=/tmp/obj make
+
+The `OBJDIR` variable allows out of tree builds, so you can easily have various 
+different builds for different configurations and architectures.
 
 For use on embedded systems, musl libc and Linux are recommended (in general).
 
