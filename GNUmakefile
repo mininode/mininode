@@ -22,6 +22,7 @@ CC ?= gcc
 LD ?= ld
 AR ?= ar
 RM ?= rm
+DESTDIR ?= /usr/local/bin
 CFLAGS ?= -O2 -std=gnu99
 
 SRCDIR := $(realpath .)
@@ -238,3 +239,6 @@ clean::
 .config:
 	touch .config
 	make defconfig
+
+install: $(OBJDIR)/build/mininode
+	cp $^ $(DESTDIR)/mininode
