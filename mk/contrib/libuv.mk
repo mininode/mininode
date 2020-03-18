@@ -37,8 +37,9 @@ LIBUV_SRCS += $(SRCDIR)/src/contrib/libuv/src/unix/linux-core.c \
 endif
 
 LIBUV_OBJS =
+LIBUV_DEPS =
 
-$(foreach file,$(LIBUV_SRCS),$(eval $(call generateRule,$(file),LIBUV_OBJS)))
+$(foreach file,$(LIBUV_SRCS),$(eval $(call generateRule,$(file),LIBUV_OBJS,LIBUV_DEPS)))
 
 $(OBJDIR)/build/libuv.a: $(LIBUV_OBJS)
 	ar crs $@ $^

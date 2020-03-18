@@ -14,5 +14,5 @@ EVENTS_SRCS = $(SRCDIR)/src/modules/events/events.c \
 							 $(SRCDIR)/src/modules/events/classes/event_emitter/event_emitter.c
 
 
-$(foreach file,$(EVENTS_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(EVENTS_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

@@ -10,5 +10,5 @@ PATH_SRCS = $(SRCDIR)/src/modules/path/path.c \
 						$(SRCDIR)/src/modules/path/methods/relative.c \
 						$(SRCDIR)/src/modules/path/methods/resolve.c
 
-$(foreach file,$(PATH_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(PATH_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

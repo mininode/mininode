@@ -69,5 +69,5 @@ FS_SRCS = $(SRCDIR)/src/modules/fs/fs.c \
 					$(SRCDIR)/src/modules/fs/methods/write_file_sync.c \
 					$(SRCDIR)/src/modules/fs/methods/write_sync.c
 
-$(foreach file,$(FS_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(FS_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

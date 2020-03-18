@@ -20,5 +20,5 @@ TLS_SRCS = $(SRCDIR)/src/modules/tls/tls.c \
 					 $(SRCDIR)/src/modules/tls/classes/tls_socket/methods/renegotiate.c \
 					 $(SRCDIR)/src/modules/tls/classes/tls_socket/methods/set_max_send_fragment.c
 
-$(foreach file,$(TLS_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(TLS_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

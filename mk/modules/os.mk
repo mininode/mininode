@@ -15,5 +15,5 @@ OS_SRCS = $(SRCDIR)/src/modules/os/os.c \
 					$(SRCDIR)/src/modules/os/methods/uptime.c \
 					$(SRCDIR)/src/modules/os/methods/user_info.c
 
-$(foreach file,$(OS_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(OS_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

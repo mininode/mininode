@@ -13,5 +13,5 @@ ASSERT_SRCS = $(SRCDIR)/src/modules/assert/assert.c \
 							$(SRCDIR)/src/modules/assert/methods/strict_equal.c \
 							$(SRCDIR)/src/modules/assert/methods/throws.c
 
-$(foreach file,$(ASSERT_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(ASSERT_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

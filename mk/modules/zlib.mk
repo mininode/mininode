@@ -22,5 +22,5 @@ ZLIB_SRCS = $(SRCDIR)/src/modules/zlib/zlib.c \
 						$(SRCDIR)/src/modules/zlib/methods/unzip.c \
 						$(SRCDIR)/src/modules/zlib/methods/unzip_sync.c
 
-$(foreach file,$(ZLIB_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(ZLIB_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

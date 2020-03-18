@@ -61,8 +61,9 @@ UNAME_S := $(shell uname -s)
 
 define generateRule
 $2 += $(patsubst %.c, %.o, $(subst $(SRCDIR), $(OBJDIR), ${1}))
+$3 += $(patsubst %.c, %.d, $(subst $(SRCDIR), $(OBJDIR), ${1}))
 $(patsubst %.c, %.o, $(subst $(SRCDIR), $(OBJDIR), ${1})): $(1) | objdir
-	$$(CC) -c -fPIC $$(CORE_CFLAGS) $$(LIBUV_CFLAGS) $$^ -o $$@
+	$$(CC) -c -fPIC $$(CORE_CFLAGS) $$(LIBUV_CFLAGS) $$^ -o $$@ -MT $$@ -MMD -MP -MF$(patsubst %.c, %.d, $(subst $(SRCDIR), $(OBJDIR), ${1})) 
 endef
 
 all: $(OBJDIR)/build/mininode
@@ -72,8 +73,6 @@ objdir:
 	mkdir -p $(OBJDIR)/build
 
 include kconfig/GNUmakefile
-
-CORE_DEPFLAGS = -MT $@ -MMD -MP -MF $(OBJDIR)/$*.d
 
 CORE_CFLAGS = $(CFLAGS)                           \
   					-Wall                                 \
@@ -96,7 +95,8 @@ CORE_SRCS = $(SRCDIR)/src/core/ref.c     \
 						$(SRCDIR)/src/core/loader.c  \
 						$(SRCDIR)/src/core/mininode.c
 
-MININODE_OBJS =
+OBJECTS =
+DEPENDS =
 
 CORE_LINKFLAGS = -L$(OBJDIR)/build/ -lm -lpthread -lrt -Wl,--no-as-needed 
 
@@ -127,6 +127,7 @@ endif
 ifeq ($(CONFIG_CONTRIB_LIBCARES),y)
 	include mk/contrib/libcares.mk
 endif
+
 ifeq ($(CONFIG_MODULE_ASSERT),y)
 	include mk/modules/assert.mk
 endif
@@ -227,11 +228,12 @@ ifeq ($(CONFIG_MODULE_ZLIB),y)
 	include mk/modules/zlib.mk
 endif
 
-#include $(CORE_DEPS)
-$(foreach file,$(CORE_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(CORE_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 
-$(OBJDIR)/build/mininode: $(OBJDIR)/src/include/builtin_hash.h $(OBJDIR)/build/libduktape.a $(OBJDIR)/build/libuv.a $(CORE_OBJS) | objdir 
-	$(CC) $(CORE_CFLAGS) -flto -fPIE $(CORE_OBJS) -L$(OBJDIR)/build -l:libduktape.a -l:libuv.a -lpthread -ldl -lm -o $@
+-include $(DEPENDS)
+
+$(OBJDIR)/build/mininode: $(OBJDIR)/src/include/builtin_hash.h $(OBJDIR)/build/libduktape.a $(OBJDIR)/build/libuv.a $(OBJECTS) | objdir 
+	$(CC) $(CORE_CFLAGS) -flto -fPIE $(OBJECTS) -L$(OBJDIR)/build -l:libduktape.a -l:libuv.a -lpthread -ldl -lm -o $@
 
 clean::
 	rm -rf $(OBJDIR)/*
@@ -240,5 +242,5 @@ clean::
 	touch .config
 	make defconfig
 
-install: $(OBJDIR)/build/mininode
-	cp $^ $(DESTDIR)/mininode
+install:
+	cp $(OBJDIR)/build/mininode $(DESTDIR)/mininode

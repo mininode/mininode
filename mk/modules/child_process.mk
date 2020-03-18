@@ -9,5 +9,5 @@ CHILD_PROCESS_SRCS = $(SRCDIR)/src/modules/child_process/child_process.c \
 										 $(SRCDIR)/src/modules/child_process/methods/spawn.c \
 										 $(SRCDIR)/src/modules/child_process/methods/spawn_sync.c
 
-$(foreach file,$(CHILD_PROCESS_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(CHILD_PROCESS_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

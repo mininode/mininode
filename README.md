@@ -73,7 +73,7 @@ mainline Node.js runtime will likely need to be ported.
 
 ## Build Instructions
 
-This uses GNU make and it is currently being developed on and forLinux,
+This uses GNU make and it is currently being developed on (and for) Linux,
 other systems are not yet supported but this should also work on OSX, Illumos/Solaris
 and *BSD (possibly with minimal porting effort).
 

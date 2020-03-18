@@ -4,5 +4,5 @@ QUERYSTRING_SRCS = $(SRCDIR)/src/modules/querystring/querystring.c \
 									 $(SRCDIR)/src/modules/querystring/methods/stringify.c \
 									 $(SRCDIR)/src/modules/querystring/methods/unescape.c \
 
-$(foreach file,$(QUERYSTRING_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(QUERYSTRING_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

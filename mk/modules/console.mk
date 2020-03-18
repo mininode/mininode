@@ -9,5 +9,5 @@ CONSOLE_SRCS = $(SRCDIR)/src/modules/console/console.c \
 							 $(SRCDIR)/src/modules/console/methods/trace.c \
 							 $(SRCDIR)/src/modules/console/methods/warn.c
 
-$(foreach file,$(CONSOLE_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(CONSOLE_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

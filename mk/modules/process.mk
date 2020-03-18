@@ -37,5 +37,5 @@ PROCESS_SRCS = $(SRCDIR)/src/modules/process/process.c \
 							 $(SRCDIR)/src/modules/process/methods/uptime.c \
 							 $(SRCDIR)/src/modules/process/methods/version.c \
 
-$(foreach file,$(PROCESS_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(PROCESS_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

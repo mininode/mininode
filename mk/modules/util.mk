@@ -5,5 +5,5 @@ UTIL_SRCS = $(SRCDIR)/src/modules/util/util.c \
 						$(SRCDIR)/src/modules/util/methods/inherits.c \
 						$(SRCDIR)/src/modules/util/methods/inspect.c
 
-$(foreach file,$(UTIL_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(UTIL_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 

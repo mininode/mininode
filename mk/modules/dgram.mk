@@ -13,5 +13,5 @@ DGRAM_SRCS = $(SRCDIR)/src/modules/dgram/dgram.c \
 						 $(SRCDIR)/src/modules/dgram/classes/socket/methods/set_ttl.c \
 						 $(SRCDIR)/src/modules/dgram/classes/socket/methods/unref.c
 
-$(foreach file,$(DGRAM_SRCS),$(eval $(call generateRule,$(file),CORE_OBJS)))
+$(foreach file,$(DGRAM_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS)))
 
