@@ -85,26 +85,49 @@ void mn_repl_loop(duk_context *ctx);
 
 /*** Internal structures ***/
 
+/*
+ * The design here is heavily influenced by https://bearssl.org/oop.html
+ * 
+ */
 typedef struct mn_event_emitter_class mn_event_emitter_class;
 struct mn_event_emitter_class {
-  size_t context_size;
+  size_t ctx_sz;
   uint32_t desc;
-  uint32_t max_listeners;
-  void (*init)(const mn_event_emitter_class **ctx);
-  void (*emit)(const mn_event_emitter_class *const *ctx);
+  void (*init)(const mn_event_emitter_class **emtr_ctx);
+  void (*fini)(const mn_event_emitter_class **emtr_ctx);
+  void (*emit)(const mn_event_emitter_class *const *emtr_ctx);
 };
 
 typedef struct mn_event_emitter_ctx mn_event_emitter_ctx;
 struct mn_event_emitter_ctx {
   const mn_event_emitter_class *vtable;
-  unsigned char buffer[256];
-  uint32_t listeners[256];
+  int fd; /* The file descriptor of an shm_open() region or a file */
+  uint32_t *watchers;
+  uint32_t max_watchers;
   uint64_t count;
+};
+
+typedef struct mn_stream_class mn_stream_class;
+struct mn_stream_class {
+  mn_event_emitter_class parent;
+  void (*init)(const mn_stream_class **strm_ctx);
+  void (*fini)(const mn_stream_class **strm_ctx);
+  void (*emit)(const mn_stream_class *const *strm_ctx);
+};
+
+typedef struct mn_stream_ctx mn_stream_ctx;
+struct mn_stream_ctx {
+  const mn_stream_class *vtable;
+  uint32_t readable:1;
+  uint32_t writable:1;
+  uint32_t flowing:1;
+  uint32_t state;
 };
 
 typedef union {
   const mn_event_emitter_class *vtable;
-  mn_event_emitter_ctx emitter;
+  mn_event_emitter_ctx emtr;
+  mn_stream_ctx strm;
 } mn_event_emitter_compat_ctx;
 
 /*** BUILT-IN MODULES ***/

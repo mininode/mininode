@@ -8,6 +8,7 @@ obj
 *.o
 *.dwo
 *.a
+*.gch*
 config.mak
 .config
 .config.old

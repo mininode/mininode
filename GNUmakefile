@@ -63,7 +63,7 @@ define generateRule
 $2 += $(patsubst %.c, %.o, $(subst $(SRCDIR), $(OBJDIR), ${1}))
 $3 += $(patsubst %.c, %.d, $(subst $(SRCDIR), $(OBJDIR), ${1}))
 $(patsubst %.c, %.o, $(subst $(SRCDIR), $(OBJDIR), ${1})): $(1) | objdir
-	$$(CC) -c -fPIC $$(CORE_CFLAGS) $$(LIBUV_CFLAGS) $$^ -o $$@ -MT $$@ -MMD -MP -MF$(patsubst %.c, %.d, $(subst $(SRCDIR), $(OBJDIR), ${1})) 
+	$$(CC) -c -fPIC $$(CORE_CFLAGS) $$^ -o $$@ -MT $$@ -MMD -MP -MF$(patsubst %.c, %.d, $(subst $(SRCDIR), $(OBJDIR), ${1})) 
 endef
 
 all: $(OBJDIR)/build/mininode
@@ -80,6 +80,7 @@ CORE_CFLAGS = $(CFLAGS)                           \
 						-I$(SRCDIR)/src/contrib/duktape       \
 						-I$(SRCDIR)/src/contrib/http-parser   \
 						-I$(SRCDIR)/src/contrib/libuv/include \
+						-I$(SRCDIR)/src/contrib/libuv/src     \
 						-I$(SRCDIR)/src/include               \
 						-DDUK_OPT_VERBOSE_ERRORS              \
 						-DDUK_OPT_PARANOID_ERRORS             \
