@@ -1,9 +1,6 @@
 [submodule "src/contrib/http-parser"]
 	path = src/contrib/http-parser
 	url = https://github.com/nodejs/http-parser.git
-[submodule "src/contrib/libuv"]
-	path = src/contrib/libuv
-	url = https://github.com/libuv/libuv.git
 [submodule "src/contrib/libslz"]
 	path = src/contrib/libslz
 	url = https://github.com/haproxy/libslz.git
@@ -16,3 +13,6 @@
 [submodule "src/contrib/BearSSL"]
 	path = src/contrib/BearSSL
 	url = https://www.bearssl.org/git/BearSSL
+[submodule "src/contrib/libtuv"]
+	path = src/contrib/libtuv
+	url = https://github.com/mininode/libtuv.git
