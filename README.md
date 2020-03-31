@@ -1,9 +1,9 @@
 # mininode - Node.js for Embedded Systems
 [![MIT Licensed](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/mininode/mininode/blob/master/LICENSE.md)[![Build Status](https://travis-ci.org/mininode/mininode.svg)](https://travis-ci.org/mininode/mininode)[![Fuck it! Ship it!](https://img.shields.io/badge/FUCK%20IT!-SHIP%20IT!-brightgreen.svg)](https://hackernoon.com/fuck-it-ship-it-905afd092547#.tnzm8yqap)
 
-This is [libuv][1], [http-parser][2], [c-ares][3], [bearssl][4], [libslz][5], and [lowzip][6]
-held together with [duktape][7]. The goal here is to produce an implementation
-of the [Node.js 6.9.2 API][8] with a full-fledged Javascript interpreter 
+This is [http-parser][1], [c-ares][2], [bearssl][3], [libslz][4], and [lowzip][5]
+held together with [duktape][6]. The goal here is to produce an implementation
+of the [Node.js 6.9.2 API][7] with a full-fledged Javascript interpreter 
 in a single binary with no runtime dependencies other than a standard C library.
 
 This aims to implement the Node.js standard library entirely in C. Deprecated 
@@ -104,21 +104,20 @@ For use on embedded systems, musl libc and Linux are recommended (in general).
 ## What's the point?
 
 This is intended aid in rapid development of small embedded clients, with 
-realistic requirements of ~75mhz and 2MB RAM although less might be workable. 
+realistic requirements of ~100mhz and 8MB RAM although less might be workable. 
 Since this will likely never approach the performance of V8 as a javascript 
 interpreter, you will almost certainly want to continue using mainstream 
 Node.js for servers unless you are prepared to write the bulk of your hot path 
 in C using duktape.
 
-[1]: https://github.com/libuv/libuv.git
-[2]: https://github.com/nodejs/http-parser.git
-[3]: https://c-ares.haxx.se/
-[4]: https://bearssl.org
-[5]: https://github.com/haproxy/libslz
-[6]: https://github.com/svaarala/lowzip
-[7]: http://duktape.org
-[8]: https://nodejs.org/dist/v6.9.2/docs/api/
-[9]: https://github.com/creationix/dukluv/tree/master/src
+[1]: https://github.com/nodejs/http-parser.git
+[2]: https://c-ares.haxx.se/
+[3]: https://bearssl.org
+[4]: https://github.com/haproxy/libslz
+[5]: https://github.com/svaarala/lowzip
+[6]: http://duktape.org
+[7]: https://nodejs.org/dist/v6.9.2/docs/api/
+[8]: https://github.com/creationix/dukluv/tree/master/src
 
 # Signed Tags
 

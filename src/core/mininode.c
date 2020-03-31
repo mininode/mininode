@@ -16,7 +16,6 @@
 #include <string.h>
 #include <limits.h>
 #include <getopt.h>
-#include "uv.h"
 #include "duktape.h"
 #include "mininode.h"
 
@@ -211,9 +210,6 @@ main(int argc, char **argv) {
 	long srclen = 0;         /* The length of source buffer */
 	size_t srcsz = 0;        /* Size of NUL-terminated source buffer. */
 
-	/* This isn't strictly necessary, but we'll do it anyway. */
-	uv_setup_args(argc, argv);
-
 	while ((c = getopt(argc, argv, OPTSTRING)) != -1) {
 		switch (c) {
 			case 'h':
@@ -264,6 +260,53 @@ main(int argc, char **argv) {
 			filename = argv[optind];
 		}
 	}
+
+/*
+ * To be compatible with Node.js, our event loop needs to have the same
+ * order of operations. Each tick of the loop starts at the top of this 
+ * diagram and goes down through the list, then obviously repeats itself.
+ *
+ * My initial focus here is the poll portion of the loop, although some
+ * consideration is being given to the bigger picture. 
+ *
+ *    ┌───────────────────────────┐
+ * ┌─>│           timers          │<----- setTimeout() and setInterval()
+ * │  └─────────────┬─────────────┘
+ * │  ┌─────────────┴─────────────┐
+ * │  │     pending callbacks     │<----- deferred from the previous tick
+ * │  └─────────────┬─────────────┘
+ * │  ┌─────────────┴─────────────┐
+ * │  │       idle, prepare       │<----- check/free resources, etc 
+ * │  └─────────────┬─────────────┘      ┌───────────────┐
+ * │  ┌─────────────┴─────────────┐      │   incoming:   │
+ * │  │           poll            │<─────┤  connections, │
+ * │  └─────────────┬─────────────┘      │ data, events  │
+ * │  ┌─────────────┴─────────────┐      └───────────────┘
+ * │  │           check           │<----- setImmediate() callbacks 
+ * │  └─────────────┬─────────────┘
+ * │  ┌─────────────┴─────────────┐
+ * └──┤      close callbacks      │<----- socket.on('close', ...) etc
+ *    └───────────────────────────┘
+ *
+ * Timers are not guaranteed to fire at exactly the requested time. 
+ * Rather, they fire on the next tick that happens at or past the 
+ * requested time. This is generally close enough that no one cares.
+ *
+ * However, this does mean that we'll have to maintain a CLOCK_MONOTONIC
+ * value and this will make it easy for us to calculate how much time 
+ * is taken by each pass through our main loop.
+ *
+ * For timers, we'll use a in heap structure. In effect, we will be 
+ * polling without using poll().
+ *
+ * Pending callbacks will be stored in a linked list.
+ *
+ *
+ *
+ *                           /o\
+ *                         /o\ /o\
+ */
+
 	/* 
 	 * Initialize the event loop.
 	 */
@@ -343,11 +386,21 @@ main(int argc, char **argv) {
 	 * included in the global namespace. This is useful
 	 * with mn_bi_util_format() and mn_bi_console_log().
 	 */
+#ifdef MN_MODULE_ERRORS
 	mn_bi_errors(ctx);
+#endif
+#ifdef MN_MODULE_TIMERS
 	mn_bi_timers(ctx);
+#endif
+#ifdef MN_MODULE_EVENTS
 	mn_bi_events(ctx);
+#endif
+#ifdef MN_MODULE_BUFFER
 	mn_bi_buffer(ctx);
+#endif
+#ifdef MN_MODULE_PROCESS
 	mn_bi_process(ctx);
+#endif
 	mn_bi_console(ctx);
 	duk_pop(ctx);
 
@@ -454,7 +507,7 @@ main(int argc, char **argv) {
 
 	/* TODO: Support check_flag and print_flag */
 
-	uv_loop_close(mn_loop);
+	//uv_loop_close(mn_loop);
 	duk_destroy_heap(ctx);
 	exit(EXIT_SUCCESS);
 

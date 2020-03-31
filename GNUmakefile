@@ -22,11 +22,11 @@ CC ?= gcc
 LD ?= ld
 AR ?= ar
 RM ?= rm
-DESTDIR ?= /usr/local/bin
 CFLAGS ?= -O2 -std=gnu99
 
 SRCDIR := $(realpath .)
 OBJDIR ?= $(SRCDIR)/obj
+DSTDIR ?= /usr/local/bin
 
 KCONFIG_CONFIG ?= .config
 export MININODEVERSION
@@ -63,7 +63,7 @@ define generateRule
 $2 += $(patsubst %.c, %.o, $(subst $(SRCDIR), $(OBJDIR), ${1}))
 $3 += $(patsubst %.c, %.d, $(subst $(SRCDIR), $(OBJDIR), ${1}))
 $(patsubst %.c, %.o, $(subst $(SRCDIR), $(OBJDIR), ${1})): $(1) | objdir
-	$$(CC) -c -fPIC $$(CORE_CFLAGS) $$^ -o $$@ -MT $$@ -MMD -MP -MF$(patsubst %.c, %.d, $(subst $(SRCDIR), $(OBJDIR), ${1})) 
+	$$(CC) -c -fPIC $$(CORE_CFLAGS) $$(filter-out %.h,$$^) -o $$@ -MQ $$@ -MMD -MP -MF$(patsubst %.c, %.d, $(subst $(SRCDIR), $(OBJDIR), ${1})) 
 endef
 
 all: $(OBJDIR)/build/mininode
@@ -74,24 +74,37 @@ objdir:
 
 include kconfig/GNUmakefile
 
-CORE_CFLAGS = $(CFLAGS)                           \
-  					-Wall                                 \
-						-I$(OBJDIR)/src/include               \
-						-I$(SRCDIR)/src/contrib/duktape       \
-						-I$(SRCDIR)/src/contrib/http-parser   \
-						-I$(SRCDIR)/src/contrib/libuv/include \
-						-I$(SRCDIR)/src/contrib/libuv/src     \
-						-I$(SRCDIR)/src/include               \
-						-DDUK_OPT_VERBOSE_ERRORS              \
-						-DDUK_OPT_PARANOID_ERRORS             \
-						-DDUK_OPT_AUGMENT_ERRORS              \
-						-D_POSIX_C_SOURCE=200809L             \
-						-D_GNU_SOURCE                         \
-						-D_XOPEN_SOURCE=700
+CORE_CFLAGS = $(CFLAGS)                            \
+  					-Wall                                  \
+						-I$(OBJDIR)/src/include                \
+						-I$(SRCDIR)/src/contrib/duktape        \
+						-I$(SRCDIR)/src/contrib/libtuv/include \
+						-I$(SRCDIR)/src/contrib/libtuv/src \
+						-I$(SRCDIR)/src/contrib/libtuv/src/unix \
+						-I$(SRCDIR)/src/contrib/http-parser    \
+						-I$(SRCDIR)/src/include                \
+						-DDUK_OPT_VERBOSE_ERRORS               \
+						-DDUK_OPT_PARANOID_ERRORS              \
+						-DDUK_OPT_AUGMENT_ERRORS               \
+						-D_POSIX_C_SOURCE=200809L              \
+						-D_GNU_SOURCE                          \
+						-D_XOPEN_SOURCE=700                    \
+						-fomit-frame-pointer                   \
+						-fstack-protector                      \
+						-flto                                  \
+						-fno-asynchronous-unwind-tables        \
+						-fno-prefetch-loop-arrays              \
+						-freorder-blocks-algorithm=simple      \
+						-mno-align-stringops                   \
+						-fno-align-loops                       \
+						-fno-align-labels                      \
+						-fno-align-jumps                      \
+						-ffunction-sections
 
 CORE_HDRS = src/include/mininode.h
 
 CORE_SRCS = $(SRCDIR)/src/core/ref.c     \
+						$(SRCDIR)/src/core/rb3ptr.c \
 						$(SRCDIR)/src/core/core.c    \
 						$(SRCDIR)/src/core/loader.c  \
 						$(SRCDIR)/src/core/mininode.c
@@ -99,7 +112,7 @@ CORE_SRCS = $(SRCDIR)/src/core/ref.c     \
 OBJECTS =
 DEPENDS =
 
-CORE_LINKFLAGS = -L$(OBJDIR)/build/ -lm -lpthread -lrt -Wl,--no-as-needed 
+CORE_LINKFLAGS = -L$(OBJDIR)/build/ -lm -lpthread -lrt -Wl,--no-as-needed -Wl,--gc-sections
 
 %.o: %.c
 	$(CC) $(CORE_CFLAGS) $(CORE_DEPFLAGS) $^ -o $@
@@ -111,7 +124,7 @@ $(OBJDIR)/src/include/builtin_hash.h: $(OBJDIR)/src/include/builtin_hash.gperf
 	gperf -N find_builtin -t $^ > $@
 
 include mk/contrib/duktape.mk
-include mk/contrib/libuv.mk
+include mk/contrib/libtuv.mk
 
 ifeq ($(CONFIG_CONTRIB_HTTP_PARSER),y)
 	include mk/contrib/httparser.mk
@@ -233,8 +246,8 @@ $(foreach file,$(CORE_SRCS),$(eval $(call generateRule,$(file),OBJECTS,DEPENDS))
 
 -include $(DEPENDS)
 
-$(OBJDIR)/build/mininode: $(OBJDIR)/src/include/builtin_hash.h $(OBJDIR)/build/libduktape.a $(OBJDIR)/build/libuv.a $(OBJECTS) | objdir 
-	$(CC) $(CORE_CFLAGS) -flto -fPIE $(OBJECTS) -L$(OBJDIR)/build -l:libduktape.a -l:libuv.a -lpthread -ldl -lm -o $@
+$(OBJDIR)/build/mininode: $(OBJDIR)/src/include/builtin_hash.h $(OBJDIR)/build/libduktape.a $(OBJDIR)/build/libtuv.a $(OBJECTS) | objdir 
+	$(CC) $(CORE_CFLAGS) -flto -fPIE $(OBJECTS) -L$(OBJDIR)/build -l:libtuv.a -l:libduktape.a -lpthread -ldl -lm -o $@
 
 clean::
 	rm -rf $(OBJDIR)/*
@@ -244,4 +257,4 @@ clean::
 	make defconfig
 
 install:
-	cp $(OBJDIR)/build/mininode $(DESTDIR)/mininode
+	cp $(OBJDIR)/build/mininode $(DSTDIR)/mininode

@@ -215,7 +215,7 @@ config MODULE_EVENTS
 
 config MODULE_FS
 	bool "'fs' module"
-	default y
+	default n
 	help
 	Enable the 'fs' module.
 
@@ -256,7 +256,7 @@ config MODULE_NET
 
 config MODULE_OS
 	bool "'os' module"
-	default y
+	default n
 	help
 	See https://nodejs.org/dist/v6.9.2/docs/api/os.html
 

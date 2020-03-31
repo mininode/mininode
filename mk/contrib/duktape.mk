@@ -3,3 +3,4 @@ $(OBJDIR)/src/contrib/duktape/duktape.o: $(SRCDIR)/src/contrib/duktape/duktape.c
 
 $(OBJDIR)/build/libduktape.a: $(OBJDIR)/src/contrib/duktape/duktape.o
 	ar crs $@ $^
+	ranlib $@

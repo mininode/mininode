@@ -20,7 +20,7 @@ mn_setup_handle(duk_context *ctx) {
 }
 
 /*
- * Fulfill a libuv request.
+ * Fulfill a libtuv request.
  */
 void
 mn_fulfill_req(duk_context *ctx, uv_req_t *req, int nargs) {
